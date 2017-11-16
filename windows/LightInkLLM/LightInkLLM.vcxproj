@@ -1,0 +1,352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{50C6AA48-8930-4699-88D3-7111B09DED8F}</ProjectGuid>
+    <RootNamespace>LightInkLLM</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\bin\Debug\</OutDir>
+    <IntDir>..\Obj_d\$(ProjectName)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental />
+    <OutDir>..\..\bin\Debug\</OutDir>
+    <IntDir>..\x64\Obj_d\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\bin\Release\</OutDir>
+    <IntDir>..\Obj_r\$(ProjectName)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental />
+    <OutDir>..\..\bin\Release\</OutDir>
+    <IntDir>..\x64\Obj_r\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIGHTINK_AS_DLL;LIGHTINK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIGHTINK_AS_DLL;LIGHTINK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIGHTINK_AS_DLL;LIGHTINK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIGHTINK_AS_DLL;LIGHTINK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalDependencies>iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\Atomic\Atomic.h" />
+    <ClInclude Include="..\..\include\Atomic\Guard.h" />
+    <ClInclude Include="..\..\include\Atomic\SpinMutex.h" />
+    <ClInclude Include="..\..\include\Atomic\Turf\turf.h" />
+    <ClInclude Include="..\..\include\Common\ArgParser.h" />
+    <ClInclude Include="..\..\include\Common\AsyncQueue.h" />
+    <ClInclude Include="..\..\include\Common\CharPtrBridge.h" />
+    <ClInclude Include="..\..\include\Common\Config.h" />
+    <ClInclude Include="..\..\include\Common\LightInkVersion.h" />
+    <ClInclude Include="..\..\include\Common\OsHelper.h" />
+    <ClInclude Include="..\..\include\Common\Ptr\AutoPtr.h" />
+    <ClInclude Include="..\..\include\Common\Ptr\RefCounter.h" />
+    <ClInclude Include="..\..\include\Common\Ptr\SharedPtr.h" />
+    <ClInclude Include="..\..\include\Common\RuntimeError.h" />
+    <ClInclude Include="..\..\include\Common\SingletonBase.h" />
+    <ClInclude Include="..\..\include\Common\SmallObject.h" />
+    <ClInclude Include="..\..\include\Common\stdint_msvc2008.h" />
+    <ClInclude Include="..\..\include\Common\STLType.h" />
+    <ClInclude Include="..\..\include\Common\Type.h" />
+    <ClInclude Include="..\..\include\Common\TypeTool\CompileTimeChecker.h" />
+    <ClInclude Include="..\..\include\Common\TypeTool\TypeList.h" />
+    <ClInclude Include="..\..\include\Common\TypeTool\TypeListDefine.h" />
+    <ClInclude Include="..\..\include\Common\TypeTool\TypeTool.h" />
+    <ClInclude Include="..\..\include\Common\UserMemory.h" />
+    <ClInclude Include="..\..\include\Common\WinSnprintf.h" />
+    <ClInclude Include="..\..\include\fmt\fmt.h" />
+    <ClInclude Include="..\..\include\fmt\format.h" />
+    <ClInclude Include="..\..\include\fmt\format.hpp" />
+    <ClInclude Include="..\..\include\fmt\ostream.h" />
+    <ClInclude Include="..\..\include\fmt\ostream.hpp" />
+    <ClInclude Include="..\..\include\Log\async\AsyncMsg.h" />
+    <ClInclude Include="..\..\include\Log\async\AsyncThread.h" />
+    <ClInclude Include="..\..\include\Log\channel\DateNameStrategy.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannel.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelAndroid.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelFile.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelList.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelMsvc.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelMT.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelNull.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelOstream.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelStd.h" />
+    <ClInclude Include="..\..\include\Log\channel\LogChannelStdColor.h" />
+    <ClInclude Include="..\..\include\Log\FixedLogger.h" />
+    <ClInclude Include="..\..\include\Log\helper\FileHelper.h" />
+    <ClInclude Include="..\..\include\Log\helper\FormatHelper.h" />
+    <ClInclude Include="..\..\include\Log\helper\LogTraceHelper.h" />
+    <ClInclude Include="..\..\include\Log\Log.h" />
+    <ClInclude Include="..\..\include\Log\LogConfig.h" />
+    <ClInclude Include="..\..\include\Log\LogFlagFormat.h" />
+    <ClInclude Include="..\..\include\Log\LogFormat.h" />
+    <ClInclude Include="..\..\include\Log\Logger.h" />
+    <ClInclude Include="..\..\include\Log\LoggerMgr.h" />
+    <ClInclude Include="..\..\include\Log\LogItem.h" />
+    <ClInclude Include="..\..\include\Log\LogThreadType.h" />
+    <ClInclude Include="..\..\include\Log\LogOption.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaInt64.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaCFunctionTraits.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaEngine.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaFixFunction.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaIndexMetatable.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaIterator.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaLib.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaMetatableTraits.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaModule.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaNewClassTraits.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaDefAutoTool.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaDefTool.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaClassPropertyTraits.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaRef.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaRegister.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaDefTraits.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaStack.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaClassInfo.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaStateProtect.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaTableRef.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaUserdata.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaUserdataForClass.h" />
+    <ClInclude Include="..\..\include\Msgpack\DataBuffer.h" />
+    <ClInclude Include="..\..\include\Msgpack\DataFixBuffer.h" />
+    <ClInclude Include="..\..\include\Msgpack\DataRefBuffer.h" />
+    <ClInclude Include="..\..\include\Msgpack\DataSharedBuffer.h" />
+    <ClInclude Include="..\..\include\Msgpack\encrypter\CapCompresser.h" />
+    <ClInclude Include="..\..\include\Msgpack\encrypter\Crc32Encrypter.h" />
+    <ClInclude Include="..\..\include\Msgpack\encrypter\XxteaEncrypter.h" />
+    <ClInclude Include="..\..\include\Msgpack\PackBuffer.h" />
+    <ClInclude Include="..\..\include\Msgpack\PackDefine.h" />
+    <ClInclude Include="..\..\include\Msgpack\Packer.h" />
+    <ClInclude Include="..\..\include\Msgpack\PackTuple.h" />
+    <ClInclude Include="..\..\include\Msgpack\Sysdep.h" />
+    <ClInclude Include="..\..\include\Msgpack\Unpacker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\include\Common\Ptr\AutoPtr.cpp" />
+    <ClCompile Include="..\..\include\Common\Ptr\SharedPtr.cpp" />
+    <ClCompile Include="..\..\include\LuaEngine\LuaRegister.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\DataFixBuffer.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\PackBuffer.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\Packer.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\PackerAdaptor.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\Unpacker.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.cpp" />
+    <ClCompile Include="..\..\src\Atomic\SpinMutex.cpp" />
+    <ClCompile Include="..\..\src\Common\ArgParser.cpp" />
+    <ClCompile Include="..\..\src\Common\LightInkVersion.cpp" />
+    <ClCompile Include="..\..\src\Common\OsHelper.cpp" />
+    <ClCompile Include="..\..\src\Common\RuntimeError.cpp" />
+    <ClCompile Include="..\..\src\Common\SmallObject.cpp" />
+    <ClCompile Include="..\..\src\Common\WinSnprintf.c" />
+    <ClCompile Include="..\..\src\Log\async\AsyncMsg.cpp" />
+    <ClCompile Include="..\..\src\Log\async\AsyncThread.cpp" />
+    <ClCompile Include="..\..\src\Log\channel\DateNameStrategy.cpp" />
+    <ClCompile Include="..\..\src\Log\channel\LogChannelAndroid.cpp" />
+    <ClCompile Include="..\..\src\Log\channel\LogChannelStdColor.cpp" />
+    <ClCompile Include="..\..\src\Log\helper\FileHelper.cpp" />
+    <ClCompile Include="..\..\src\Log\helper\FormatHelper.cpp" />
+    <ClCompile Include="..\..\src\Log\LogFormat.cpp" />
+    <ClCompile Include="..\..\src\Log\Logger.cpp" />
+    <ClCompile Include="..\..\src\Log\LoggerMgr.cpp" />
+    <ClCompile Include="..\..\src\Log\LogOption.cpp" />
+    <ClCompile Include="..\..\src\Log\LogThreadType.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaInt64.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaEngine.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaIndexMetatable.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaIterator.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaModule.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaRef.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\LuaTableRef.cpp" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lapi.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lauxlib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lbaselib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lcode.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldblib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldebug.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldo.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldump.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lfunc.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lgc.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\linit.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\liolib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\llex.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lmathlib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lmem.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\loadlib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lobject.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lopcodes.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\loslib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lparser.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lstate.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lstring.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lstrlib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ltable.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ltablib.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\ltm.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lundump.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lvm.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\lzio.c" />
+    <ClCompile Include="..\..\src\LuaEngine\lua\print.c" />
+    <ClCompile Include="..\..\src\Msgpack\DataBuffer.cpp" />
+    <ClCompile Include="..\..\src\Msgpack\DataRefBuffer.cpp" />
+    <ClCompile Include="..\..\src\Msgpack\encrypter\CapCompresser.cpp" />
+    <ClCompile Include="..\..\src\Msgpack\encrypter\Crc32Encrypter.cpp" />
+    <ClCompile Include="..\..\src\Msgpack\encrypter\XxteaEncrypter.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

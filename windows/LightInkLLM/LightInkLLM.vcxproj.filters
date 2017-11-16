@@ -1,0 +1,576 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{88528d95-8de4-48cc-ab40-8d07004fe565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\include">
+      <UniqueIdentifier>{5168657c-6ada-47ed-a062-636b9493e0ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\source">
+      <UniqueIdentifier>{5b7bd9b4-557e-4554-8e9f-d0c3bc489c6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Msgpack">
+      <UniqueIdentifier>{2c4a667b-dbe8-47a1-8426-3c78ed369e43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Msgpack\include">
+      <UniqueIdentifier>{5c97d173-d8e6-4700-8dd5-904b69fcd863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Msgpack\source">
+      <UniqueIdentifier>{0fd94358-c2f2-4205-883a-78641fea3e1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaEngine">
+      <UniqueIdentifier>{19388e26-2358-4e84-84a2-c8a9c884ca0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaEngine\include">
+      <UniqueIdentifier>{af4b1b92-b30e-4b11-8516-c04434696d0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaEngine\source">
+      <UniqueIdentifier>{d2d8e616-6db5-43ff-87d7-6c0c18f6fff2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{1cd00634-f230-4749-96d3-5b99ff645633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\include">
+      <UniqueIdentifier>{49544984-48db-4719-8125-05a51992c3f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\source">
+      <UniqueIdentifier>{49d9732a-fa2b-419b-af3a-e02b182e83b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fmt">
+      <UniqueIdentifier>{6346e71a-31b6-4327-9097-1579c6bfd738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\include\helper">
+      <UniqueIdentifier>{5619a20c-5fc3-4f84-b5c9-b2db99d85801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\include\channel">
+      <UniqueIdentifier>{bb698207-668b-4b45-984d-0acd5acca0ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\source\channel">
+      <UniqueIdentifier>{0dc1c4d1-513e-4739-8707-b24894c25263}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\source\helper">
+      <UniqueIdentifier>{7bb2a85b-9a40-432b-9c16-16ad9e883f2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\include\async">
+      <UniqueIdentifier>{24ab491f-1e09-4b7a-a5fc-cbbad03eadcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\source\async">
+      <UniqueIdentifier>{80915a4d-6b2f-40f0-889c-641158cf7d9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaEngine\source\lua">
+      <UniqueIdentifier>{60f06e56-498f-479b-89df-352380bb8ed4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Msgpack\include\encrypter">
+      <UniqueIdentifier>{8b20d772-22db-45c6-aa40-3b7e28a68706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Msgpack\source\encrypter">
+      <UniqueIdentifier>{3aec0203-3963-4cad-91ce-5d7b4af29d6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\include\Ptr">
+      <UniqueIdentifier>{c8324a94-4316-4571-b972-1461cf65a7be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\source\Ptr">
+      <UniqueIdentifier>{786ca541-ba50-4b5b-a003-d355e43857aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\include\TypeTool">
+      <UniqueIdentifier>{96c72426-1210-4558-bb00-04c3b6da455f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Atomic">
+      <UniqueIdentifier>{71c0e3ce-51e5-427e-9f58-6308f5924356}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Atomic\include">
+      <UniqueIdentifier>{c70b3e47-32cf-4bd0-b6b3-c4501711e925}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Atomic\source">
+      <UniqueIdentifier>{08ac8247-5cf4-4b26-b4c4-e7230b2b62ea}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\Common\Config.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\RuntimeError.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\DataBuffer.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\PackBuffer.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\PackDefine.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\Packer.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\PackTuple.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\Sysdep.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\Unpacker.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\stdint_msvc2008.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaEngine.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaModule.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaRegister.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaDefTraits.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaMetatableTraits.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaCFunctionTraits.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaNewClassTraits.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaClassPropertyTraits.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaRef.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaStack.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaUserdata.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaIterator.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaClassInfo.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaIndexMetatable.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\WinSnprintf.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaDefAutoTool.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaStateProtect.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaFixFunction.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaDefTool.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaUserdataForClass.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\DataFixBuffer.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\CharPtrBridge.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\LightInkVersion.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LogConfig.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LoggerMgr.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LogFormat.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\Logger.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fmt\fmt.h">
+      <Filter>fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fmt\format.h">
+      <Filter>fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fmt\format.hpp">
+      <Filter>fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fmt\ostream.h">
+      <Filter>fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fmt\ostream.hpp">
+      <Filter>fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LogItem.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LogOption.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannel.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelMT.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelList.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelAndroid.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelNull.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelStd.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelStdColor.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\helper\FileHelper.h">
+      <Filter>Log\include\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelFile.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LogThreadType.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelMsvc.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\LogChannelOstream.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\helper\FormatHelper.h">
+      <Filter>Log\include\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\LogFlagFormat.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\channel\DateNameStrategy.h">
+      <Filter>Log\include\channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\FixedLogger.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\helper\LogTraceHelper.h">
+      <Filter>Log\include\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\Log.h">
+      <Filter>Log\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\async\AsyncThread.h">
+      <Filter>Log\include\async</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\AsyncQueue.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Log\async\AsyncMsg.h">
+      <Filter>Log\include\async</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\ArgParser.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaInt64.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaLib.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\encrypter\CapCompresser.h">
+      <Filter>Msgpack\include\encrypter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\encrypter\Crc32Encrypter.h">
+      <Filter>Msgpack\include\encrypter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\encrypter\XxteaEncrypter.h">
+      <Filter>Msgpack\include\encrypter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\DataRefBuffer.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\OsHelper.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Msgpack\DataSharedBuffer.h">
+      <Filter>Msgpack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\Type.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\STLType.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\Ptr\AutoPtr.h">
+      <Filter>Common\include\Ptr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\Ptr\RefCounter.h">
+      <Filter>Common\include\Ptr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\Ptr\SharedPtr.h">
+      <Filter>Common\include\Ptr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\TypeTool\CompileTimeChecker.h">
+      <Filter>Common\include\TypeTool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\TypeTool\TypeList.h">
+      <Filter>Common\include\TypeTool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\TypeTool\TypeListDefine.h">
+      <Filter>Common\include\TypeTool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\TypeTool\TypeTool.h">
+      <Filter>Common\include\TypeTool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaTableRef.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Atomic\Atomic.h">
+      <Filter>Atomic\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Atomic\Guard.h">
+      <Filter>Atomic\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Atomic\SpinMutex.h">
+      <Filter>Atomic\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Atomic\Turf\turf.h">
+      <Filter>Atomic\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\SmallObject.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\UserMemory.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Common\SingletonBase.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Common\RuntimeError.cpp">
+      <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\PackBuffer.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\Packer.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\PackerAdaptor.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\Unpacker.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Msgpack\DataBuffer.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\LuaEngine\LuaRegister.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaModule.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaIterator.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaEngine.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaIndexMetatable.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Common\WinSnprintf.c">
+      <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\DataFixBuffer.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Common\LightInkVersion.cpp">
+      <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\LogOption.cpp">
+      <Filter>Log\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\channel\LogChannelAndroid.cpp">
+      <Filter>Log\source\channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\channel\LogChannelStdColor.cpp">
+      <Filter>Log\source\channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\helper\FileHelper.cpp">
+      <Filter>Log\source\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\channel\DateNameStrategy.cpp">
+      <Filter>Log\source\channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\LogFormat.cpp">
+      <Filter>Log\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\helper\FormatHelper.cpp">
+      <Filter>Log\source\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\Logger.cpp">
+      <Filter>Log\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\LoggerMgr.cpp">
+      <Filter>Log\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\async\AsyncThread.cpp">
+      <Filter>Log\source\async</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\async\AsyncMsg.cpp">
+      <Filter>Log\source\async</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Common\ArgParser.cpp">
+      <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaInt64.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lapi.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lauxlib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lbaselib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lcode.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldblib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldebug.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldo.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ldump.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lfunc.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lgc.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\linit.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\liolib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\llex.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lmathlib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lmem.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\loadlib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lobject.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lopcodes.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\loslib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lparser.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lstate.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lstring.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lstrlib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ltable.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ltablib.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\ltm.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lundump.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lvm.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\lzio.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\lua\print.c">
+      <Filter>LuaEngine\source\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Msgpack\encrypter\CapCompresser.cpp">
+      <Filter>Msgpack\source\encrypter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Msgpack\encrypter\Crc32Encrypter.cpp">
+      <Filter>Msgpack\source\encrypter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Msgpack\encrypter\XxteaEncrypter.cpp">
+      <Filter>Msgpack\source\encrypter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Msgpack\DataRefBuffer.cpp">
+      <Filter>Msgpack\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Common\OsHelper.cpp">
+      <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Common\Ptr\AutoPtr.cpp">
+      <Filter>Common\source\Ptr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Common\Ptr\SharedPtr.cpp">
+      <Filter>Common\source\Ptr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaRef.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LuaEngine\LuaTableRef.cpp">
+      <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Log\LogThreadType.cpp">
+      <Filter>Log\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Atomic\SpinMutex.cpp">
+      <Filter>Atomic\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Common\SmallObject.cpp">
+      <Filter>Common\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
