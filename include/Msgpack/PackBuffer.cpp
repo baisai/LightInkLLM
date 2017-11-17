@@ -26,8 +26,8 @@
 #define LIGHTINK_MSGPACK_PACKBUFFER_CPP_
 
 #include "Msgpack/PackBuffer.h"
-#include "Msgpack/Packer.h"
-#include "Msgpack/Unpacker.h"
+#include "Msgpack/PackerAdaptor.h"
+#include "Msgpack/UnpackerAdaptor.h"
 
 
 namespace LightInk

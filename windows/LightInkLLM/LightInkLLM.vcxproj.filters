@@ -371,13 +371,7 @@
     <ClCompile Include="..\..\include\Msgpack\Packer.cpp">
       <Filter>Msgpack\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\include\Msgpack\PackerAdaptor.cpp">
-      <Filter>Msgpack\source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\include\Msgpack\Unpacker.cpp">
-      <Filter>Msgpack\source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.cpp">
       <Filter>Msgpack\source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Msgpack\DataBuffer.cpp">
@@ -571,6 +565,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Common\SmallObject.cpp">
       <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\PackerAdaptor.h">
+      <Filter>Msgpack\include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.h">
+      <Filter>Msgpack\include</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

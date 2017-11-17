@@ -281,9 +281,9 @@
     <ClCompile Include="..\..\include\Msgpack\DataFixBuffer.cpp" />
     <ClCompile Include="..\..\include\Msgpack\PackBuffer.cpp" />
     <ClCompile Include="..\..\include\Msgpack\Packer.cpp" />
-    <ClCompile Include="..\..\include\Msgpack\PackerAdaptor.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\PackerAdaptor.h" />
     <ClCompile Include="..\..\include\Msgpack\Unpacker.cpp" />
-    <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.cpp" />
+    <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.h" />
     <ClCompile Include="..\..\src\Atomic\SpinMutex.cpp" />
     <ClCompile Include="..\..\src\Common\ArgParser.cpp" />
     <ClCompile Include="..\..\src\Common\LightInkVersion.cpp" />

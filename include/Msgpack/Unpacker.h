@@ -27,9 +27,9 @@
 #define LIGHTINK_MSGPACK_UNPACKER_H_
 
 #include "Sysdep.h"
-#include "PackBuffer.h"
 #include "Common/TypeTool/TypeTool.h"
 #include "Common/RuntimeError.h"
+#include "Log/Log.h"
 
 namespace LightInk
 {
@@ -207,15 +207,10 @@ namespace LightInk
 	LIGHTINK_DISABLE_COPY(Unpacker)
 	};
 
-
-	template <typename TBuffer, typename T>
-	RuntimeError unpack(TBuffer & buffer, T & v);
-
 }
 
 
 #include "Unpacker.cpp"
-#include "UnpackerAdaptor.cpp"
 
 
 #endif

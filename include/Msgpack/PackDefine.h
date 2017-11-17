@@ -25,8 +25,8 @@
 #define LIGHTINK_MSGPACK_PACKDEFINE_H_
 #include "DataBuffer.h"
 #include "PackBuffer.h"
-#include "Packer.h"
-#include "Unpacker.h"
+#include "PackerAdaptor.h"
+#include "UnpackerAdaptor.h"
 
 /*
 --lua生成
