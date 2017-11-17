@@ -44,12 +44,12 @@
 #endif
 #else
 #define LogTrace(name, ft, ...) \
-		fmt::MemoryWriter __##name_mess; \
-		__##name_mess.write("["#name"]"); \
-		__##name_mess.write(ft, ##__VA_ARGS__); \
-		LightInk::LogTraceHelper __##name_trace(__FILE__, __LINE__, &__##name_mess)
+		fmt::MemoryWriter __##name##_mess; \
+		__##name##_mess.write("["#name"]"); \
+		__##name##_mess.write(ft, ##__VA_ARGS__); \
+		LightInk::LogTraceHelper __##name##_trace(__FILE__, __LINE__, &__##name##_mess)
 #define LogTraceEnd \
-		do {__##name_trace.set_line(__LINE__); __##name_trace.log_out(); } while (0)
+		do {__##name##_trace.set_line(__LINE__); __##name##_trace.log_out(); } while (0)
 #endif
 
 #ifdef LightInkNoTraceStepCall
