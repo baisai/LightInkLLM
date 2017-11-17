@@ -36,13 +36,17 @@ namespace LightInk
 	class LIGHTINK_DECL LoggerMgr : public SmallObject
 	{
 	public:
+		static LoggerMgr * get_instance();
+		static bool init_cpp_log(const LogOption & op);
+		static Logger * get_cpp_log();
+		static bool init_lua_log(const LogOption & op);
+		static Logger * get_lua_log();
+
 		template <int32 Idx>
 		bool init_fixed_logger(const LogOption & op);
 
 		template <int32 Idx>
 		Logger * get_fixed_logger();
-
-		static LoggerMgr * get_instance();
 
 	private:
 		template <int32 Idx>
@@ -81,6 +85,13 @@ namespace LightInk
 	///////////////////////////////////////////////////////////////////////
 	//inline method
 	//////////////////////////////////////////////////////////////////////
+	inline LoggerMgr * LoggerMgr::get_instance() { static LoggerMgr s_lm; return &s_lm; }
+
+	inline bool LoggerMgr::init_cpp_log(const LogOption & op) { return get_instance()->init_fixed_logger<1>(op); }
+	inline Logger * LoggerMgr::get_cpp_log() { return get_instance()->get_fixed_logger<1>(); }
+	inline bool LoggerMgr::init_lua_log(const LogOption & op) { return get_instance()->init_fixed_logger<2>(op); }
+	inline Logger * LoggerMgr::get_lua_log() { return get_instance()->get_fixed_logger<2>(); }
+
 	template <int32 Idx>
 	inline bool LoggerMgr::init_fixed_logger(const LogOption & op) 
 	{ 
@@ -92,7 +103,6 @@ namespace LightInk
 		return get_raw_fixed_logger<Idx>()->get_logger(); 
 	}
 
-	inline LoggerMgr * LoggerMgr::get_instance() { static LoggerMgr s_lm; return &s_lm; }
 
 	template <int32 Idx>
 	inline FixedLogger<Idx> * LoggerMgr::get_raw_fixed_logger() 
@@ -115,10 +125,10 @@ namespace LightInk
 
 
 #define LightInkLog LightInk::LoggerMgr::get_instance()
-#define LightInkLogCppInit(op) LightInkLog->init_fixed_logger<1>(op)
-#define LightInkLogLuaInit(op) LightInkLog->init_fixed_logger<2>(op)
-#define LightInkLogCpp LightInkLog->get_fixed_logger<1>()
-#define LightInkLogLua LightInkLog->get_fixed_logger<2>()
+#define LightInkLogCppInit(op) LightInk::LoggerMgr::init_cpp_log(op)
+#define LightInkLogLuaInit(op) LightInk::LoggerMgr::init_lua_log(op)
+#define LightInkLogCpp LightInk::LoggerMgr::get_cpp_log()
+#define LightInkLogLua LightInk::LoggerMgr::get_lua_log()
 
 
 #endif

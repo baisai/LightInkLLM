@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Log">
+      <UniqueIdentifier>{20c088db-75de-4019-bb3c-24199ccc76a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{becac988-25f1-4950-9ec9-7cd35eb2e251}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MsgPack">
+      <UniqueIdentifier>{61ecc318-0f90-4eb8-b902-6d1bf37a51e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Example\Main.cpp" />
+    <ClCompile Include="..\..\Example\Log\ExampleLog.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\Lua\BindClass.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\Lua\BindInherit.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\Lua\BindStatic.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\Lua\ExampleLua.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\MsgPack\CompressEncrypt.cpp">
+      <Filter>MsgPack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\MsgPack\ExampleMsgPack.cpp">
+      <Filter>MsgPack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\MsgPack\PackClass.cpp">
+      <Filter>MsgPack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Example\MsgPack\PackType.cpp">
+      <Filter>MsgPack</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Example\Lua\BindClass.lua">
+      <Filter>Lua</Filter>
+    </None>
+    <None Include="..\..\Example\Lua\BindInherit.lua">
+      <Filter>Lua</Filter>
+    </None>
+    <None Include="..\..\Example\Lua\BindStatic.lua">
+      <Filter>Lua</Filter>
+    </None>
+  </ItemGroup>
+</Project>

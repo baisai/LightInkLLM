@@ -9,3 +9,4 @@ link_directories(./)
 
 add_subdirectory(LightInkLLM)
 
+add_subdirectory(Example)
