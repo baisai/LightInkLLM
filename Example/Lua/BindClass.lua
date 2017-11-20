@@ -6,6 +6,8 @@ local cppObj = CppClass:new__(1)
 print("cppObj:get_private() == 1 ? ", cppObj:get_private() == 1)
 cppObj:set_private(100)
 print("cppObj:get_private() == 100 ? ", cppObj:get_private() == 100)
+cppObj:set_enum(cppObj.enum1)
+print("cppObj:get_enum() == cppObj.enum1 ? ", cppObj:get_enum() == cppObj.enum1)
 cppObj:delete__()
 cppObj = nil
 

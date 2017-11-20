@@ -177,6 +177,24 @@ namespace LightInk
 	}
 
 	template <typename ClassType, typename CtorType>
+	template <typename ET>
+	LuaRegister<ClassType, CtorType> & LuaRegister<ClassType, CtorType>::def_enum(ET obj, const string & name)
+	{
+		LogTraceStepCall("LuaRegister<ClassType, CtorType> & LuaRegister<ClassType, CtorType>::def_enum(ET obj, const string & name)");
+		LuaStateProtect lsp(m_lua, true);
+		if (get_class_metatable() != RE_Success)
+		{
+			LogError("Error!!!Get Class Metatable Failed!!!");
+		}
+		lua_pushinteger(m_lua, static_cast<lua_Integer>(obj));
+		rawsetfieldlen(m_lua, -2, name.c_str(), name.size());
+		lua_pop(m_lua, 1);
+		lua_pushinteger(m_lua, static_cast<lua_Integer>(obj));
+		rawsetfieldlen(m_lua, -2, name.c_str(), name.size());
+		LogTraceStepReturn(*this);
+	}
+
+	template <typename ClassType, typename CtorType>
 	template <typename T>
 	LuaRegister<ClassType, CtorType> & LuaRegister<ClassType, CtorType>::def_class_func(T obj, const string & name)
 	{

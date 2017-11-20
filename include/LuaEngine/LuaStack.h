@@ -34,6 +34,39 @@
 #include "Common/CharPtrBridge.h"
 #include "Common/TypeTool/TypeTool.h"
 
+
+#define LightInkLuaEnumType(ET) \
+	template <> \
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <ET> \
+	{ \
+		static inline void push(lua_State * L, ET e) \
+		{ \
+			LogTraceStepCall("void LuaStack<int>::push(lua_State * L, " #ET " e)"); \
+			lua_pushinteger(L, static_cast <lua_Integer> (e)); \
+			LogTraceStepReturnVoid; \
+		} \
+		static inline ET get(lua_State * L, int idx) \
+		{ \
+			LogTraceStepCall("int LuaStack<" #ET ">::get(lua_State * L, int idx)"); \
+			LogTraceStepReturn(static_cast<ET>(luaL_checkinteger(L, idx))); \
+		} \
+	}; \
+	template <> \
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const ET> \
+	{ \
+		static inline void push(lua_State * L, const ET e) \
+		{ \
+			LogTraceStepCall("void LuaStack<int>::push(lua_State * L, " #ET " e)"); \
+			lua_pushinteger(L, static_cast <lua_Integer> (e)); \
+			LogTraceStepReturnVoid; \
+		} \
+		static inline ET get(lua_State * L, int idx) \
+		{ \
+			LogTraceStepCall("int LuaStack<" #ET ">::get(lua_State * L, int idx)"); \
+			LogTraceStepReturn(static_cast<ET>(luaL_checkinteger(L, idx))); \
+		} \
+	}; 
+
 namespace LightInk
 {
 	struct LIGHTINK_DECL LuaTypeNil
@@ -723,40 +756,7 @@ end
 	};
 
 	//RuntimeError
-	template <>
-	struct LIGHTINK_TEMPLATE_DECL LuaStack <RuntimeError>
-	{
-		static inline void push(lua_State * L, RuntimeError e)
-		{
-			LogTraceStepCall("void LuaStack<int>::push(lua_State * L, RuntimeError e)");
-			lua_pushinteger(L, static_cast <lua_Integer> (e));
-			LogTraceStepReturnVoid;
-		}
-
-		static inline RuntimeError get(lua_State * L, int idx)
-		{
-			LogTraceStepCall("int LuaStack<int>::get(lua_State * L, int idx)");
-			LogTraceStepReturn(static_cast<RuntimeError>(luaL_checkinteger(L, idx)));
-		}
-	};
-
-	//const RuntimeError
-	template <>
-	struct LIGHTINK_TEMPLATE_DECL LuaStack <const RuntimeError>
-	{
-		static inline void push(lua_State * L, const RuntimeError e)
-		{
-			LogTraceStepCall("void LuaStack<int>::push(lua_State * L, RuntimeError e)");
-			lua_pushinteger(L, static_cast <lua_Integer> (e));
-			LogTraceStepReturnVoid;
-		}
-
-		static inline RuntimeError get(lua_State * L, int idx)
-		{
-			LogTraceStepCall("int LuaStack<int>::get(lua_State * L, int idx)");
-			LogTraceStepReturn(static_cast<RuntimeError>(luaL_checkinteger(L, idx)));
-		}
-	};
+	LightInkLuaEnumType(RuntimeError)
 
 	//nil
 	template <>

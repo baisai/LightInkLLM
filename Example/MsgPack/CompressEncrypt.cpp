@@ -45,7 +45,7 @@ void test_compress_encrypt()
 	bool success = true;
 
 	buff.compress<LightInk::CapCompresser>(compressBuff.get_buffer());
-	LogMessage("pre size = %u, compress size = %u", buff.size(), compressBuff.size());
+	LogMessage("pre size = {}, compress size = {}", buff.size(), compressBuff.size());
 	compressBuff.uncompress<LightInk::CapCompresser>(uncompressBuff.get_buffer());
 	if (buff.size() != uncompressBuff.size())
 	{

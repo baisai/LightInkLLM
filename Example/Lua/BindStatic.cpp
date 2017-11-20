@@ -38,7 +38,7 @@ static int test_cclosure(lua_State * lua)
 	{
 		std::string key = iter.get_key<std::string>();
 		LightInk::CharPtrBridge value = iter.get_value<LightInk::CharPtrBridge>();
-		LogMessage("key = \"%s\"; value = \"%s\"", key.c_str(), value.m_charPtr);
+		LogMessage("key = \"{}\"; value = \"{}\"", key.c_str(), value.m_charPtr);
 	}
 
 	lua_pushboolean(lua, 1);

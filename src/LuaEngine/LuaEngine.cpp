@@ -74,7 +74,7 @@ namespace LightInk
 		luaL_openlibs(m_lua);
 		register_global_func("get_userdata_property", &LuaIndexMetatable::gt_index_function);
 		register_global_func("set_userdata_property", &LuaIndexMetatable::gt_newindex_function);
-		LuaDefTool::def_func(m_lua, get_runtime_error_int, "get_runtime_error");
+		LuaDefTool::def_func(m_lua, get_runtime_error, "get_runtime_error");
 		register_global_func("print", &lua_replace_print);
 		register_global_func("print_debug", &lua_print_debug);
 		register_global_func("print_warning", &lua_print_warning);
