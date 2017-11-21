@@ -1402,6 +1402,16 @@ end
 	};
 
 
+	
+
+	template <typename T, typename ContextType>
+	inline static void gc_shared_ptr(T * obj, void * context)
+	{
+		LogTraceStepCall("void GCSharedPtr::gc_shared_ptr(T * obj, void * context)");
+		ContextType * c = (ContextType *)context;
+		delete c;
+		LogTraceStepReturnVoid;
+	}
 	// pointer shared
 	template <typename T>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <SharedPtrWrapper<T, RefCounter<SmallObject>, PtrDelStrategy, SmallObject> >
@@ -1411,10 +1421,7 @@ end
 			LogTraceStepCall("void LuaStack<typename SharedPtr<T>::type &>::push(lua_State * L, typename SharedPtr<T>::type & sp)");
 			typedef typename SharedPtr<T>::type AdaptorType;
 			AdaptorType * nsp = new AdaptorType(sp);
-			void ** asp = SmallObject::malloc_user(sizeof(void *) * 2);
-			asp[0] = nsp;
-			asp[1] = nsp.get();
-			lua_pushlightuserdata(L, asp[1]);
+			LuaUserdataSharedPtr::push<T>(L, sp.get(), gc_shared_ptr<T, AdaptorType>, nsp);
 			LogTraceStepReturnVoid;
 		}
 
@@ -1422,7 +1429,7 @@ end
 		{
 			LogTraceStepCall("typename SharedPtr<T>::type LuaStack<typename SharedPtr<T>::type &>::get(lua_State * L, int idx)");
 			typedef typename SharedPtr<T>::type AdaptorType;
-			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			AdaptorType * sp = (AdaptorType *) LuaUserdataSharedPtr::get<T>(L, idx);
 			LogTraceStepReturn(*sp);
 		}
 	};
@@ -1436,7 +1443,7 @@ end
 			LogTraceStepCall("void LuaStack<const typename SharedPtr<T>::type &>::push(lua_State * L, const typename SharedPtr<T>::type & sp)");
 			typedef typename SharedPtr<T>::type AdaptorType;
 			AdaptorType * nsp = new AdaptorType(sp);
-			lua_pushlightuserdata(L, nsp);
+			LuaUserdataSharedPtr::push<T>(L, sp.get(), gc_shared_ptr<T, AdaptorType>, nsp);
 			LogTraceStepReturnVoid;
 		}
 
@@ -1444,7 +1451,7 @@ end
 		{
 			LogTraceStepCall("typename SharedPtr<T>::type LuaStack<const typename SharedPtr<T>::type &>::get(lua_State * L, int idx)");
 			typedef typename SharedPtr<T>::type AdaptorType;
-			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			AdaptorType * sp = (AdaptorType *) LuaUserdataSharedPtr::get<T>(L, idx);
 			LogTraceStepReturn(*sp);
 		}
 	};
@@ -1458,7 +1465,7 @@ end
 			LogTraceStepCall("void LuaStack<const typename SharedPtr<T>::type &>::push(lua_State * L, const typename SharedPtr<T>::type & sp)");
 			typedef typename SharedPtr<T>::type AdaptorType;
 			AdaptorType * nsp = new AdaptorType(sp);
-			lua_pushlightuserdata(L, nsp);
+			LuaUserdataSharedPtr::push<T>(L, sp.get(), gc_shared_ptr<T, AdaptorType>, nsp);
 			LogTraceStepReturnVoid;
 		}
 
@@ -1466,7 +1473,7 @@ end
 		{
 			LogTraceStepCall("typename SharedPtr<T>::type LuaStack<const typename SharedPtr<T>::type &>::get(lua_State * L, int idx)");
 			typedef typename SharedPtr<T>::type AdaptorType;
-			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			AdaptorType * sp = (AdaptorType *) LuaUserdataSharedPtr::get<T>(L, idx);
 			LogTraceStepReturn(*sp);
 		}
 	};
@@ -1480,7 +1487,7 @@ end
 			LogTraceStepCall("void LuaStack<typename SharedPtrTS<T>::type &>::push(lua_State * L, typename SharedPtrTS<T>::type & sp)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
 			AdaptorType * nsp = new AdaptorType(sp);
-			lua_pushlightuserdata(L, nsp);
+			LuaUserdataSharedPtr::push<T>(L, sp.get(), gc_shared_ptr<T, AdaptorType>, nsp);
 			LogTraceStepReturnVoid;
 		}
 
@@ -1488,7 +1495,7 @@ end
 		{
 			LogTraceStepCall("typename SharedPtrTS<T>::type LuaStack<typename SharedPtrTS<T>::type &>::get(lua_State * L, int idx)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
-			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			AdaptorType * sp = (AdaptorType *) LuaUserdataSharedPtr::get<T>(L, idx);
 			LogTraceStepReturn(*sp);
 		}
 	};
@@ -1502,7 +1509,7 @@ end
 			LogTraceStepCall("void LuaStack<const typename SharedPtrTS<T>::type &>::push(lua_State * L, const typename SharedPtrTS<T>::type & sp)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
 			AdaptorType * nsp = new AdaptorType(sp);
-			lua_pushlightuserdata(L, nsp);
+			LuaUserdataSharedPtr::push<T>(L, sp.get(), gc_shared_ptr<T, AdaptorType>, nsp);
 			LogTraceStepReturnVoid;
 		}
 
@@ -1510,7 +1517,7 @@ end
 		{
 			LogTraceStepCall("typename SharedPtrTS<T>::type LuaStack<const typename SharedPtrTS<T>::type &>::get(lua_State * L, int idx)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
-			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			AdaptorType * sp = (AdaptorType *) LuaUserdataSharedPtr::get<T>(L, idx);
 			LogTraceStepReturn(*sp);
 		}
 	};
@@ -1524,7 +1531,7 @@ end
 			LogTraceStepCall("void LuaStack<const typename SharedPtrTS<T>::type &>::push(lua_State * L, const typename SharedPtrTS<T>::type & sp)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
 			AdaptorType * nsp = new AdaptorType(sp);
-			lua_pushlightuserdata(L, nsp);
+			LuaUserdataSharedPtr::push<T>(L, sp.get(), gc_shared_ptr<T, AdaptorType>, nsp);
 			LogTraceStepReturnVoid;
 		}
 
@@ -1532,7 +1539,7 @@ end
 		{
 			LogTraceStepCall("typename SharedPtrTS<T>::type LuaStack<const typename SharedPtrTS<T>::type &>::get(lua_State * L, int idx)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
-			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			AdaptorType * sp = (AdaptorType *) LuaUserdataSharedPtr::get<T>(L, idx);
 			LogTraceStepReturn(*sp);
 		}
 	};

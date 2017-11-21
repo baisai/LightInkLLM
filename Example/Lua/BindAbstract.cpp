@@ -45,6 +45,7 @@ public:
 
 	static LightInk::SharedPtrTS<CppClassAbs>::type get_shared() { return LightInk::SharedPtrTS<CppClassAbs>::type(static_cast<CppClassAbs *>(new CppClassAbsInherit)); }
 
+	static void check_shared(LightInk::SharedPtrTS<CppClassAbs>::type sp) { LogMessage("SharedPtrTS Use Count = {}", sp.use_count()); }
 };
 
 static void bind_cppclass(lua_State * lua)
@@ -60,6 +61,7 @@ static void bind_cppclass(lua_State * lua)
 	[
 		LightInk::LuaRegister<CppClassAbsInherit, void()>(lua, "CppClassAbsInherit", LightInk::BaseClassStrategy<CppClassAbs>())
 			.def(CppClassAbsInherit::get_shared, "get_shared")
+			.def(CppClassAbsInherit::check_shared, "check_shared")
 			
 	];
 }

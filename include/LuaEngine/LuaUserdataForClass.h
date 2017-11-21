@@ -30,25 +30,62 @@
 namespace LightInk
 {
 	template<typename T>
-	struct LuaUserdataForClass
+	class LuaUserdataForClass
 	{
-		LuaUserdataForClass(const T * p, bool luaGC) : m_obj((T*)p), m_luaGC(luaGC)
+	public:
+		typedef void (* GCCallback)(T *, void *);
+		inline static void gc_delete(T * obj, void * context) { delete obj; }
+		LuaUserdataForClass(const T * p, bool autoGC) : m_obj((T*)p), m_autoGC(autoGC), m_luaGC(gc_delete), m_context(NULL)
 		{
-			LogTraceStepCall("LuaUserdataForClass(T * p, bool luaGC)");
+			LogTraceStepCall("LuaUserdataForClass::LuaUserdataForClass(T * p, bool luaGC, GCCallback luaGC)");
+			LogTraceStepReturnVoid;
+		}
+		LuaUserdataForClass(const T * p, bool autoGC, GCCallback luaGC, void * context) : m_obj((T*)p), m_autoGC(autoGC), m_luaGC(luaGC), m_context(context)
+		{
+			LogTraceStepCall("LuaUserdataForClass::LuaUserdataForClass(T * p, bool luaGC, GCCallback luaGC, void * context)");
 			LogTraceStepReturnVoid;
 		}
 		~LuaUserdataForClass()
 		{
-			LogTraceStepCall("~LuaUserdataForClass()");
-			if (m_obj && m_luaGC)
-			{
-				delete m_obj;
-			}
+			LogTraceStepCall("LuaUserdataForClass::~LuaUserdataForClass()");
+			if (m_obj && m_autoGC) { m_luaGC(m_obj, m_context); }
 			m_obj = NULL;
+			m_context = NULL;
 			LogTraceStepReturnVoid;
 		}
+		inline void user_gc() 
+		{ 
+			LogTraceStepCall("void LuaUserdataForClass::user_gc()");
+			if (m_obj && !m_autoGC) { m_luaGC(m_obj, m_context); m_obj = NULL; m_context = NULL; }
+			LogTraceStepReturnVoid;
+		}
+		inline void force_gc()
+		{
+			LogTraceStepCall("void LuaUserdataForClass::force_gc()");
+			if (m_obj) { m_luaGC(m_obj, m_context); m_obj = NULL; m_context = NULL; }
+			LogTraceStepReturnVoid;
+		}
+		inline T * get_object() 
+		{ 
+			LogTraceStepCall("T * LuaUserdataForClass::get_object() ");
+			LogTraceStepReturn(m_obj);
+		}
+		inline T * move_object()
+		{
+			LogTraceStepCall("T * LuaUserdataForClass::move_object()");
+			T * t = m_obj; m_obj = NULL;
+			LogTraceStepReturn(t);
+		}
+		inline void * get_context()
+		{ 
+			LogTraceStepCall("T * LuaUserdataForClass::get_context() ");
+			LogTraceStepReturn(m_context);
+		}
+	private:
 		T * m_obj;
-		bool m_luaGC;
+		bool m_autoGC;
+		GCCallback m_luaGC;
+		void * m_context;
 	};
 
 }

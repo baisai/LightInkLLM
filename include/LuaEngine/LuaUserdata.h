@@ -104,12 +104,47 @@ namespace LightInk
 		}
 	};
 
+	struct LuaUserdataSharedPtr
+	{
+		template <typename T>
+		static void push(lua_State * L, const T * t, typename LuaUserdataForClass<T>::GCCallback gc, void * sp)
+		{
+			LogTraceStepCall("void LuaUserdataSharedPtr<T>::push(lua_State * L, const T * t, LuaUserdataForClass<T>::GCCallback gc, void * sp)");
+			if (!LuaClassInfo<T>::get_class_metatable(L))
+			{
+				LogScriptErrorJump(L, "Error!!!LuaUserdataPtr<T>::push Can not get class metatable!!!!");
+			}
+			if (t)
+			{
+				void * userdataPtr = lua_newuserdata(L, sizeof(LuaUserdataForClass<T>));
+				lua_insert(L, -2);
+				lua_setmetatable(L, -2);
+				new(userdataPtr) LuaUserdataForClass<T>(t, true, gc, sp);
+			}
+			else
+			{
+				lua_pop(L, 1);
+				lua_pushnil(L);
+			}
+			LogTraceStepReturnVoid;
+		}
+
+		template <typename T>
+		static void * get(lua_State * L, int idx)
+		{
+			LogTraceStepCall("void * LuaUserdataSharedPtr<T>::get(lua_State * L, int idx)");
+			LuaUserdataForClass<T> * imp = LuaMetatableTraits<T>::userdata_to_imp(L, idx);
+			if (imp) { LogTraceStepReturn(imp->get_context()); }
+			LogTraceStepReturn(NULL);
+		}
+	};
+
 	struct LuaUserdataPtr
 	{
 		template <typename T>
 		static void push(lua_State * L, const T * t)
 		{
-			LogTraceStepCall("void LuaUserdataPtr<T>::push(lua_State * L, const T & t)");
+			LogTraceStepCall("void LuaUserdataPtr<T>::push(lua_State * L, const T * t)");
 			if (!LuaClassInfo<T>::get_class_metatable(L))
 			{
 				LogScriptErrorJump(L, "Error!!!LuaUserdataPtr<T>::push Can not get class metatable!!!!");
@@ -132,7 +167,7 @@ namespace LightInk
 		template <typename T>
 		static T * get(lua_State * L, int idx)
 		{
-			LogTraceStepCall("T LuaUserdataPtr<T>::get(lua_State * L, int idx)");
+			LogTraceStepCall("T * LuaUserdataPtr<T>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(LuaMetatableTraits<T>::userdata_to_object(L, idx));
 		}
 	};

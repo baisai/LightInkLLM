@@ -78,7 +78,7 @@ namespace LightInk
 			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, idx);
 			if (p)
 			{
-				LogTraceStepReturn(p->m_obj);
+				LogTraceStepReturn(p->get_object());
 			}
 			LogTraceStepReturn(NULL);
 		}
@@ -87,12 +87,7 @@ namespace LightInk
 		{
 			LogTraceStepCall("ClassType * LuaMetatableTraits<ClassType>::userdata_to_object_move(lua_State* L, int idx)");
 			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, idx);
-			if (p)
-			{
-				ClassType * t = p->m_obj;
-				p->m_obj = NULL;
-				LogTraceStepReturn(t);
-			}
+			if (p) { LogTraceStepReturn(p->move_object()); }
 			LogTraceStepReturn(NULL);
 		}
 
@@ -100,14 +95,8 @@ namespace LightInk
 		{
 			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_isdelete_function(lua_State * L)");
 			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
-			if (p && p->m_obj)
-			{
-				lua_pushboolean(L, 0);
-			}
-			else
-			{
-				lua_pushboolean(L, 1);
-			}
+			if (p && p->get_object()) { lua_pushboolean(L, 0); }
+			else { lua_pushboolean(L, 1); }
 			LogTraceStepReturn(1);
 		}
 
@@ -115,11 +104,7 @@ namespace LightInk
 		{
 			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_delete_function(lua_State * L)");
 			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
-			if (p && p->m_obj && !p->m_luaGC)
-			{
-				delete p->m_obj;
-				p->m_obj = NULL;
-			}
+			if (p) { p->user_gc(); }
 			LogTraceStepReturn(0);
 		}
 
@@ -127,11 +112,7 @@ namespace LightInk
 		{
 			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_force_delete_function(lua_State * L)");
 			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
-			if (p && p->m_obj)
-			{
-				delete p->m_obj;
-				p->m_obj = NULL;
-			}
+			if (p) { p->force_gc(); }
 			LogTraceStepReturn(0);
 		}
 
