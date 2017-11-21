@@ -254,6 +254,7 @@
     <ClInclude Include="..\..\include\LuaEngine\LuaRef.h" />
     <ClInclude Include="..\..\include\LuaEngine\LuaRegister.h" />
     <ClInclude Include="..\..\include\LuaEngine\LuaDefTraits.h" />
+    <ClInclude Include="..\..\include\LuaEngine\LuaRegisterAbstract.h" />
     <ClInclude Include="..\..\include\LuaEngine\LuaStack.h" />
     <ClInclude Include="..\..\include\LuaEngine\LuaClassInfo.h" />
     <ClInclude Include="..\..\include\LuaEngine\LuaStateProtect.h" />
@@ -277,7 +278,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\include\Common\Ptr\AutoPtr.cpp" />
     <ClCompile Include="..\..\include\Common\Ptr\SharedPtr.cpp" />
-    <ClCompile Include="..\..\include\LuaEngine\LuaRegister.cpp" />
+    <ClCompile Include="..\..\include\LuaEngine\LuaRegisterAbstract.cpp" />
     <ClCompile Include="..\..\include\Msgpack\DataFixBuffer.cpp" />
     <ClCompile Include="..\..\include\Msgpack\PackBuffer.cpp" />
     <ClCompile Include="..\..\include\Msgpack\Packer.cpp" />

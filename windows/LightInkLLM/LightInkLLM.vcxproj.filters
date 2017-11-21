@@ -360,6 +360,9 @@
     <ClInclude Include="..\..\include\Common\SingletonBase.h">
       <Filter>Common\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\LuaEngine\LuaRegisterAbstract.h">
+      <Filter>LuaEngine\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Common\RuntimeError.cpp">
@@ -376,9 +379,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Msgpack\DataBuffer.cpp">
       <Filter>Msgpack\source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\include\LuaEngine\LuaRegister.cpp">
-      <Filter>LuaEngine\source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\LuaEngine\LuaModule.cpp">
       <Filter>LuaEngine\source</Filter>
@@ -571,6 +571,9 @@
     </ClCompile>
     <ClCompile Include="..\..\include\Msgpack\UnpackerAdaptor.h">
       <Filter>Msgpack\include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\LuaEngine\LuaRegisterAbstract.cpp">
+      <Filter>LuaEngine\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

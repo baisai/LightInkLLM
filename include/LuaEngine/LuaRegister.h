@@ -25,20 +25,13 @@
 #ifndef LIGHTINK_LUAENGINE_LUAREGISTER_H_
 #define LIGHTINK_LUAENGINE_LUAREGISTER_H_
 
-#include "Common/RuntimeError.h"
-#include "LuaEngine/LuaModule.h"
+#include "LuaEngine/LuaRegisterAbstract.h"
 
 namespace LightInk
 {
-	template <typename ClassType, typename CtorType>
-	class LuaModuleByClass;
-
-	template <typename T>
-	struct BaseClassStrategy{};
-
 	//namespace use ::table::table::classname
 	template <typename ClassType, typename CtorType>
-	class LIGHTINK_TEMPLATE_DECL LuaRegister : public LuaRegisterNode
+	class LIGHTINK_TEMPLATE_DECL LuaRegister : public LuaRegisterAbstract<ClassType>
 	{
 	public:
 		template <typename T>
@@ -47,72 +40,63 @@ namespace LightInk
 		LuaRegister(lua_State * L, const string & name);
 
 		template <typename BaseType>
-		LuaRegister(lua_State * L, const string & name, BaseClassStrategy<BaseType>); //call once again base every class
+		LuaRegister(lua_State * L, const string & name, BaseClassStrategy<BaseType> bcs); //call once again base every class
 
-		LuaRegister(const LuaRegister<ClassType, CtorType> & cp);
-
-		LuaRegister<ClassType, CtorType> & operator = (const LuaRegister<ClassType, CtorType> & right);
-
-		template <typename T>
-		LuaRegister & def(T obj, const string & name);
-
-		LuaModuleByClass<ClassType, CtorType> def_module(const string & name);
-
-		template <typename T>
-		LuaRegister & def_property(T * obj, const string & name);
-
-		LuaRegister & disable_new();
-
-		LuaRegister & def_cclosure(lua_CFunction obj, const string & name);
-
-		template <typename ET>
-		LuaRegister & def_enum(ET obj, const string & name);
-
-	private:
-
-		template <typename T>
-		LuaRegister & def_class_func(T obj, const string & name);
-
-		template <typename T>
-		LuaRegister & def_class_property(T ClassType::* obj, const string & name);
-
-		template <typename T>
-		LuaRegister & def_func(T obj, const string & name);
-
-		RuntimeError get_class_table();
-
-		RuntimeError get_class_metatable();
-
-		void init_class(const string & name);
-
-
-	private:
-		lua_State * m_lua;
+	
+	protected:
+		RuntimeError add_ctor();
 
 	};
+	///////////////////////////////////////////////////////////////////////
+	//inline method
+	//////////////////////////////////////////////////////////////////////
+	template <typename ClassType, typename CtorType>
+	LuaRegister<ClassType, CtorType>::LuaRegister(lua_State * L, const string & name) : LuaRegisterAbstract<ClassType>(L, name)
+	{
+		LogTraceStepCall("LuaRegister<ClassType, CtorType>::LuaRegister(lua_State * L, const string & name)");
+		LuaStateProtect lsp(L, true);
+		RuntimeError err = add_ctor();
+		if (err != RE_Success)
+		{
+			LogError(get_runtime_error(err));
+		}
+		//pop metatable, class table, parent class table
+		LogTraceStepReturnVoid;
+	}
 
 	template <typename ClassType, typename CtorType>
-	class LIGHTINK_TEMPLATE_DECL LuaModuleByClass : public LuaModule
+	template <typename BaseType>
+	LuaRegister<ClassType, CtorType>::LuaRegister(lua_State * L, const string & name, BaseClassStrategy<BaseType> bcs) : LuaRegisterAbstract<ClassType>(L, name, bcs)
 	{
-	public:
-		LuaModuleByClass(lua_State * L, const string & moduleName, const LuaRef & table, LuaRegister<ClassType, CtorType> & c);
+		LogTraceStepCall("LuaRegister<ClassType, CtorType>::LuaRegister(lua_State * L, const string & name, BaseClassStrategy<BaseType> bcs)");
+		LuaStateProtect lsp(L, true);
+		RuntimeError err = add_ctor();
+		if (err != RE_Success)
+		{
+			LogError(get_runtime_error(err));
+		}
+		//pop metatable, class table, parent class table
+		LogTraceStepReturnVoid;
+	}
 
-		virtual ~LuaModuleByClass();
-
-		LuaRegister<ClassType, CtorType> & module_end();
-
-		template <typename T>
-		LuaModuleByClass & def(T obj, const string & name);
-
-		template <typename T>
-		LuaRegister<ClassType, CtorType> & operator[](const T & idx);
-
-	protected:
-		LuaRegister<ClassType, CtorType> & m_class;
-	};
-
+	template <typename ClassType, typename CtorType>
+	RuntimeError LuaRegister<ClassType, CtorType>::add_ctor()
+	{
+		LogTraceStepCall("RuntimeError LuaRegister<ClassType, CtorType>::add_ctor()");
+		LuaStateProtect lsp(m_lua, true);
+		RuntimeError err = get_class_table();
+		if (err != RE_Success)
+		{
+			LogTraceStepReturn(err);
+		}
+		lua_pushcclosure(m_lua, &LuaNewClassTraits<ClassType, false, CtorType>::call, 0);
+		rawsetfield(m_lua, -2, "new__"); //class table
+		lua_getmetatable(m_lua, -1);
+		lua_pushcclosure(m_lua, &LuaNewClassTraits<ClassType, true, CtorType>::call, 0);
+		rawsetfield(m_lua, -2, "__call"); //class table
+		//pop metatable, class table, parent class table
+		LogTraceStepReturn(RE_Success);
+	}
 }
-
-#include "LuaEngine/LuaRegister.cpp"
 
 #endif

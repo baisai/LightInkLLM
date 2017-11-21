@@ -67,7 +67,7 @@ namespace LightInk
 		LuaRegisterNode(lua_State * L);
 		LuaRegisterNode(const LuaRef & key, const LuaRef & value, const LuaRef & parent);
 		LuaRegisterNode(const LuaRegisterNode & cp);
-		~LuaRegisterNode();
+		virtual ~LuaRegisterNode();
 
 		lua_State * state() const;
 
