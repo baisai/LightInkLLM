@@ -13,6 +13,7 @@ set( sourceFile
 	Lua/BindClass.cpp
 	Lua/BindInherit.cpp
 	Lua/BindStatic.cpp
+	Lua/BindAbstract.cpp
 	Lua/ExampleLua.cpp
 	MsgPack/CompressEncrypt.cpp
 	MsgPack/ExampleMsgPack.cpp

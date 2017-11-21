@@ -168,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Example\Log\ExampleLog.cpp" />
+    <ClCompile Include="..\..\Example\Lua\BindAbstract.cpp" />
     <ClCompile Include="..\..\Example\Lua\BindClass.cpp" />
     <ClCompile Include="..\..\Example\Lua\BindInherit.cpp" />
     <ClCompile Include="..\..\Example\Lua\BindStatic.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="..\..\Example\MsgPack\PackType.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Example\Lua\BindAbstract.lua" />
     <None Include="..\..\Example\Lua\BindClass.lua" />
     <None Include="..\..\Example\Lua\BindInherit.lua" />
     <None Include="..\..\Example\Lua\BindStatic.lua" />

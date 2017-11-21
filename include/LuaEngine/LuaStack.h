@@ -33,6 +33,7 @@
 #include "LuaEngine/LuaFixFunction.h"
 #include "Common/CharPtrBridge.h"
 #include "Common/TypeTool/TypeTool.h"
+#include "Common/Ptr/SharedPtr.h"
 
 
 #define LightInkLuaEnumType(ET) \
@@ -1399,6 +1400,143 @@ end
 			LogTraceStepReturn(LuaUserdataPtrMove::get<T> (L, idx));
 		}
 	};
+
+
+	// pointer shared
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <SharedPtrWrapper<T, RefCounter<SmallObject>, PtrDelStrategy, SmallObject> >
+	{
+		static inline void push(lua_State* L, typename SharedPtr<T>::type & sp)
+		{
+			LogTraceStepCall("void LuaStack<typename SharedPtr<T>::type &>::push(lua_State * L, typename SharedPtr<T>::type & sp)");
+			typedef typename SharedPtr<T>::type AdaptorType;
+			AdaptorType * nsp = new AdaptorType(sp);
+			void ** asp = SmallObject::malloc_user(sizeof(void *) * 2);
+			asp[0] = nsp;
+			asp[1] = nsp.get();
+			lua_pushlightuserdata(L, asp[1]);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline typename SharedPtr<T>::type get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("typename SharedPtr<T>::type LuaStack<typename SharedPtr<T>::type &>::get(lua_State * L, int idx)");
+			typedef typename SharedPtr<T>::type AdaptorType;
+			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			LogTraceStepReturn(*sp);
+		}
+	};
+
+	//const pointer shared
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const SharedPtrWrapper<T, RefCounter<SmallObject>, PtrDelStrategy, SmallObject> >
+	{
+		static inline void push(lua_State* L, typename SharedPtr<T>::type & sp)
+		{
+			LogTraceStepCall("void LuaStack<const typename SharedPtr<T>::type &>::push(lua_State * L, const typename SharedPtr<T>::type & sp)");
+			typedef typename SharedPtr<T>::type AdaptorType;
+			AdaptorType * nsp = new AdaptorType(sp);
+			lua_pushlightuserdata(L, nsp);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline typename SharedPtr<T>::type get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("typename SharedPtr<T>::type LuaStack<const typename SharedPtr<T>::type &>::get(lua_State * L, int idx)");
+			typedef typename SharedPtr<T>::type AdaptorType;
+			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			LogTraceStepReturn(*sp);
+		}
+	};
+
+	//const pointer shared &
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const SharedPtrWrapper<T, RefCounter<SmallObject>, PtrDelStrategy, SmallObject> &>
+	{
+		static inline void push(lua_State* L, const typename SharedPtr<T>::type & sp)
+		{
+			LogTraceStepCall("void LuaStack<const typename SharedPtr<T>::type &>::push(lua_State * L, const typename SharedPtr<T>::type & sp)");
+			typedef typename SharedPtr<T>::type AdaptorType;
+			AdaptorType * nsp = new AdaptorType(sp);
+			lua_pushlightuserdata(L, nsp);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline typename SharedPtr<T>::type get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("typename SharedPtr<T>::type LuaStack<const typename SharedPtr<T>::type &>::get(lua_State * L, int idx)");
+			typedef typename SharedPtr<T>::type AdaptorType;
+			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			LogTraceStepReturn(*sp);
+		}
+	};
+
+	// pointer ts shared
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <SharedPtrWrapper<T, RefCounterTS<SmallObject>, PtrDelStrategy, SmallObject> >
+	{
+		static inline void push(lua_State* L, typename SharedPtrTS<T>::type & sp)
+		{
+			LogTraceStepCall("void LuaStack<typename SharedPtrTS<T>::type &>::push(lua_State * L, typename SharedPtrTS<T>::type & sp)");
+			typedef typename SharedPtrTS<T>::type AdaptorType;
+			AdaptorType * nsp = new AdaptorType(sp);
+			lua_pushlightuserdata(L, nsp);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline typename SharedPtrTS<T>::type get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("typename SharedPtrTS<T>::type LuaStack<typename SharedPtrTS<T>::type &>::get(lua_State * L, int idx)");
+			typedef typename SharedPtrTS<T>::type AdaptorType;
+			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			LogTraceStepReturn(*sp);
+		}
+	};
+
+	//const pointer ts shared
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const SharedPtrWrapper<T, RefCounterTS<SmallObject>, PtrDelStrategy, SmallObject> >
+	{
+		static inline void push(lua_State* L, typename SharedPtrTS<T>::type & sp)
+		{
+			LogTraceStepCall("void LuaStack<const typename SharedPtrTS<T>::type &>::push(lua_State * L, const typename SharedPtrTS<T>::type & sp)");
+			typedef typename SharedPtrTS<T>::type AdaptorType;
+			AdaptorType * nsp = new AdaptorType(sp);
+			lua_pushlightuserdata(L, nsp);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline typename SharedPtrTS<T>::type get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("typename SharedPtrTS<T>::type LuaStack<const typename SharedPtrTS<T>::type &>::get(lua_State * L, int idx)");
+			typedef typename SharedPtrTS<T>::type AdaptorType;
+			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			LogTraceStepReturn(*sp);
+		}
+	};
+
+	//const pointer ts shared &
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const SharedPtrWrapper<T, RefCounterTS<SmallObject>, PtrDelStrategy, SmallObject> &>
+	{
+		static inline void push(lua_State* L, const typename SharedPtrTS<T>::type & sp)
+		{
+			LogTraceStepCall("void LuaStack<const typename SharedPtrTS<T>::type &>::push(lua_State * L, const typename SharedPtrTS<T>::type & sp)");
+			typedef typename SharedPtrTS<T>::type AdaptorType;
+			AdaptorType * nsp = new AdaptorType(sp);
+			lua_pushlightuserdata(L, nsp);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline typename SharedPtrTS<T>::type get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("typename SharedPtrTS<T>::type LuaStack<const typename SharedPtrTS<T>::type &>::get(lua_State * L, int idx)");
+			typedef typename SharedPtrTS<T>::type AdaptorType;
+			AdaptorType * sp = (AdaptorType *)lua_touserdata(L, idx);
+			LogTraceStepReturn(*sp);
+		}
+	};
+
 
 	// pointer
 	template <typename T>

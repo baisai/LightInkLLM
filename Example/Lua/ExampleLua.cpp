@@ -27,6 +27,7 @@
 void test_bind_class();
 void test_bind_inherit();
 void test_bind_static();
+void test_bind_abstract();
 
 void test_lua()
 {
@@ -36,6 +37,8 @@ void test_lua()
 	test_bind_inherit();
 
 	test_bind_static();
+
+	test_bind_abstract();
 	LogMessage("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 

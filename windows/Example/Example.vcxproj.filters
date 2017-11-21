@@ -40,6 +40,9 @@
     <ClCompile Include="..\..\Example\MsgPack\PackType.cpp">
       <Filter>MsgPack</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Example\Lua\BindAbstract.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Example\Lua\BindClass.lua">
@@ -49,6 +52,9 @@
       <Filter>Lua</Filter>
     </None>
     <None Include="..\..\Example\Lua\BindStatic.lua">
+      <Filter>Lua</Filter>
+    </None>
+    <None Include="..\..\Example\Lua\BindAbstract.lua">
       <Filter>Lua</Filter>
     </None>
   </ItemGroup>
