@@ -83,17 +83,17 @@ namespace LightInk
 	RuntimeError LuaRegister<ClassType, CtorType>::add_ctor()
 	{
 		LogTraceStepCall("RuntimeError LuaRegister<ClassType, CtorType>::add_ctor()");
-		LuaStateProtect lsp(m_lua, true);
-		RuntimeError err = get_class_table();
+		LuaStateProtect lsp(this->m_lua, true);
+		RuntimeError err = this->get_class_table();
 		if (err != RE_Success)
 		{
 			LogTraceStepReturn(err);
 		}
-		lua_pushcclosure(m_lua, &LuaNewClassTraits<ClassType, false, CtorType>::call, 0);
-		rawsetfield(m_lua, -2, "new__"); //class table
-		lua_getmetatable(m_lua, -1);
-		lua_pushcclosure(m_lua, &LuaNewClassTraits<ClassType, true, CtorType>::call, 0);
-		rawsetfield(m_lua, -2, "__call"); //class table
+		lua_pushcclosure(this->m_lua, &LuaNewClassTraits<ClassType, false, CtorType>::call, 0);
+		rawsetfield(this->m_lua, -2, "new__"); //class table
+		lua_getmetatable(this->m_lua, -1);
+		lua_pushcclosure(this->m_lua, &LuaNewClassTraits<ClassType, true, CtorType>::call, 0);
+		rawsetfield(this->m_lua, -2, "__call"); //class table
 		//pop metatable, class table, parent class table
 		LogTraceStepReturn(RE_Success);
 	}

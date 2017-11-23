@@ -1438,7 +1438,7 @@ end
 	template <typename T>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <const SharedPtrWrapper<T, RefCounter<SmallObject>, PtrDelStrategy, SmallObject> >
 	{
-		static inline void push(lua_State* L, typename SharedPtr<T>::type & sp)
+		static inline void push(lua_State* L, const typename SharedPtr<T>::type & sp)
 		{
 			LogTraceStepCall("void LuaStack<const typename SharedPtr<T>::type &>::push(lua_State * L, const typename SharedPtr<T>::type & sp)");
 			typedef typename SharedPtr<T>::type AdaptorType;
@@ -1504,7 +1504,7 @@ end
 	template <typename T>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <const SharedPtrWrapper<T, RefCounterTS<SmallObject>, PtrDelStrategy, SmallObject> >
 	{
-		static inline void push(lua_State* L, typename SharedPtrTS<T>::type & sp)
+		static inline void push(lua_State* L, const typename SharedPtrTS<T>::type & sp)
 		{
 			LogTraceStepCall("void LuaStack<const typename SharedPtrTS<T>::type &>::push(lua_State * L, const typename SharedPtrTS<T>::type & sp)");
 			typedef typename SharedPtrTS<T>::type AdaptorType;
