@@ -6,8 +6,8 @@ local cppObj = CppClass:new__(1)
 print("cppObj:get_private() == 1 ? ", cppObj:get_private() == 1)
 cppObj:set_private(100)
 print("cppObj:get_private() == 100 ? ", cppObj:get_private() == 100)
-cppObj:set_enum(cppObj.enum1)
-print("cppObj:get_enum() == cppObj.enum1 ? ", cppObj:get_enum() == cppObj.enum1)
+cppObj:set_enum(CppClass.enum1)
+print("cppObj:get_enum() == CppClass.enum1 ? ", cppObj:get_enum() == CppClass.enum1)
 cppObj:delete__()
 cppObj = nil
 
@@ -37,6 +37,8 @@ collectgarbage("collect")
 local CppClass2 = CppClassList.CppClass2
 cppObj = CppClass2.create()
 cppObj:test()
+print(CppClass2.s_str)
+print("this is static CppClass2::s_cppclass Calss", CppClass2.s_cppclass:get_private())
 CppClass2.destroy(cppObj)
 cppObj = nil
 

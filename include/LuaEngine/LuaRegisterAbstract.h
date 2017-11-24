@@ -70,6 +70,12 @@ namespace LightInk
 		template <typename ET>
 		LuaRegisterAbstract & def_enum(ET obj, const string & name);
 
+		template <typename T>
+		LuaRegisterAbstract & def_const_copy(const T & obj, const string & name);
+
+		template <typename T>
+		LuaRegisterAbstract & def_const_ptr(const T * obj, const string & name);
+
 	protected:
 		template <typename T>
 		LuaRegisterAbstract & def_class_func(T obj, const string & name);

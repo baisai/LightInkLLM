@@ -182,14 +182,41 @@ namespace LightInk
 	{
 		LogTraceStepCall("LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_enum(ET obj, const string & name)");
 		LuaStateProtect lsp(m_lua, true);
-		if (get_class_metatable() != RE_Success)
+		if (get_class_table() != RE_Success)
 		{
-			LogError("Error!!!Get Class Metatable Failed!!!");
+			LogError("Error!!!Get Class Table Failed!!!");
 		}
 		lua_pushinteger(m_lua, static_cast<lua_Integer>(obj));
 		rawsetfieldlen(m_lua, -2, name.c_str(), name.size());
-		lua_pop(m_lua, 1);
-		lua_pushinteger(m_lua, static_cast<lua_Integer>(obj));
+		LogTraceStepReturn(*this);
+	}
+
+	template <typename ClassType>
+	template <typename T>
+	LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_const_copy(const T & obj, const string & name)
+	{
+		LogTraceStepCall("LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_const_copy(const T & obj, const string & name)");
+		LuaStateProtect lsp(m_lua, true);
+		if (get_class_table() != RE_Success)
+		{
+			LogError("Error!!!Get Class Table Failed!!!");
+		}
+		LuaStack<const T>::push(m_lua, obj);
+		rawsetfieldlen(m_lua, -2, name.c_str(), name.size());
+		LogTraceStepReturn(*this);
+	}
+
+	template <typename ClassType>
+	template <typename T>
+	LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_const_ptr(const T * obj, const string & name)
+	{
+		LogTraceStepCall("LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_const_ptr(const T * obj, const string & name)");
+		LuaStateProtect lsp(m_lua, true);
+		if (get_class_table() != RE_Success)
+		{
+			LogError("Error!!!Get Class Table Failed!!!");
+		}
+		LuaStack<const T *>::push(m_lua, obj);
 		rawsetfieldlen(m_lua, -2, name.c_str(), name.size());
 		LogTraceStepReturn(*this);
 	}

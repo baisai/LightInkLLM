@@ -1563,13 +1563,31 @@ end
 		}
 	};
 
-	//const pointer
+	// const pointer
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const T *>
+	{
+		static inline void push(lua_State* L, const T * p)
+		{
+			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, const T * p)");
+			LuaUserdataPtr::push<T>(L, p);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline T * get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("T * LuaStack<T *>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(LuaUserdataPtr::get<T> (L, idx));
+		}
+	};
+
+	//const pointer const
 	template <typename T>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <const T * const>
 	{
 		static inline void push(lua_State* L, const T * const p)
 		{
-			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, T * const p)");
+			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, const T * const p)");
 			LuaUserdataPtr::push<T>(L, p);
 			LogTraceStepReturnVoid;
 		}

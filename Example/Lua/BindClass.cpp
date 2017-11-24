@@ -34,8 +34,8 @@ public:
 		enum2,
 	};
 public:
-	CppClass(int pri) : m_private(pri) { LogMessage("new CppClass"); }
-	~CppClass() { LogMessage("delete CppClass"); }
+	CppClass(int pri) : m_private(pri) { printf("new CppClass"); }
+	~CppClass() { printf("delete CppClass"); }
 
 	int get_private() { return m_private; }
 	void set_private(int pri) { m_private = pri; }
@@ -64,7 +64,14 @@ public:
 	static CppClass2 * create() { return new CppClass2; }
 	static void destroy(CppClass2 * obj) { delete obj; }
 
+public:
+	static const LightInk::string s_str;
+	static const CppClass s_cppclass;
+
 };
+
+const LightInk::string CppClass2::s_str("this is static const string");
+const CppClass CppClass2::s_cppclass(10000);
 
 
 namespace LightInk
@@ -72,8 +79,9 @@ namespace LightInk
 	LightInkLuaEnumType(CppClass::CppEnum)}
 static void bind_cppclass(lua_State * lua)
 {
-	LightInk::LuaModule(lua, "CppClassList")
-	[
+	LightInk::LuaModule lm(lua, "CppClassList");
+
+	lm[
 		LightInk::LuaRegister<CppClass, void(int)>(lua, "CppClass")
 			.def(&CppClass::get_private, "get_private")
 			.def(&CppClass::set_private, "set_private")
@@ -87,13 +95,15 @@ static void bind_cppclass(lua_State * lua)
 			.def(&CppClass::m_vector, "m_vector")
 			.def_enum(CppClass::enum1, "enum1")
 			.def_enum(CppClass::enum2, "enum2")
-		<=
+	];
+	lm[
 		LightInk::LuaRegister<CppClass2, void()>(lua, "CppClass2")
 			.disable_new() //disable CppClass2.new__
 			.def(CppClass2::create, "create")
 			.def(CppClass2::destroy, "destroy")
 			.def(&CppClass2::test, "test")
-			
+			.def_const_copy(CppClass2::s_str, "s_str")
+			.def_const_copy(CppClass2::s_cppclass, "s_cppclass")
 	];
 }
 
