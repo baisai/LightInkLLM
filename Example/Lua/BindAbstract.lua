@@ -9,5 +9,7 @@ CppClassAbsInherit.check_shared(cppObj)
 
 cppObj:test_abstract()
 
+CppClassAbsInherit.show_class_name(cppObj)
+
 cppObj:force_delete__()
 cppObj = nil

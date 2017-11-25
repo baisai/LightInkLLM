@@ -60,6 +60,8 @@ namespace LightInk
 
 		void register_module(void(*func)(lua_State * lua));
 
+		static const char * get_class_name(lua_State * L, int idx);
+
 	private:
 		static void * lua_allocator(void * ud, void * ptr, size_t osize, size_t nsize);
 		static int lua_error_catch(lua_State * L);

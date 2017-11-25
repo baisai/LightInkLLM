@@ -449,4 +449,20 @@ namespace LightInk
 		func(m_lua);
 		LogTraceStepReturnVoid;
 	}
+
+	const char * LuaEngine::get_class_name(lua_State * L, int idx)
+	{
+		LogTraceStepCall("const char * LuaEngine::get_class_name(lua_State * L, int idx)");
+		const char * className = "";
+		if (lua_isuserdata(L, idx) && lua_getmetatable(L, idx))
+		{
+			rawgetfield(L, -1, "type__");
+			if (lua_isstring(L, -1))
+			{
+				className = lua_tostring(L, -1);
+			}
+			lua_pop(L, 2);
+		}
+		LogTraceStepReturn(className);
+	}
 }
