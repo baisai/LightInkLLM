@@ -1544,6 +1544,60 @@ end
 		}
 	};
 
+	// void * const
+	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <void * const>
+	{
+		static inline void push(lua_State* L, void * const p)
+		{
+			LogTraceStepCall("void LuaStack<void * const>::push(lua_State * L, void * const p)");
+			lua_pushlightuserdata(L, p);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline void * get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("void * LuaStack<void * const>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(lua_touserdata(L, idx));
+		}
+	};
+
+	// const void *
+	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const void *>
+	{
+		static inline void push(lua_State* L, const void * p)
+		{
+			LogTraceStepCall("void LuaStack<const void *>::push(lua_State * L, const void * p)");
+			lua_pushlightuserdata(L, (void *)p);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline void * get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("void * LuaStack<const void *>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(lua_touserdata(L, idx));
+		}
+	};
+
+	//const void * const
+	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <const void * const>
+	{
+		static inline void push(lua_State* L, const void * const p)
+		{
+			LogTraceStepCall("void LuaStack<const void * const>::push(lua_State * L, const void * const p)");
+			lua_pushlightuserdata(L, (void *)p);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline const void * get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("const void * LuaStack<const void * const>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(lua_touserdata(L, idx));
+		}
+	};
+
 
 	// pointer
 	template <typename T>
@@ -1551,14 +1605,14 @@ end
 	{
 		static inline void push(lua_State* L, T * const p)
 		{
-			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, T * const p)");
+			LogTraceStepCall("void LuaStack<T * const>::push(lua_State * L, T * const p)");
 			LuaUserdataPtr::push<T>(L, p);
 			LogTraceStepReturnVoid;
 		}
 
 		static inline T * get (lua_State * L, int idx)
 		{
-			LogTraceStepCall("T * LuaStack<T *>::get(lua_State * L, int idx)");
+			LogTraceStepCall("T * LuaStack<T * const>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(LuaUserdataPtr::get<T> (L, idx));
 		}
 	};
@@ -1569,14 +1623,14 @@ end
 	{
 		static inline void push(lua_State* L, const T * p)
 		{
-			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, const T * p)");
+			LogTraceStepCall("void LuaStack<const T *>::push(lua_State * L, const T * p)");
 			LuaUserdataPtr::push<T>(L, p);
 			LogTraceStepReturnVoid;
 		}
 
 		static inline T * get (lua_State * L, int idx)
 		{
-			LogTraceStepCall("T * LuaStack<T *>::get(lua_State * L, int idx)");
+			LogTraceStepCall("T * LuaStack<const T *>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(LuaUserdataPtr::get<T> (L, idx));
 		}
 	};
@@ -1587,14 +1641,14 @@ end
 	{
 		static inline void push(lua_State* L, const T * const p)
 		{
-			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, const T * const p)");
+			LogTraceStepCall("void LuaStack<const T * const>::push(lua_State * L, const T * const p)");
 			LuaUserdataPtr::push<T>(L, p);
 			LogTraceStepReturnVoid;
 		}
 
 		static inline const T * get (lua_State * L, int idx)
 		{
-			LogTraceStepCall("const T * LuaStack<T *>::get(lua_State * L, int idx)");
+			LogTraceStepCall("const T * LuaStack<const T * const>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(LuaUserdataPtr::get<T> (L, idx));
 		}
 	};
@@ -1604,14 +1658,14 @@ end
 	{
 		static inline void push(lua_State * L, const T & t)
 		{
-			LogTraceStepCall("void LuaStack<T>::push(lua_State * L, const T & t)");
+			LogTraceStepCall("void LuaStack<const T &>::push(lua_State * L, const T & t)");
 			LuaUserdataPtr::push<T>(L, &t);
 			LogTraceStepReturnVoid;
 		}
 
 		static inline const T & get(lua_State * L, int idx)
 		{
-			LogTraceStepCall("const T & LuaStack<T>::get(lua_State * L, int idx)");
+			LogTraceStepCall("const T & LuaStack<const T &>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(*LuaUserdataPtr::get <T> (L, idx));
 		}
 	};
@@ -1621,14 +1675,14 @@ end
 	{
 		static inline void push(lua_State * L, T & t)
 		{
-			LogTraceStepCall("void LuaStack<T>::push(lua_State * L, T & t)");
+			LogTraceStepCall("void LuaStack<T &>::push(lua_State * L, T & t)");
 			LuaUserdataPtr::push<T>(L, &t);
 			LogTraceStepReturnVoid;
 		}
 
 		static inline T & get(lua_State * L, int idx)
 		{
-			LogTraceStepCall("T & LuaStack<T>::get(lua_State * L, int idx)");
+			LogTraceStepCall("T & LuaStack<T &>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(*LuaUserdataPtr::get <T> (L, idx));
 		}
 	};
@@ -1639,14 +1693,14 @@ end
 	{
 		static inline void push(lua_State * L, const T & t)
 		{
-			LogTraceStepCall("void LuaStack<T>::push(lua_State * L, const T & t)");
+			LogTraceStepCall("void LuaStack<const T>::push(lua_State * L, const T & t)");
 			LuaUserdata::push<T>(L, t);
 			LogTraceStepReturnVoid;
 		}
 
 		static inline const T get(lua_State * L, int idx)
 		{
-			LogTraceStepCall("T LuaStack<T>::get(lua_State * L, int idx)");
+			LogTraceStepCall("T LuaStack<const T>::get(lua_State * L, int idx)");
 			LogTraceStepReturn(LuaUserdata::get <T> (L, idx));
 		}
 	};
