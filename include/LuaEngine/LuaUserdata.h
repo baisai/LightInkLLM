@@ -42,6 +42,7 @@ namespace LightInk
 			{
 				LogScriptErrorJump(L, "Error!!!LuaUserdata<T>::push Can not get class metatable!!!!");
 			}
+			lua_remove(L, -2);
 			void * userdataPtr = lua_newuserdata(L, sizeof(LuaUserdataForClass<T>));
 			lua_insert(L, -2);
 			lua_setmetatable(L, -2);
@@ -81,6 +82,7 @@ namespace LightInk
 			{
 				LogScriptErrorJump(L, "Error!!!LuaUserdataPtrMove<T>::push Can not get class metatable!!!!");
 			}
+			lua_remove(L, -2);
 			if (pm.m_ptr)
 			{
 				void * userdataPtr = lua_newuserdata(L, sizeof(LuaUserdataForClass<T>));
@@ -114,6 +116,7 @@ namespace LightInk
 			{
 				LogScriptErrorJump(L, "Error!!!LuaUserdataPtr<T>::push Can not get class metatable!!!!");
 			}
+			lua_remove(L, -2);
 			if (t)
 			{
 				void * userdataPtr = lua_newuserdata(L, sizeof(LuaUserdataForClass<T>));
@@ -149,6 +152,7 @@ namespace LightInk
 			{
 				LogScriptErrorJump(L, "Error!!!LuaUserdataPtr<T>::push Can not get class metatable!!!!");
 			}
+			lua_remove(L, -2);
 			if (t)
 			{
 				void * userdataPtr = lua_newuserdata(L, sizeof(LuaUserdataForClass<T>));

@@ -110,7 +110,6 @@ namespace LightInk
 			}
 			lua_pushstring(L, "metatable__");
 			lua_rawget(L, -2);
-			lua_remove(L, -2);
 			LogTraceStepReturn(true);
 		}
 
