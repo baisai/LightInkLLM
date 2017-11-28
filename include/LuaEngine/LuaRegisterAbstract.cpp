@@ -162,21 +162,6 @@ namespace LightInk
 	}
 
 	template <typename ClassType>
-	LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_cclosure(lua_CFunction obj, const string & name)
-	{
-		LogTraceStepCall("LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_cclosure(lua_CFunction obj, const string & name)");
-		LuaStateProtect lsp(m_lua, true);
-		if (get_class_metatable() != RE_Success)
-		{
-			LogError("Error!!!Get Class Metatable Failed!!!");
-		}
-		LuaDefAutoTool::def(m_lua, obj, name);
-		lua_pop(m_lua, 1);
-		LuaDefAutoTool::def(m_lua, obj, name);
-		LogTraceStepReturn(*this);
-	}
-
-	template <typename ClassType>
 	template <typename ET>
 	LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_enum(ET obj, const string & name)
 	{
@@ -293,6 +278,21 @@ namespace LightInk
 		new (lua_newuserdata(m_lua, sizeof(LuaClassPropertyInfo))) LuaClassPropertyInfo(LuaClassPropertyTraits<T, void>::pt_index_function, 
 																						LuaClassPropertyTraits<T, void>::pt_newindex_function, obj);
 		rawsetfieldlen(m_lua, -2, name.c_str(), name.size());
+		LogTraceStepReturn(*this);
+	}
+
+	template <typename ClassType>
+	LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_cclosure(lua_CFunction obj, const string & name)
+	{
+		LogTraceStepCall("LuaRegisterAbstract<ClassType> & LuaRegisterAbstract<ClassType>::def_cclosure(lua_CFunction obj, const string & name)");
+		LuaStateProtect lsp(m_lua, true);
+		if (get_class_metatable() != RE_Success)
+		{
+			LogError("Error!!!Get Class Metatable Failed!!!");
+		}
+		LuaDefAutoTool::def(m_lua, obj, name);
+		lua_pop(m_lua, 1);
+		LuaDefAutoTool::def(m_lua, obj, name);
 		LogTraceStepReturn(*this);
 	}
 

@@ -75,6 +75,25 @@ namespace LightInk
 			rawsetfieldlen(L, -2, name.c_str(), name.size());
 			LogTraceStepReturnVoid;
 		}
+
+		static void def_cclosure(lua_State * L, lua_CFunction obj, const string & name)
+		{
+			LogTraceStepCall("void LuaDefTool::def_cclosure(lua_State * L, lua_CFunction ObjectCloseAuditAlarm, const string & name)");
+			LuaStateProtect lsp(L, true);
+			if (!lua_istable(L, -1))
+			{
+				//lua_getglobal(L, "_G");
+				lua_pushvalue(L, LUA_GLOBALSINDEX);
+			}
+			else
+			{
+				lua_pushvalue(L, -1);
+			}
+			lua_pushlstring(L, name.c_str(), name.size());
+			lua_pushcclosure(L, obj, 0);
+			lua_rawset(L, -3);
+			LogTraceStepReturnVoid;
+		}
 	};
 
 

@@ -64,7 +64,7 @@ static void bind_cppclass(lua_State * lua)
 		LightInk::LuaRegister<CppClassAbsInherit, void()>(lua, "CppClassAbsInherit", LightInk::BaseClassStrategy<CppClassAbs>())
 			.def(CppClassAbsInherit::get_shared, "get_shared")
 			.def(CppClassAbsInherit::check_shared, "check_shared")
-			.def_cclosure(CppClassAbsInherit::show_class_name, "show_class_name")
+			.def(CppClassAbsInherit::show_class_name, "show_class_name")
 			
 	];
 }

@@ -36,6 +36,24 @@ namespace LightInk
 	template <typename T>
 	struct LuaDefTraits;
 
+	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaDefTraits<lua_CFunction>
+	{
+		template <typename RegisterType>
+		static void call(RegisterType* reg, lua_State * L, lua_CFunction arg, const string & name)
+		{
+			LogTraceStepCall("LuaDefTraits<T>::call(RegisterType* reg, lua_State * L, lua_CFunction arg, const string & name)");
+			reg->def_cclosure(arg, name);
+			LogTraceStepReturnVoid;
+		}
+
+		static void call(lua_State * L, lua_CFunction arg, const string & name)
+		{
+			LogTraceStepCall("LuaDefTraits<T>::call(lua_State * L, lua_CFunction arg, const string & name)");
+			LuaDefTool::def_cclosure(L, arg, name);
+			LogTraceStepReturnVoid;
+		}
+	};
 	
 	template <typename T>
 	struct LIGHTINK_TEMPLATE_DECL LuaDefTraits

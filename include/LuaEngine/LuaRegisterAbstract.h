@@ -65,8 +65,6 @@ namespace LightInk
 
 		LuaRegisterAbstract & disable_new();
 
-		LuaRegisterAbstract & def_cclosure(lua_CFunction obj, const string & name);
-
 		template <typename ET>
 		LuaRegisterAbstract & def_enum(ET obj, const string & name);
 
@@ -85,6 +83,8 @@ namespace LightInk
 
 		template <typename T>
 		LuaRegisterAbstract & def_func(T obj, const string & name);
+
+		LuaRegisterAbstract & def_cclosure(lua_CFunction obj, const string & name);
 
 		RuntimeError get_class_table();
 
