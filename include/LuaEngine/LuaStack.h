@@ -1544,6 +1544,24 @@ end
 		}
 	};
 
+	// void *
+	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <void *>
+	{
+		static inline void push(lua_State* L, void * p)
+		{
+			LogTraceStepCall("void LuaStack<void *>::push(lua_State * L, void * p)");
+			lua_pushlightuserdata(L, p);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline void * get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("void * LuaStack<void *>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(lua_touserdata(L, idx));
+		}
+	};
+
 	// void * const
 	template <>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <void * const>
@@ -1598,8 +1616,25 @@ end
 		}
 	};
 
-
 	// pointer
+	template <typename T>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <T *>
+	{
+		static inline void push(lua_State* L, T * p)
+		{
+			LogTraceStepCall("void LuaStack<T *>::push(lua_State * L, T * p)");
+			LuaUserdataPtr::push<T>(L, p);
+			LogTraceStepReturnVoid;
+		}
+
+		static inline T * get (lua_State * L, int idx)
+		{
+			LogTraceStepCall("T * LuaStack<T *>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(LuaUserdataPtr::get<T> (L, idx));
+		}
+	};
+
+	// pointer const
 	template <typename T>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <T * const>
 	{
