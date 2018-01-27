@@ -194,7 +194,7 @@ namespace LightInk
 	template <typename TBuffer, uint32 len>
 	inline RuntimeError pack(TBuffer & buffer, const char (& v)[len])
 	{
-		LogTraceStepCall("RuntimeError pack(TBuffer & buffer, const char (& v)[len]");
+		LogTraceStepCall("RuntimeError pack(TBuffer & buffer, const char (& v)[len])");
 		uint32 size = strnlen(v, len);
 		RuntimeError e = Packer<TBuffer>::pack_str(buffer, size);
 		if (e != RE_Success)
@@ -214,7 +214,7 @@ namespace LightInk
 	template <typename TBuffer, typename T, uint32 len>
 	inline RuntimeError pack(TBuffer & buffer, const T (& v)[len])
 	{
-		LogTraceStepCall("RuntimeError pack(TBuffer & buffer, const T (& v)[len]");
+		LogTraceStepCall("RuntimeError pack(TBuffer & buffer, const T (& v)[len])");
 		RuntimeError e = Packer<TBuffer>::pack_array(buffer, len);
 		if (e != RE_Success)
 		{

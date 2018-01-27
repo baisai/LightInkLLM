@@ -175,47 +175,47 @@ namespace LightInk
 
 #if defined(__LITTLE_ENDIAN__)
 		template <typename T>
-		inline static char take8_8(T d) {
-			LogTraceStepCall("char take8_8(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[0]));
+		inline static uint8 take8_8(T d) {
+			LogTraceStepCall("uint8 take8_8(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[0]);
 		}
 		template <typename T>
-		inline static char take8_16(T d) {
-			LogTraceStepCall("char take8_16(T d"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[0]));
+		inline static uint8 take8_16(T d) {
+			LogTraceStepCall("uint8 take8_16(T d"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[0]);
 		}
 		template <typename T>
-		inline static char take8_32(T d) {
-			LogTraceStepCall("char take8_32(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[0]));
+		inline static uint8 take8_32(T d) {
+			LogTraceStepCall("uint8 take8_32(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[0]);
 		}
 		template <typename T>
-		inline static char take8_64(T d) {
-			LogTraceStepCall("char take8_64(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[0]));
+		inline static uint8 take8_64(T d) {
+			LogTraceStepCall("uint8 take8_64(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[0]);
 		}
 
 #elif defined(__BIG_ENDIAN__)
 
 		template <typename T>
-		inline static char take8_8(T d) {
-			LogTraceStepCall("char take8_8(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[0]));
+		inline static uint8 take8_8(T d) {
+			LogTraceStepCall("uint8 take8_8(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[0]);
 		}
 		template <typename T>
-		inline static char take8_16(T d) {
-			LogTraceStepCall("char take8_16(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[1]));
+		inline static uint8 take8_16(T d) {
+			LogTraceStepCall("uint8 take8_16(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[1]);
 		}
 		template <typename T>
-		inline static char take8_32(T d) {
-			LogTraceStepCall("char take8_32(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[3]));
+		inline static uint8 take8_32(T d) {
+			LogTraceStepCall("uint8 take8_32(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[3]);
 		}
 		template <typename T>
-		inline static char take8_64(T d) {
-			LogTraceStepCall("char take8_64(T d)"); 
-			LogTraceStepReturn(static_cast<char>(reinterpret_cast<uint8*>(&d)[7]));
+		inline static uint8 take8_64(T d) {
+			LogTraceStepCall("uint8 take8_64(T d)"); 
+			LogTraceStepReturn(reinterpret_cast<uint8*>(&d)[7]);
 		}
 
 #endif
@@ -225,7 +225,6 @@ namespace LightInk
 
 	LIGHTINK_DISABLE_COPY(Packer)
 	};
-
 
 }
 

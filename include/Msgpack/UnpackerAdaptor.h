@@ -189,7 +189,7 @@ namespace LightInk
 	template <typename TBuffer, uint32 len>
 	inline RuntimeError unpack(TBuffer & buffer, char (& v)[len])
 	{
-		LogTraceStepCall("RuntimeError unpack(TBuffer & buffer, char (& v)[len]");
+		LogTraceStepCall("RuntimeError unpack(TBuffer & buffer, char (& v)[len])");
 		uint32 size = 0;
 		Unpacker<TBuffer>::unpack_str(buffer, size);
 		if (size != len)
@@ -223,7 +223,7 @@ namespace LightInk
 	template <typename TBuffer, typename T, uint32 len>
 	inline RuntimeError unpack(TBuffer & buffer, T (& v)[len])
 	{
-		LogTraceStepCall("RuntimeError pack(TBuffer & buffer, T (& v)[len]");
+		LogTraceStepCall("RuntimeError pack(TBuffer & buffer, T (& v)[len])");
 		uint32 size = 0;
 		Unpacker<TBuffer>::unpack_array(buffer, size);
 		if (size != len)
