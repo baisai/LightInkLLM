@@ -25,6 +25,7 @@
 #define LIGHTINK_COMMON_CHARPTRBRIDGE_H_
 
 #include <string.h>
+#include <string>
 #include "Common/Type.h"
 #include "Common/SmallObject.h"
 
@@ -35,6 +36,7 @@ namespace LightInk
 		CharPtrBridge() : m_charPtr(NULL), m_len(0) { ; }
 		CharPtrBridge(const char * charPtr) : m_charPtr(charPtr), m_len(0) { if (charPtr) { m_len = strlen(charPtr); } }
 		CharPtrBridge(const char * charPtr, uint32 len) : m_charPtr(charPtr), m_len(len) { ; }
+		CharPtrBridge(const std::string & str) : m_charPtr(str.c_str()), m_len(str.size()) { ; }
 		virtual ~CharPtrBridge() { ; }
 
 		const char * m_charPtr;
