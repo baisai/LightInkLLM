@@ -92,11 +92,11 @@
 	
 	TURF_C_INLINE uint32_t turf_getCurrentProcessID()
 	{
-#if MINT_TARGET_XBOX_360  // Xbox 360
+#if TURF_TARGET_XBOX_360  // Xbox 360
 		return 0;
-#elif MINT_CPU_X64        // Windows x64
+#elif TURF_CPU_X64        // Windows x64
 		return ((uint32_t*) __readgsqword(48))[16]; // Read directly from the TIB
-#elif MINT_CPU_X86        // Windows x86
+#elif TURF_CPU_X86        // Windows x86
 		return ((uint32_t*) __readfsdword(24))[8];  // Read directly from the TIB
 #endif
 	}
@@ -129,7 +129,7 @@
 	//  CPU intrinsics
 	//-------------------------------------
 	TURF_C_INLINE void turf_yieldHWThread() {
-	#if MINT_CPU_X86 || MINT_CPU_X64
+	#if TURF_CPU_X86 || TURF_CPU_X64
 		// Only implemented on x86/64
 		asm volatile("pause");
 	#endif
