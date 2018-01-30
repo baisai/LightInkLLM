@@ -35,7 +35,7 @@ namespace LightInk
 		m_args.clear();
 		Arg arg;
 		int idx = 1;
-		for (int i = 1; i < argc; ++i)
+		for (int i = 0; i < argc; ++i)
 		{
 			if (argv[i][0] == '-')
 			{
@@ -45,7 +45,7 @@ namespace LightInk
 				}
 				arg.m_index = idx++;
 				arg.m_option = argv[i];
-				arg.m_value.clear();
+				arg.m_value = "";
 			}
 			else
 			{
@@ -57,7 +57,7 @@ namespace LightInk
 				m_args.push_back(arg);
 				arg.m_index = 0;
 				arg.m_option.clear();
-				arg.m_value.clear();
+				arg.m_value = "";
 			}
 		}
 		if (arg.m_index != 0)
@@ -67,7 +67,6 @@ namespace LightInk
 		for (size_t i = 0; i < m_args.size(); ++i)
 		{
 			std::transform(m_args[i].m_option.begin(), m_args[i].m_option.end(), m_args[i].m_option.begin(), ::tolower);
-			std::transform(m_args[i].m_value.begin(), m_args[i].m_value.end(), m_args[i].m_value.begin(), ::tolower);
 		}
 	}
 

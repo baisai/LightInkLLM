@@ -31,13 +31,13 @@ namespace LightInk
 {
 	struct LIGHTINK_DECL Arg
 	{
-		Arg() : m_index(0) {  }
+		Arg() : m_index(0), m_value("") {  }
 		Arg(const Arg & cp) : m_index(cp.m_index), m_option(cp.m_option), m_value(cp.m_value) {  }
 		Arg & operator = (const Arg & right);
 		~Arg() {  }
 		uint32 m_index;
 		string m_option;
-		string m_value;
+		const char * m_value;
 	};
 	///////////////////////////////////////////////////////////////////////
 	//inline method

@@ -105,6 +105,9 @@
 
 #endif
 
+#define LIGHTINK_MAX_PATH 1024
+#define LIGHTINK_MAX_FILENAME 128
+
 
 /////////////////////////////////////////////////////////////
 //类型
