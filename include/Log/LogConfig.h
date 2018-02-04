@@ -27,8 +27,6 @@
 
 #define LIGHTINK_LOG_MULTITHREAD
 
-//#define LIGHTINK_LOG_WCHAR_FILENAMES
-
 namespace LightInk
 {
 	namespace LogLevel

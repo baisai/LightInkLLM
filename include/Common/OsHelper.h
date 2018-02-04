@@ -27,7 +27,6 @@
 #include "Common/Type.h"
 #include "Common/RuntimeError.h"
 #include "Common/STLType.h"
-#include "Log/LogConfig.h"
 
 #include <stdio.h>
 #include <string>
@@ -44,8 +43,9 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include "Windows.h"
-#include "WinSock.h"
 #endif
+
+//#define LIGHTINK_WCHAR_FILENAMES
 
 namespace LightInk
 {
@@ -53,7 +53,7 @@ namespace LightInk
 	{
 		typedef void (* log_err_handle)(const string & err);
 
-#if defined(_WIN32) && defined(LIGHTINK_LOG_WCHAR_FILENAMES)
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
 		typedef wstring FileNameType;
 		typedef wchar_t FileCharType;
 #else
@@ -101,49 +101,51 @@ namespace LightInk
 		static void gettimeofday(struct timeval * tv);
 
 
-		static inline FILE* fopen(const FileNameType& filename, const FileCharType * mode)
+		static inline FILE* fopen(const FileCharType * filename, const FileCharType * mode)
 		{
 #ifdef _WIN32
-#ifdef LIGHTINK_LOG_WCHAR_FILENAMES
-			FILE* fp = ::_wfsopen((filename.c_str()), mode, _SH_DENYWR);
+#ifdef LIGHTINK_WCHAR_FILENAMES
+			FILE* fp = ::_wfsopen(filename, mode, _SH_DENYWR);
 #else
-			FILE* fp = ::_fsopen((filename.c_str()), mode, _SH_DENYWR);
+			FILE* fp = ::_fsopen(filename, mode, _SH_DENYWR);
 #endif
 #else
-			FILE* fp = ::fopen((filename.c_str()), mode);
+			FILE* fp = ::fopen(filename, mode);
 #endif
 			return fp;
 		}
-		static inline int remove(const FileNameType &filename)
+		static inline int remove(const FileCharType * filename)
 		{
-#if defined(_WIN32) && defined(LIGHTINK_LOG_WCHAR_FILENAMES)
-			return ::_wremove(filename.c_str());
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
+			return ::_wremove(filename);
 #else
-			return ::remove(filename.c_str());
+			return ::remove(filename);
 #endif
 		}
-		static inline int rename(const FileNameType & oldName, const FileNameType & newName)
+		static inline int rename(const FileCharType * oldName, const FileCharType * newName)
 		{
-#if defined(_WIN32) && defined(LIGHTINK_LOG_WCHAR_FILENAMES)
-			return ::_wrename(oldName.c_str(), newName.c_str());
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
+			return ::_wrename(oldName, newName);
 #else
-			return ::rename(oldName.c_str(), newName.c_str());
+			return ::rename(oldName, newName);
 #endif
 		}
-		static inline bool file_exists(const FileNameType & filename)
+		static inline bool file_exists(const FileCharType * filename)
 		{
 #ifdef _WIN32
-#ifdef LIGHTINK_LOG_WCHAR_FILENAMES
-			uint32 attribs = ::GetFileAttributesW(filename.c_str());
+#ifdef LIGHTINK_WCHAR_FILENAMES
+			uint32 attribs = ::GetFileAttributesW(filename);
 #else
-			uint32 attribs = ::GetFileAttributesA(filename.c_str());
+			uint32 attribs = ::GetFileAttributesA(filename);
 #endif
 			return (attribs != INVALID_FILE_ATTRIBUTES && !(attribs & FILE_ATTRIBUTE_DIRECTORY));
 #else //common linux/unix all have the stat system call
 			struct stat buffer;
-			return (::stat (filename.c_str(), &buffer) == 0);
+			return (::stat (filename, &buffer) == 0);
 #endif
 		}
+
+		static bool is_absolute_path(const FileCharType * path);
 
 		static size_t file_size(FILE * fp);
 		
@@ -168,10 +170,16 @@ namespace LightInk
 		
 	};
 
-#if defined(_WIN32) && defined(LIGHTINK_LOG_WCHAR_FILENAMES)
-#define LIGHTINK_LOG_FILENAME_T(s) L ## s
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
+#define LIGHTINK_FILENAME_T(s) L ## s
 #else
-#define LIGHTINK_LOG_FILENAME_T(s) s
+#define LIGHTINK_FILENAME_T(s) s
+#endif
+
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
+#define LIGHTINK_STRFUNC_T(s) wcs ## s
+#else
+#define LIGHTINK_STRFUNC_T(s) str ## s
 #endif
 
 

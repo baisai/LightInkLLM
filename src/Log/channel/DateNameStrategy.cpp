@@ -16,7 +16,7 @@ namespace LightInk
 	{
 		tm lt = OsHelper::localtime(t);
 		TypeSelect<IsSameType<OsHelper::FileCharType, char>::Result, fmt::MemoryWriter, fmt::WMemoryWriter>::Result w;
-		w.write(LIGHTINK_LOG_FILENAME_T("{}.{:04d}.{:02d}.{:02d}.{:02d}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, lt.tm_mday, lt.tm_hour, extName);
+		w.write(LIGHTINK_FILENAME_T("{}.{:04d}.{:02d}.{:02d}.{:02d}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, lt.tm_mday, lt.tm_hour, extName);
 		return w.str();
 	}
 
@@ -37,7 +37,7 @@ namespace LightInk
 	{
 		tm lt = OsHelper::localtime(t);
 		TypeSelect<IsSameType<OsHelper::FileCharType, char>::Result, fmt::MemoryWriter, fmt::WMemoryWriter>::Result w;
-		w.write(LIGHTINK_LOG_FILENAME_T("{}.{:04d}.{:02d}.{:02d}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, lt.tm_mday, extName);
+		w.write(LIGHTINK_FILENAME_T("{}.{:04d}.{:02d}.{:02d}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, lt.tm_mday, extName);
 		return w.str();
 	}
 
@@ -58,7 +58,7 @@ namespace LightInk
 	{
 		tm lt = OsHelper::localtime(t);
 		TypeSelect<IsSameType<OsHelper::FileCharType, char>::Result, fmt::MemoryWriter, fmt::WMemoryWriter>::Result w;
-		w.write(LIGHTINK_LOG_FILENAME_T("{}.{:04d}.{:02d}.{:02d}.{}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, lt.tm_mday, FormatHelper::wdays[lt.tm_wday], extName);
+		w.write(LIGHTINK_FILENAME_T("{}.{:04d}.{:02d}.{:02d}.{}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, lt.tm_mday, FormatHelper::wdays[lt.tm_wday], extName);
 		return w.str();
 	}
 
@@ -79,7 +79,7 @@ namespace LightInk
 	{
 		tm lt = OsHelper::localtime(t);
 		TypeSelect<IsSameType<OsHelper::FileCharType, char>::Result, fmt::MemoryWriter, fmt::WMemoryWriter>::Result w;
-		w.write(LIGHTINK_LOG_FILENAME_T("{}.{:04d}.{:02d}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, extName);
+		w.write(LIGHTINK_FILENAME_T("{}.{:04d}.{:02d}{}"), name, lt.tm_year + 1900, lt.tm_mon + 1, extName);
 		return w.str();
 	}
 

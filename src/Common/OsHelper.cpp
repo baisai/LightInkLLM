@@ -57,6 +57,14 @@ namespace LightInk
 #endif
 	}
 
+	bool OsHelper::is_absolute_path(const FileCharType * path)
+	{
+		if (!path || path[0] == LIGHTINK_FILENAME_T('\0'))
+		{
+			return false;
+		}
+		return path[0] == LIGHTINK_FILENAME_T('/') || ::LIGHTINK_STRFUNC_T(chr)(path, LIGHTINK_FILENAME_T(':'));
+	}
 
 	size_t OsHelper::file_size(FILE * fp)
 	{
@@ -152,7 +160,7 @@ namespace LightInk
 
 	string OsHelper::filename_to_string(const FileNameType & filename)
 	{
-#if defined(_WIN32) && defined(LIGHTINK_LOG_WCHAR_FILENAMES)
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
 		int destLen = WideCharToMultiByte( CP_OEMCP, NULL , filename.c_str(), filename.length(), NULL , NULL, NULL, NULL );
 		char * pDest = new char[destLen +1];
 		WideCharToMultiByte(CP_OEMCP , NULL, filename.c_str(), filename.length() , pDest, destLen, NULL , NULL);
@@ -167,7 +175,7 @@ namespace LightInk
 
 	OsHelper::FileNameType OsHelper::string_to_filename(const string & str)
 	{
-#if defined(_WIN32) && defined(LIGHTINK_LOG_WCHAR_FILENAMES)
+#if defined(_WIN32) && defined(LIGHTINK_WCHAR_FILENAMES)
 		int destLen = MultiByteToWideChar( CP_ACP, NULL , str.c_str(), -1, NULL, NULL);
 		wchar_t * pDest = new wchar_t[destLen+1];
 		MultiByteToWideChar(CP_ACP , NULL, str.c_str(), -1, pDest, destLen);

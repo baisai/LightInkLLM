@@ -31,9 +31,9 @@ namespace LightInk
 	{
 		RuntimeError err = close();
 		if (err != RE_Success) return err;
-		const OsHelper::FileCharType * mode = cover ? LIGHTINK_LOG_FILENAME_T("wb") : LIGHTINK_LOG_FILENAME_T("ab");
+		const OsHelper::FileCharType * mode = cover ? LIGHTINK_FILENAME_T("wb") : LIGHTINK_FILENAME_T("ab");
 		m_filename = name;
-		m_fp = OsHelper::fopen(m_filename, mode);
+		m_fp = OsHelper::fopen(m_filename.c_str(), mode);
 		if (!m_fp) err = RE_Log_FileFailed;
 		return err;
 	}

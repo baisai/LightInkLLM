@@ -100,7 +100,7 @@ namespace LightInk
 			if (index) 
 			{
 				TypeSelect<IsSameType<OsHelper::FileCharType, char>::Result, fmt::MemoryWriter, fmt::WMemoryWriter>::Result w;
-				w.write(LIGHTINK_LOG_FILENAME_T("{}.{}{}"), m_filename, index, m_extname);
+				w.write(LIGHTINK_FILENAME_T("{}.{}{}"), m_filename, index, m_extname);
 				return w.str();
 			}
 			return m_filename;
@@ -112,7 +112,7 @@ namespace LightInk
 			for (size_t i = m_currIndex + 1; i <= m_maxFiles; ++i)
 			{
 				OsHelper::FileNameType name = calc_filename(i);
-				if (!OsHelper::file_exists(name))
+				if (!OsHelper::file_exists(name.c_str()))
 				{
 					m_currIndex = i;
 					break;
@@ -123,14 +123,14 @@ namespace LightInk
 			{
 				OsHelper::FileNameType src = calc_filename(i - 1);
 				OsHelper::FileNameType target = calc_filename(i);
-				if (OsHelper::file_exists(target))
+				if (OsHelper::file_exists(target.c_str()))
 				{
-					if (OsHelper::remove(target) != 0)
+					if (OsHelper::remove(target.c_str()) != 0)
 					{
 						return RE_Log_FileFailed;
 					}
 				}
-				if (OsHelper::file_exists(src) && OsHelper::rename(src, target))
+				if (OsHelper::file_exists(src.c_str()) && OsHelper::rename(src.c_str(), target.c_str()))
 				{
 					return RE_Log_FileFailed;
 				}
@@ -177,11 +177,11 @@ namespace LightInk
 			{
 				m_file.close();
 				OsHelper::FileNameType target = DateNameStrategy::calc_filename(m_filename, m_nextTime, m_extname);
-				if (OsHelper::file_exists(target))
+				if (OsHelper::file_exists(target.c_str()))
 				{
-					OsHelper::remove(target);
+					OsHelper::remove(target.c_str());
 				}
-				OsHelper::rename(m_filename, target);
+				OsHelper::rename(m_filename.c_str(), target.c_str());
 				m_nextTime = DateNameStrategy::get_next_time(m_nextTime);
 				m_file.reopen(true);
 			}
