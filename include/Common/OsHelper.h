@@ -149,6 +149,8 @@ namespace LightInk
 		static bool is_absolute_path(const FileCharType * path);
 
 		static size_t file_size(FILE * fp);
+
+		static bool enum_dir_files(const FileCharType * path, vector<FileNameType>::type & outFiles, bool dir, bool recursion);
 		
 		static int utc_minutes_offset(const tm & t = localtime());
 

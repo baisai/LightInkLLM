@@ -98,6 +98,121 @@ namespace LightInk
 		return 0;
 	}
 
+	bool OsHelper::enum_dir_files(const FileCharType * path, vector<FileNameType>::type & outFiles, bool dir, bool recursion)
+	{
+		if (!path || path[0] == '\0')
+		{
+			return false;
+		}
+		FileNameType filePath = path;
+		char lastChar = filePath[filePath.size() - 1];
+		if (lastChar != '/' && lastChar != '\\')
+		{
+			filePath.push_back('/');
+		}
+#ifdef _WIN32
+		filePath.append("*.*");
+		WIN32_FIND_DATA findFileData;  
+		HANDLE hFind = FindFirstFile(filePath.c_str(), &findFileData);  
+		if (hFind != INVALID_HANDLE_VALUE)  
+		{  
+			do   
+			{  
+				if (strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") == 0)  
+				{  
+					continue;  
+				}
+				if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)  
+				{
+					if (dir)
+					{
+						outFiles.push_back(findFileData.cFileName);
+					}
+					if (recursion)
+					{
+						FileNameType fullPath = filePath;
+						fullPath.resize(fullPath.size() - 3);
+						fullPath.append(findFileData.cFileName);
+						vector<FileNameType>::type subFiles;
+						bool result = enum_dir_files(fullPath.c_str(), subFiles, dir, recursion);
+						if (result)
+						{
+							FileNameType subFile(findFileData.cFileName);
+							subFile.push_back('/');
+							size_t len = subFile.size();
+							for (size_t i = 0; i < subFiles.size(); ++i)
+							{
+								subFile.resize(len);
+								subFile.append(subFiles[i]);
+								outFiles.push_back(subFile);
+							}
+						}
+						else
+						{
+							return result;
+						}
+					}
+				}  
+				else  
+				{
+					outFiles.push_back(findFileData.cFileName);
+				}  
+			} while (FindNextFile(hFind, &findFileData));
+		}
+		return true;
+#else
+		DIR * pDir = opendir(filePath.c_str());  
+		if (pDir == NULL)  
+		{  
+			return false;  
+		}
+		struct dirent * pDirent = NULL;
+		while ((pDirent = readdir(pDir)) != NULL)
+		{
+			if (strcmp(pDirent->d_name, ".") == 0 || strcmp(pDirent->d_name, "..") == 0)  
+			{  
+				continue;  
+			}
+			if (pDirent->d_type == DT_DIR)  
+			{
+				if (dir)
+				{
+					outFiles.push_back(pDirent->d_name);
+				}
+				if (recursion)
+				{
+					FileNameType fullPath = filePath;
+					fullPath.append(pDirent->d_name);
+					vector<FileNameType>::type subFiles;
+					bool result = enum_dir_files(fullPath.c_str(), subFiles, dir, recursion);
+					if (result)
+					{
+						FileNameType subFile(pDirent->d_name);
+						subFile.push_back('/');
+						size_t len = subFile.size();
+						for (size_t i = 0; i < subFiles.size(); ++i)
+						{
+							subFile.resize(len);
+							subFile.append(subFiles[i]);
+							outFiles.push_back(subFile);
+						}
+					}
+					else
+					{
+						return result;
+					}
+				}
+			}  
+			else  
+			{
+				outFiles.push_back(pDirent->d_name);
+			}
+		}
+		closedir(pDir);
+		return true;
+#endif
+	}
+
 	int OsHelper::utc_minutes_offset(const tm & t)
 	{
 
