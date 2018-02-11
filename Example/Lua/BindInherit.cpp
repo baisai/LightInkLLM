@@ -138,7 +138,7 @@ void test_bind_inherit()
 	le.register_module(bind_cppclass);
 	//le.register_module(bind_cppclass2);
 
-	le.add_package_path("../../Example/Lua");
+	le.add_package_path("../../Example/Lua/?.lua");
 
 	le.require_file("BindInherit");
 

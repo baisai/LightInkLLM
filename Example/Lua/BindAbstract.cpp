@@ -78,7 +78,7 @@ void test_bind_abstract()
 
 	le.register_module(bind_cppclass);
 
-	le.add_package_path("../../Example/Lua");
+	le.add_package_path("../../Example/Lua/?.lua");
 
 	le.require_file("BindAbstract");
 

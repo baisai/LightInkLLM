@@ -62,7 +62,7 @@ void test_bind_static()
 	le.init();
 	le.register_module(bind_cppclass);
 
-	le.add_package_path("../../Example/Lua");
+	le.add_package_path("../../Example/Lua/?.lua");
 
 	le.require_file("BindStatic");
 

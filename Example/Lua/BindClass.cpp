@@ -34,8 +34,8 @@ public:
 		enum2,
 	};
 public:
-	CppClass(int pri) : m_private(pri) { printf("new CppClass"); }
-	~CppClass() { printf("delete CppClass"); }
+	CppClass(int pri) : m_private(pri) {  }
+	~CppClass() {  }
 
 	int get_private() { return m_private; }
 	void set_private(int pri) { m_private = pri; }
@@ -115,7 +115,7 @@ void test_bind_class()
 	le.init();
 	le.register_module(bind_cppclass);
 
-	le.add_package_path("../../Example/Lua");
+	le.add_package_path("../../Example/Lua/?.lua");
 
 	le.require_file("BindClass");
 

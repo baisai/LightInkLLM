@@ -49,12 +49,12 @@ namespace LightInk
 		virtual void * do_lua_allocator(void * ptr, size_t osize, size_t nsize);
 		virtual RuntimeError do_init();
 		virtual void do_close();
-		RuntimeError add_package_path(const string & path);
-		void clear_package_path();
+		virtual RuntimeError add_package_path(const string & path);
+		virtual void clear_package_path();
 		static void dump_stack(lua_State * L);
-		RuntimeError run_string(const char * chunk);
-		RuntimeError run_file(const char * fileName);
-		RuntimeError require_file(const char * fileName);
+		virtual RuntimeError do_string(const char * chunk);
+		virtual RuntimeError do_file(const char * fileName);
+		virtual RuntimeError require_file(const char * fileName);
 		RuntimeError register_global_func(const char * func, lua_CFunction f);
 		LuaRef get_global_ref(const char * name);
 
