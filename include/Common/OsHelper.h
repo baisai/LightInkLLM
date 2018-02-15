@@ -39,6 +39,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 #else
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN

@@ -24,15 +24,7 @@
 #ifndef LIGHTINK_LOG_LOGTHREADTYPE_H_
 #define LIGHTINK_LOG_LOGTHREADTYPE_H_
 
-#ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include "Windows.h"
-#else
-#include <pthread.h>
-#endif
-
+#include "Common/OsHelper.h"
 #include "Common/TypeTool/TypeTool.h"
 #include "Common/Ptr/SharedPtr.h"
 #include "Common/Ptr/AutoPtr.h"
