@@ -35,7 +35,8 @@
 
 #ifndef _WIN32
 #include <sys/time.h>
-#include "sys/sysinfo.h"
+#include <sys/sysinfo.h>
+#include <dirent.h>
 #include <string.h>
 #include <errno.h>
 #else
