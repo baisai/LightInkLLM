@@ -37,7 +37,7 @@
 //Trace
 ///////////////////////////
 #ifdef LightInkNoTrace
-#define LogTrace(ft, ...)
+#define LogTrace(ft, ...) do {} while (0)
 #define LogTraceEnd
 #ifndef LightInkNoTraceStepCall
 #define LightInkNoTraceStepCall
@@ -53,7 +53,7 @@
 #endif
 
 #ifdef LightInkNoTraceStepCall
-#define LogTraceStepCall(ft, ...)
+#define LogTraceStepCall(ft, ...) do {} while (0)
 #define LogTraceStepReturn(v) return v
 #define LogTraceStepReturnVoid return
 #else
@@ -71,7 +71,7 @@
 //Debug
 ///////////////////////
 #ifdef LightInkNoDebug
-#define LogDebug(ft, ...)
+#define LogDebug(ft, ...) do {} while (0)
 #else
 #define LogDebug(ft, ...) \
 	do  \
@@ -85,7 +85,7 @@
 //Message
 ///////////////////////
 #ifdef LightInkNoMessage
-#define LogMessage(ft, ...)
+#define LogMessage(ft, ...) do {} while (0)
 #else
 #define LogMessage(ft, ...) \
 	do  \
@@ -99,7 +99,7 @@
 //Warning
 ///////////////////////
 #ifdef LightInkNoWarning
-#define LogWarning(ft, ...)
+#define LogWarning(ft, ...) do {} while (0)
 #else
 #define LogWarning(ft, ...) \
 	do  \
@@ -114,7 +114,7 @@
 //Error
 ///////////////////////
 #ifdef LightInkNoError
-#define LogError(ft, ...)
+#define LogError(ft, ...) do {} while (0)
 #else
 #define LogError(ft, ...) \
 	do  \
@@ -128,7 +128,7 @@
 //Fatal
 ///////////////////////
 #ifdef LightInkNoFatal
-#define LogFatal(ft, ...)
+#define LogFatal(ft, ...) do {} while (0)
 #else
 #define LogFatal(ft, ...) \
 	do  \
@@ -144,7 +144,7 @@
 //ScriptDebug
 ///////////////////////
 #ifdef LightInkNoScriptDebug
-#define LogScriptDebug(ft, ...)
+#define LogScriptDebug(ft, ...) do {} while (0)
 #else
 #define LogScriptDebug(ft, ...) \
 	do  \
@@ -159,7 +159,7 @@
 //ScriptMessage
 ///////////////////////
 #ifdef LightInkNoScriptMessage
-#define LogScriptMessage(ft, ...)
+#define LogScriptMessage(ft, ...) do {} while (0)
 #else
 #define LogScriptMessage(ft, ...) \
 	do  \
@@ -172,7 +172,7 @@
 //ScriptWarning
 ///////////////////////
 #ifdef LightInkNoScriptWarning
-#define LogScriptWarning(ft, ...)
+#define LogScriptWarning(ft, ...) do {} while (0)
 #else
 #define LogScriptWarning(ft, ...) \
 	do  \
@@ -186,7 +186,7 @@
 //ScriptError
 ///////////////////////
 #ifdef LightInkNoScriptError
-#define LogScriptError(ft, ...)
+#define LogScriptError(ft, ...) do {} while (0)
 #else
 #define LogScriptError(ft, ...) \
 	do  \
@@ -200,7 +200,7 @@
 //Fatal
 ///////////////////////
 #ifdef LightInkNoScriptFatal
-#define LogScriptFatal(ft, ...)
+#define LogScriptFatal(ft, ...) do {} while (0)
 #else
 #define LogScriptFatal(ft, ...) \
 	do  \
