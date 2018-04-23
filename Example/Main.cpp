@@ -23,6 +23,8 @@
  */
 
 #include <stdio.h>
+#include "Common/SelfDQueue.h"
+#include "Log/Log.h"
 
 void test_log();
 void release_log();
@@ -40,5 +42,21 @@ int main(int argc, char ** argv)
 	test_msgpack();
 	getchar();
 
+	{
+		class NodeTest : public LightInk::SelfDQueue<NodeTest>::NodeType
+		{
+		public:
+			NodeTest(){  }
+			~NodeTest(){  }
+		};
+		LightInk::SelfDQueue<NodeTest> que;
+		NodeTest * elem = new NodeTest;
+		que.push_back(elem);
+		LogMessage("SelfDQueue Size = {}", que.size());
+		delete elem;
+		LogMessage("SelfDQueue Size = {}", que.size());
+	}
+	getchar();
+	
 	release_log();
 }

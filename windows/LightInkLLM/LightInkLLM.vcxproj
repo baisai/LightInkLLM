@@ -196,6 +196,7 @@
     <ClInclude Include="..\..\include\Common\Ptr\RefCounter.h" />
     <ClInclude Include="..\..\include\Common\Ptr\SharedPtr.h" />
     <ClInclude Include="..\..\include\Common\RuntimeError.h" />
+    <ClInclude Include="..\..\include\Common\SelfDQueue.h" />
     <ClInclude Include="..\..\include\Common\SingletonBase.h" />
     <ClInclude Include="..\..\include\Common\SmallObject.h" />
     <ClInclude Include="..\..\include\Common\stdint_msvc2008.h" />
@@ -278,6 +279,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\include\Common\Ptr\AutoPtr.cpp" />
     <ClCompile Include="..\..\include\Common\Ptr\SharedPtr.cpp" />
+    <ClCompile Include="..\..\include\Common\SelfDQueue.cpp" />
     <ClCompile Include="..\..\include\LuaEngine\LuaRegisterAbstract.cpp" />
     <ClCompile Include="..\..\include\Msgpack\DataFixBuffer.cpp" />
     <ClCompile Include="..\..\include\Msgpack\PackBuffer.cpp" />

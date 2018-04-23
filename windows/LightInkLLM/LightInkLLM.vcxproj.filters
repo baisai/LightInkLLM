@@ -363,6 +363,9 @@
     <ClInclude Include="..\..\include\LuaEngine\LuaRegisterAbstract.h">
       <Filter>LuaEngine\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Common\SelfDQueue.h">
+      <Filter>Common\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Common\RuntimeError.cpp">
@@ -574,6 +577,9 @@
     </ClCompile>
     <ClCompile Include="..\..\include\LuaEngine\LuaRegisterAbstract.cpp">
       <Filter>LuaEngine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\include\Common\SelfDQueue.cpp">
+      <Filter>Common\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
