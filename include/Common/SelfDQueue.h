@@ -45,15 +45,18 @@ namespace LightInk
 
 			bool remove()
 			{
-				if (m_pre && m_next)
+				bool isIn = is_in_queue();
+				if (m_pre)
 				{
 					m_pre->next(m_next);
+					m_pre = NULL;
+				}
+				if (m_next)
+				{
 					m_next->pre(m_pre);
 					m_next = NULL;
-					m_pre = NULL;
-					return true;
 				}
-				return false;
+				return isIn;
 			}
 
 			void pre(NodeType * pre) { m_pre = pre; }

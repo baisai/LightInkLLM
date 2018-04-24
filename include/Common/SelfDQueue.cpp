@@ -45,6 +45,14 @@ namespace LightInk
 	template<typename ElemType, typename Allocator>
 	void SelfDQueue<ElemType, Allocator>::clear()
 	{
+		if (m_head.next())
+		{
+			m_head.next()->pre(NULL);
+		}
+		if (m_tail.pre())
+		{
+			m_tail.pre()->next(NULL);
+		}
 		m_head.next(&m_tail);
 		m_head.pre(NULL);
 		m_tail.next(NULL);
