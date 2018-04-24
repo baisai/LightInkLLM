@@ -49,13 +49,13 @@ namespace LightInk
 				if (m_pre)
 				{
 					m_pre->next(m_next);
-					m_pre = NULL;
 				}
 				if (m_next)
 				{
 					m_next->pre(m_pre);
-					m_next = NULL;
 				}
+				m_pre = NULL;
+				m_next = NULL;
 				return isIn;
 			}
 
