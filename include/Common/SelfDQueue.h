@@ -85,17 +85,15 @@ namespace LightInk
 		SelfDQueue(const SelfDQueue & cp);
 		SelfDQueue & operator = (const SelfDQueue & right);
 
-		uint32 push_front(NodeType * node);
-		uint32 push_back(NodeType * node);
-		uint32 remove_node(NodeType * node);
-		NodeType * pop_front();
-		NodeType * pop_back();
-		bool pop(NodeType * node);
+		uint32 push_front(ElemType & node);
+		uint32 push_back(ElemType & node);
+		uint32 remove_node(ElemType & node);
+		ElemType * pop_front();
+		ElemType * pop_back();
+		bool pop(ElemType & node);
 
-		bool is_head(NodeType * node);
-		NodeType * get_head();
-		bool is_tail(NodeType * node);
-		NodeType * get_tail();
+		ElemType * get_head();
+		ElemType * get_tail();
 
 		void swap_queue(SelfDQueue & queue);
 

@@ -46,8 +46,7 @@ namespace LightInk
 	void SelfDQueue<ElemType, Allocator>::clear()
 	{
 		if (m_head.next())
-		{
-			m_head.next()->pre(NULL);
+		{			m_head.next()->pre(NULL);
 		}
 		if (m_tail.pre())
 		{
@@ -74,55 +73,55 @@ namespace LightInk
 	}
 
 	template<typename ElemType, typename Allocator>
-	uint32 SelfDQueue<ElemType, Allocator>::push_front(NodeType * node)
+	uint32 SelfDQueue<ElemType, Allocator>::push_front(ElemType & node)
 	{
-		node->next(m_head.next());
-		node->pre(&m_head);
-		m_head->next().pre(node);
-		m_head->next(node);
+		node.next(m_head.next());
+		node.pre(&m_head);
+		m_head->next().pre(&node);
+		m_head->next(&node);
 		++m_size;
 		return m_size;
 	}
 
 
 	template<typename ElemType, typename Allocator>
-	uint32 SelfDQueue<ElemType, Allocator>::push_back(NodeType * node)
+	uint32 SelfDQueue<ElemType, Allocator>::push_back(ElemType & node)
 	{
-		node->next(&m_tail);
-		node->pre(m_tail.pre());
-		m_tail.pre()->next(node);
-		m_tail.pre(node);
+		node.next(&m_tail);
+		node.pre(m_tail.pre());
+		m_tail.pre()->next(&node);
+		m_tail.pre(&node);
 		++m_size;
 		return m_size;
 	}
 
 	template<typename ElemType, typename Allocator>
-	uint32 SelfDQueue<ElemType, Allocator>::remove_node(NodeType * node)
+	uint32 SelfDQueue<ElemType, Allocator>::remove_node(ElemType & node)
 	{
-		if (node->remove()) { --m_size; }
+		if (node.remove()) { --m_size; }
 		return m_size;
 	}
 
 	template<typename ElemType, typename Allocator>
-	typename SelfDQueue<ElemType, Allocator>::NodeType * SelfDQueue<ElemType, Allocator>::pop_front()
+	ElemType * SelfDQueue<ElemType, Allocator>::pop_front()
 	{
-		NodeType * p = m_head.next();
-		if (p->remove()) { --m_size; }
+		ElemType * p = get_head();
+		if (p && p->remove()) { --m_size; }
 		return p;
 	}
 
 	template<typename ElemType, typename Allocator>
-	typename SelfDQueue<ElemType, Allocator>::NodeType * SelfDQueue<ElemType, Allocator>::pop_back()
+	ElemType * SelfDQueue<ElemType, Allocator>::pop_back()
 	{
-		NodeType * p = m_tail.pre();
-		if (p->remove()) { --m_size; }
+		ElemType * p = get_tail();
+		if (p && p->remove()) { --m_size; }
 		return p;
 	}
 
 	template<typename ElemType, typename Allocator>
-	bool SelfDQueue<ElemType, Allocator>::pop(NodeType * node)
+	bool SelfDQueue<ElemType, Allocator>::pop(ElemType & node)
 	{
-		if (node->remove()) 
+		if (node.remove()) 
 		{ 
 			--m_size; 
 			return true;
@@ -162,27 +161,17 @@ namespace LightInk
 	}
 
 	template<typename ElemType, typename Allocator>
-	inline bool SelfDQueue<ElemType, Allocator>::is_head(NodeType * node)
+	inline ElemType * SelfDQueue<ElemType, Allocator>::get_head()
 	{
-		return &m_head == node;
+		NodeType * p = m_head.next();
+		return p == &m_tail ? NULL : static_cast<ElemType *>(p);
 	}
 
 	template<typename ElemType, typename Allocator>
-	inline typename SelfDQueue<ElemType, Allocator>::NodeType * SelfDQueue<ElemType, Allocator>::get_head()
+	inline ElemType * SelfDQueue<ElemType, Allocator>::get_tail()
 	{
-		return m_head.next();
-	}
-
-	template<typename ElemType, typename Allocator>
-	inline bool SelfDQueue<ElemType, Allocator>::is_tail(NodeType * node)
-	{
-		return &m_tail == node;
-	}
-
-	template<typename ElemType, typename Allocator>
-	inline typename SelfDQueue<ElemType, Allocator>::NodeType * SelfDQueue<ElemType, Allocator>::get_tail()
-	{
-		return m_tail.pre();
+		NodeType * p = m_tail.pre();
+		return p == &m_head ? NULL : static_cast<ElemType *>(p);
 	}
 
 }

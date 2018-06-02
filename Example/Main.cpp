@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
 		};
 		LightInk::SelfDQueue<NodeTest> que;
 		NodeTest * elem = new NodeTest;
-		que.push_back(elem);
+		que.push_back(*elem);
 		LogMessage("SelfDQueue Size = {}", que.size());
 		delete elem;
 		LogMessage("SelfDQueue Size = {}", que.size());
