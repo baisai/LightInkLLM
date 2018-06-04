@@ -118,6 +118,16 @@ foreach(k ${sourceFile} )
   set( fullSourcePath ${fullSourcePath} ${sourceRootPath}/${middlePath}/${k} )
 endforeach(k)
 
+set( middlePath Timer )
+set( sourceFile 
+	TimerData.cpp
+	TimerWheel.cpp
+	STTimerMgr.cpp
+)
+foreach(k ${sourceFile} )
+  set( fullSourcePath ${fullSourcePath} ${sourceRootPath}/${middlePath}/${k} )
+endforeach(k)
+
 if (CMAKE_BUILD_TYPE STREQUAL Release)
 	add_definitions("-DNDEBUG")
 else ()

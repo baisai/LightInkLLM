@@ -85,6 +85,15 @@
     <Filter Include="Atomic\source">
       <UniqueIdentifier>{08ac8247-5cf4-4b26-b4c4-e7230b2b62ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{e0c09d50-2451-4dd7-a6dd-d2458057f47b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer\include">
+      <UniqueIdentifier>{1efcfb7d-3673-4748-8779-738d8b78d650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer\source">
+      <UniqueIdentifier>{7f21d2ed-4037-412a-8d4c-0422582e95fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Common\Config.h">
@@ -366,6 +375,15 @@
     <ClInclude Include="..\..\include\Common\SelfDQueue.h">
       <Filter>Common\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Timer\STTimerMgr.h">
+      <Filter>Timer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Timer\TimerData.h">
+      <Filter>Timer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Timer\TimerWheel.h">
+      <Filter>Timer\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Common\RuntimeError.cpp">
@@ -580,6 +598,15 @@
     </ClCompile>
     <ClCompile Include="..\..\include\Common\SelfDQueue.cpp">
       <Filter>Common\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Timer\STTimerMgr.cpp">
+      <Filter>Timer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Timer\TimerData.cpp">
+      <Filter>Timer\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Timer\TimerWheel.cpp">
+      <Filter>Timer\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -275,6 +275,9 @@
     <ClInclude Include="..\..\include\Msgpack\PackTuple.h" />
     <ClInclude Include="..\..\include\Msgpack\Sysdep.h" />
     <ClInclude Include="..\..\include\Msgpack\Unpacker.h" />
+    <ClInclude Include="..\..\include\Timer\STTimerMgr.h" />
+    <ClInclude Include="..\..\include\Timer\TimerData.h" />
+    <ClInclude Include="..\..\include\Timer\TimerWheel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\include\Common\Ptr\AutoPtr.cpp" />
@@ -348,6 +351,9 @@
     <ClCompile Include="..\..\src\Msgpack\encrypter\CapCompresser.cpp" />
     <ClCompile Include="..\..\src\Msgpack\encrypter\Crc32Encrypter.cpp" />
     <ClCompile Include="..\..\src\Msgpack\encrypter\XxteaEncrypter.cpp" />
+    <ClCompile Include="..\..\src\Timer\STTimerMgr.cpp" />
+    <ClCompile Include="..\..\src\Timer\TimerData.cpp" />
+    <ClCompile Include="..\..\src\Timer\TimerWheel.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
