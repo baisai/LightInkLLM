@@ -91,7 +91,7 @@
 #define strtoull _strtoui64
 #endif
 
-#if COMPILER == COMPILER_MICROSOFT
+#ifdef WIN32
 
 #define I64FMT "%016I64X"
 #define I64FMTD "%I64u"
