@@ -50,7 +50,7 @@ namespace LightInk
 	{
 		m_objPtr = cp.m_objPtr;
 		m_refControl = cp.m_refControl;
-		m_refControl->inc_shared();
+		if (m_refControl) { m_refControl->inc_shared(); }
 	}
 
 
@@ -61,7 +61,7 @@ namespace LightInk
 		reset();
 		m_objPtr = right.m_objPtr;
 		m_refControl = right.m_refControl;
-		m_refControl->inc_shared();
+		if (m_refControl) { m_refControl->inc_shared(); }
 		return (*this);
 	}
 
@@ -70,7 +70,7 @@ namespace LightInk
 	{
 		m_objPtr = wpw.m_objPtr;
 		m_refControl = wpw.m_refControl;
-		m_refControl->inc_shared();
+		if (m_refControl) { m_refControl->inc_shared(); }
 	}
 
 
@@ -80,7 +80,7 @@ namespace LightInk
 	{
 		m_objPtr = cp.m_objPtr;
 		m_refControl = cp.m_refControl;
-		m_refControl->inc_shared();
+		if (m_refControl) { m_refControl->inc_shared(); }
 	}
 
 
@@ -92,7 +92,7 @@ namespace LightInk
 		reset();
 		m_objPtr = right.m_objPtr;
 		m_refControl = right.m_refControl;
-		m_refControl->inc_shared();
+		if (m_refControl) { m_refControl->inc_shared(); }
 		return (*this);
 	}
 
@@ -103,7 +103,7 @@ namespace LightInk
 	{
 		m_objPtr = wpw.m_objPtr;
 		m_refControl = wpw.m_refControl;
-		m_refControl->inc_shared();
+		if (m_refControl) { m_refControl->inc_shared(); }
 	}
 
 
@@ -163,7 +163,7 @@ namespace LightInk
 	template <typename T, typename Counter, typename DelStrategy, typename Allocator>
 	inline int64 SharedPtrWrapper<T, Counter, DelStrategy, Allocator>::use_count() const
 	{
-		if (m_objPtr == NULL)
+		if (m_objPtr == NULL || m_refControl == NULL)
 		{
 			return 0;
 		}
@@ -321,14 +321,14 @@ namespace LightInk
 	WeakPtrWrapper<T, Counter, DelStrategy, Allocator>::WeakPtrWrapper(const SharedPtrWrapper<T, Counter, DelStrategy, Allocator> & spw) : 
 		m_objPtr(spw.m_objPtr), m_refControl(spw.m_refControl)
 	{
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 	}
 
 	template <typename T, typename Counter, typename DelStrategy, typename Allocator>
 	WeakPtrWrapper<T, Counter, DelStrategy, Allocator>::WeakPtrWrapper(const WeakPtrWrapper<T, Counter, DelStrategy, Allocator> & cp) : 
 		m_objPtr(cp.m_objPtr), m_refControl(cp.m_refControl)
 	{
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 	}
 
 	template <typename T, typename Counter, typename DelStrategy, typename Allocator>
@@ -337,7 +337,7 @@ namespace LightInk
 		if (this == &right) { return (*this); }
 		m_objPtr = right.m_objPtr;
 		m_refControl = right.m_refControl;
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 		return (*this);
 	}
 
@@ -347,7 +347,7 @@ namespace LightInk
 	WeakPtrWrapper<T, Counter, DelStrategy, Allocator>::WeakPtrWrapper(const SharedPtrWrapper<__T, __Counter, __DelStrategy, __Allocator> & spw) : 
 		m_objPtr(spw.m_objPtr), m_refControl(spw.m_refControl)
 	{
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 	}
 
 
@@ -358,7 +358,7 @@ namespace LightInk
 		if (this == &right) { return(*this); }
 		m_objPtr = right.m_objPtr;
 		m_refControl = right.m_refControl;
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 		return (*this);
 	}
 
@@ -368,7 +368,7 @@ namespace LightInk
 	WeakPtrWrapper<T, Counter, DelStrategy, Allocator>::WeakPtrWrapper(const WeakPtrWrapper<__T, __Counter, __DelStrategy, __Allocator> & cp) : 
 		m_objPtr(cp.m_objPtr), m_refControl(cp.m_refControl)
 	{
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 	}
 
 
@@ -392,7 +392,7 @@ namespace LightInk
 		check_delete_ptr();
 		m_objPtr = spw.m_objPtr;
 		m_refControl = spw.m_refControl;
-		m_refControl->inc_weak();
+		if (m_refControl) { m_refControl->inc_weak(); }
 	}
 
 	template <typename T, typename Counter, typename DelStrategy, typename Allocator>
