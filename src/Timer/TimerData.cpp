@@ -75,12 +75,10 @@ namespace LightInk
 	bool TimerData::tick_out()
 	{
 		LogTraceStepCall("TimerData::tick_out()");
+		if (!m_call) { LogTraceStepReturn(false); }
 		(*m_call)();
 		--m_times;
-		if (m_times <= 0)
-		{
-			LogTraceStepReturn(false);
-		}
+		if (m_times <= 0) { LogTraceStepReturn(false); }
 		m_nextTime += m_interval;
 		LogTraceStepReturn(true);
 	}

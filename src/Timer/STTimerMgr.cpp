@@ -147,7 +147,7 @@ namespace LightInk
 	uint32 STTimerMgr::add_timer(uint32 nextTime, uint32 interval, uint32 times, TimerCall * tc)
 	{
 		LogTraceStepCall("uint32 STTimerMgr::add_timer(uint32 nextTime, uint32 interval, uint32 times, TimerCall * tc)");
-		if (!m_run) { LogTraceStepReturn(0); }
+		if (!m_run || !tc) { LogTraceStepReturn(0); }
 		TimerNode * t =  new TimerNode;
 		uint32 id = 0;
 
