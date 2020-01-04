@@ -79,7 +79,7 @@ namespace LightInk
 //////////////////////////////////////////////////////////////////////////////////////////////
 //LogThread
 //////////////////////////////////////////////////////////////////////////////////////////////
-	LogThread::LogThread() : m_running(false)
+	LogThread::LogThread() : m_threadID(0u)
 	{
 
 	}
@@ -89,56 +89,67 @@ namespace LightInk
 
 	}
 
-	int32 LogThread::run()
+	bool LogThread::run()
 	{
-		if (m_running)
-		{
-			return 0;
-		}
-		m_running = true;
+		if (is_running())
+			return true;
+
 #ifdef _WIN32
 		m_handle = CreateThread(0, 0, work_thread, this, 0, 0);
-		if (m_handle == NULL) { m_running = false; return -1; }
+		return m_handle != NULL;
 #else
 		pthread_attr_t type;
 		pthread_attr_init(&type);
 		pthread_attr_setdetachstate(&type, PTHREAD_CREATE_JOINABLE);
-		if (pthread_create(&m_handle, &type, work_thread, this) != 0)
-		{ m_running = false; return -1; }
+		return pthread_create(&m_handle, &type, work_thread, this) == 0;
 #endif
-		return 0;
 	}
 
 	void LogThread::work()
 	{
-		
+#ifndef _WIN32
+		pthread_detach(thread_self());
+#endif
 	}
 
 	bool LogThread::is_running()
 	{
-		return m_running;
+		return m_threadID != 0u;
+	}
+
+	bool LogThread::join()
+	{
+		if (!is_running() || m_threadID == thread_self())
+			return false;
+#ifdef _WIN32
+		return !WaitForSingleObject(m_handle, UINT_MAX);
+#else
+		return !pthread_join(m_handle, NULL);
+#endif
 	}
 
 #ifdef _WIN32
 	DWORD WINAPI LogThread::work_thread(void * arg)
 	{
 		LogThread * t = (LogThread *) arg;
+		t->m_threadID = thread_self();
 		t->work();
-		t->m_running = false;
+		t->m_threadID = 0u;
 		return 0;
 	}
 #else
 	void * LogThread::work_thread(void * arg)
 	{
 		LogThread * t = (LogThread *) arg;
+		t->m_threadID = thread_self();
 		t->work();
-		t->m_running = false;
+		t->m_threadID = 0u;
 		pthread_exit(NULL);
 		return NULL;
 	}
 #endif
 
-	uint32 LogThread::thread_self()
+	size_t LogThread::thread_self()
 	{
 #ifdef _WIN32
 		return GetCurrentThreadId();

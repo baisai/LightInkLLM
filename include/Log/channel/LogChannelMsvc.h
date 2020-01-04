@@ -32,14 +32,24 @@ namespace LightInk
 	class LIGHTINK_DECL LogChannelMsvc : public LogChannel
 	{
 	public:
-		LogChannelMsvc() {  }
+		LogChannelMsvc(const string & format, uint32 level, uint32 flushLevel) : 
+			LogChannel(format, level, flushLevel)
+		{  }
 		virtual ~LogChannelMsvc() {  }
 
 	protected:
 		virtual RuntimeError do_log(const LogItem & item)
 		{
 #if defined(_MSC_VER)
-			OutputDebugStringA(item.m_format.c_str());
+			int len = 0;
+			while (item.m_format.size() - len >= INT16_MAX)
+			{
+				char tmp[1024 + 1] = { 0 };
+				memcpy(tmp, item.m_format.c_str() + len, sizeof(tmp) - 1);
+				len += (sizeof(tmp) - 1);
+				OutputDebugString(tmp);
+			}
+			OutputDebugString(item.m_format.c_str() + len);
 #endif
 			return RE_Success;
 		}

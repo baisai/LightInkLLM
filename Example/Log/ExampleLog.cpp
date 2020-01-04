@@ -30,6 +30,7 @@ void test_log()
 	LightInk::LogOption lo;
 	LightInk::ChannelOption<LogLockAuto, LightInk::LogChannelType::StdOutChannel> * sc = new LightInk::ChannelOption<LogLockAuto, LightInk::LogChannelType::StdOutChannel>;
 	sc->set_color(true);
+	//sc->set_format("%u");
 	lo.add_channel(sc);
 
 	LightInkLog->init_async(1000, LightInk::AsyncMsg::Block);

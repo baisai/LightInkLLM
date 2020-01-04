@@ -29,23 +29,29 @@
 
 namespace LightInk
 {
+	LuaRef::LuaRef() : m_L(NULL), m_ref(LUA_REFNIL)
+	{
+		LogTraceStepCall("LuaRef::LuaRef()");
+		LogTraceStepReturnVoid;
+	}
+
 	LuaRef::LuaRef(lua_State * L) : m_L(L), m_ref(LUA_REFNIL)
 	{ 
 		LogTraceStepCall("LuaRef::LuaRef(lua_State * L)"); 
 		LogTraceStepReturnVoid; 
 	}
 
-	LuaRef::LuaRef(lua_State * L, bool fromStack) : m_L(L), m_ref(luaL_ref(L, LUA_REGISTRYINDEX))
+	LuaRef::LuaRef(lua_State * L, bool fromStack) : m_L(NULL), m_ref(LUA_REFNIL)
 	{ 
 		LogTraceStepCall("LuaRef::LuaRef(lua_State * L, bool fromStack)"); 
+		reset(L, fromStack);
 		LogTraceStepReturnVoid; 
 	}
 
-	LuaRef::LuaRef(lua_State * L, int idx) : m_L(L), m_ref(LUA_REFNIL)
+	LuaRef::LuaRef(lua_State * L, int idx) : m_L(NULL), m_ref(LUA_REFNIL)
 	{
 		LogTraceStepCall("LuaRef::LuaRef(lua_State * L, int idx)");
-		lua_pushvalue(L, idx);
-		m_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+		reset(L, idx);
 		LogTraceStepReturnVoid;
 	}
 
@@ -68,29 +74,62 @@ namespace LightInk
 		LogTraceStepReturnVoid;
 	}
 
-	void LuaRef::clear_lua()
+	void LuaRef::clear()
 	{
-		LogTraceStepCall("void LuaRef::LuaTableRef::clear_lua()");
+		LogTraceStepCall("void LuaRef::LuaTableRef::clear()");
 		m_L = NULL;
 		m_ref = LUA_REFNIL;
 		LogTraceStepReturnVoid;
 	}
 
-	int LuaRef::create_ref() const
+	void LuaRef::reset()
 	{
-		LogTraceStepCall("int LuaRef::create_ref() const");
-		if (m_ref == LUA_REFNIL)
+		LogTraceStepCall("void LuaRef::reset()");
+		set_nil();
+		LogTraceStepReturnVoid;
+	}
+
+	void LuaRef::reset(lua_State * L)
+	{
+		LogTraceStepCall("void LuaRef::reset(lua_State * L)");
+		set_nil();
+		m_L = L;
+		LogTraceStepReturnVoid;
+	}
+
+	void LuaRef::reset(lua_State * L, bool fromStack)
+	{
+		LogTraceStepCall("void LuaRef::reset(lua_State * L, bool fromStack)");
+		set_nil();
+		if (L != NULL)
 		{
-			LogTraceStepReturn(m_ref);
+			m_L = L;
+			m_ref = luaL_ref(m_L, LUA_REGISTRYINDEX);
 		}
-		push();
-		LogTraceStepReturn(luaL_ref(m_L, LUA_REGISTRYINDEX));
+		else
+		{
+			lua_pop(L, -1); //failed pop stack
+		}
+		LogTraceStepReturnVoid;
+	}
+
+	void LuaRef::reset(lua_State * L, int idx)
+	{
+		LogTraceStepCall("void LuaRef::reset(lua_State * L, int idx)");
+		set_nil();
+		if (L != NULL)
+		{
+			m_L = L;
+			lua_pushvalue(L, idx);
+			m_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+		}
+		LogTraceStepReturnVoid;
 	}
 
 	void LuaRef::set_nil()
 	{
 		LogTraceStepCall("LuaRef::set_nil()");
-		if (m_ref != LUA_REFNIL)
+		if (m_L != NULL && m_ref != LUA_REFNIL)
 		{
 			luaL_unref(m_L, LUA_REGISTRYINDEX, m_ref);
 			m_ref = LUA_REFNIL;
@@ -98,23 +137,36 @@ namespace LightInk
 		LogTraceStepReturnVoid;
 	}
 
+	int LuaRef::create_ref() const
+	{
+		LogTraceStepCall("int LuaRef::create_ref() const");
+		if (m_L == NULL || m_ref == LUA_REFNIL)
+		{
+			LogTraceStepReturn(LUA_REFNIL);
+		}
+		push();
+		LogTraceStepReturn(luaL_ref(m_L, LUA_REGISTRYINDEX));
+	}
+
 	LuaRef & LuaRef::operator = (const LuaRef & right)
 	{
 		LogTraceStepCall("LuaRef & LuaRef::operator = (const LuaRef & right)");
-		luaL_unref(m_L, LUA_REGISTRYINDEX, m_ref);
-		right.push();
-		m_L = right.state();
-		m_ref = luaL_ref(m_L, LUA_REGISTRYINDEX);
+		if (right.push())
+		{
+			set_nil();
+			reset(right.state(), true);
+		}
 		LogTraceStepReturn(*this);
 	}
 
 	LuaRef & LuaRef::operator = (const LuaTableRef & right)
 	{
 		LogTraceStepCall("LuaRef & LuaRef::operator = (const LuaTableRef & right)");
-		luaL_unref(m_L, LUA_REGISTRYINDEX, m_ref);
-		right.push();
-		m_L = right.state();
-		m_ref = luaL_ref(m_L, LUA_REGISTRYINDEX);
+		if (right.push())
+		{
+			set_nil();
+			reset(right.state(), true);
+		}
 		LogTraceStepReturn(*this);
 	}
 
@@ -122,27 +174,39 @@ namespace LightInk
 	LuaRef LuaRef::new_table(lua_State * L, int narr, int nrec)
 	{
 		LogTraceStepCall("LuaRef LuaRef::new_table(lua_State * L, int narr, int nrec)");
-		lua_createtable(L, narr, nrec);
-		LogTraceStepReturn(LuaRef(L, true));
+		if (L != NULL)
+		{
+			lua_createtable(L, narr, nrec);
+			LogTraceStepReturn(LuaRef(L, true));
+		}
+		LogTraceStepReturn(LuaRef());
 	}
 	LuaRef LuaRef::get_global_var(lua_State * L, const char * name)
 	{
 		LogTraceStepCall("LuaRef LuaRef::get_global_var(lua_State * L, const char * name)");
-		lua_getglobal(L, name);
-		LogTraceStepReturn(LuaRef(L, true));
+		if (L != NULL)
+		{
+			lua_getglobal(L, name);
+			LogTraceStepReturn(LuaRef(L, true));
+		}
+		LogTraceStepReturn(LuaRef());
 	}
 
 
 	string LuaRef::to_string() const
 	{
 		LogTraceStepCall("string LuaRef::to_string() const");
+		if (m_L == NULL || m_ref == LUA_REFNIL)
+		{
+			LogTraceStepReturn(string("nil"));
+		}
 		LuaStateProtect lsp(m_L);
 		lua_getglobal(m_L, "tostring");
 		push();
 		if (lua_pcall(m_L, 1, 1, 0))
 		{
 			const char * errStr = lua_tostring(m_L, -1);
-			if (errStr) LogScriptError(errStr);
+			if (errStr) LogScriptError(m_L, errStr);
 			LogTraceStepReturn(string());
 		}
 		const char * str = lua_tostring(m_L, -1);
@@ -179,23 +243,32 @@ namespace LightInk
 	}
 	lua_State * LuaRef::state() const
 	{ LogTraceStepCall("lua_State * LuaRef::state()"); LogTraceStepReturn(m_L); }
-	void LuaRef::push() const
+	bool LuaRef::push() const
 	{
-		LogTraceStepCall("LuaRef::push() const");
+		LogTraceStepCall("bool LuaRef::push() const");
+		if (m_L == NULL)
+		{
+			LogScriptError(m_L, "Error!!! the lua state is NULL!!!");
+			LogTraceStepReturn(false);
+		}
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_ref);
-		LogTraceStepReturnVoid;
+		LogTraceStepReturn(true);
 	}
-	void LuaRef::pop()
+	bool LuaRef::pop()
 	{
-		LogTraceStepCall("LuaRef::pop() const");
-		luaL_unref(m_L, LUA_REGISTRYINDEX, m_ref);
-		m_ref = luaL_ref(m_L, LUA_REGISTRYINDEX);
-		LogTraceStepReturnVoid;
+		LogTraceStepCall("bool LuaRef::pop()");
+		if (m_L != NULL)
+		{
+			set_nil();
+			m_ref = luaL_ref(m_L, LUA_REGISTRYINDEX);
+			LogTraceStepReturn(true);
+		}
+		LogTraceStepReturn(false);
 	}
 	int LuaRef::type() const
 	{
 		LogTraceStepCall("int LuaRef::type() const");
-		if (m_ref == LUA_REFNIL)
+		if (m_L == NULL || m_ref == LUA_REFNIL)
 		{
 			LogTraceStepReturn(LUA_TNIL);
 		}
@@ -253,13 +326,10 @@ namespace LightInk
 	bool LuaRef::is_cfunction() const
 	{
 		LogTraceStepCall("bool LuaRef::is_cfunction() const");
-		if (m_ref == LUA_REFNIL)
-		{
-			LogTraceStepReturn(false);
-		}
 		LuaStateProtect lsp(m_L, true);
-		push();
-		LogTraceStepReturn(lua_iscfunction(m_L, -1) == 1);
+		if (push())
+			LogTraceStepReturn(lua_iscfunction(m_L, -1) == 1);
+		LogTraceStepReturn(false);
 	}
 
 
@@ -267,21 +337,27 @@ namespace LightInk
 	{
 		LogTraceStepCall("LuaRef::length() const");
 		LuaStateProtect lsp(m_L, true);
-		push();
-		size_t len = lua_objlen(m_L, -1);
-		lsp.reset();
-		LogTraceStepReturn(len);
+		if (push() && lua_istable(m_L, -1))
+		{
+			size_t len = lua_objlen(m_L, -1);
+			LogTraceStepReturn(len);
+		}
+		LogTraceStepReturn(0u);
 	}
 
 		
 	const LuaRef LuaRef::operator () () const
 	{
 		LogTraceStepCall("const LuaRef LuaRef::operator () () const");
-		push();
+		if (!push())
+		{
+			LogError("Error!!!the lua state is NULL!!!");
+			LogTraceStepReturn(LuaRef());
+		}
 		if (lua_pcall(m_L, 0, 1, 0))
 		{
 			const char * errStr = lua_tostring(m_L, -1);
-			if (errStr) LogScriptError(errStr);
+			if (errStr) LogScriptError(m_L, errStr);
 			LogTraceStepReturn(LuaRef(m_L));
 		}
 		LogTraceStepReturn(LuaRef(m_L, true));

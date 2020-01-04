@@ -29,12 +29,11 @@
 #include "Common/RuntimeError.h"
 #include "Common/Type.h"
 #include "Log/Log.h"
-#include "Common/SmallObject.h"
 #include "Common/STLType.h"
 
 namespace LightInk
 {
-	class LIGHTINK_DECL DataRefBuffer : public SmallObject
+	class LIGHTINK_DECL DataRefBuffer
 	{
 	public:
 		DataRefBuffer();
@@ -62,49 +61,56 @@ namespace LightInk
 
 		RuntimeError resize_buffer(uint32 size);
 
+		void swap(DataRefBuffer & right);
 
 	protected:
 		const char * m_buffer;
 		uint32 m_size;
 	};
-
+	///////////////////////////////////////////////////////////////////////
+	//inline method
+	//////////////////////////////////////////////////////////////////////
 	inline void DataRefBuffer::clear()
 	{
-		LogTraceStepCall("DataRefBuffer::clear()");
 		m_buffer = NULL;
 		m_size = 0;
-		LogTraceStepReturnVoid;
 	}
 
 	//warning can not use write 
 	inline char * DataRefBuffer::data() const
 	{
-		LogTraceStepCall("char * DataRefBuffer::data() const");
-		LogTraceStepReturn(const_cast<char *>(m_buffer));
+		return const_cast<char *>(m_buffer);
 	}
 
 	inline uint32 DataRefBuffer::buffer_size() const
 	{
-		LogTraceStepCall("uint32 DataRefBuffer::buffer_size() const");
-		LogTraceStepReturn(m_size);
+		return m_size;
 	}
 
+	// can not write
 	inline void DataRefBuffer::write_pos(uint32 pos)
 	{
-		LogTraceStepCall("void DataRefBuffer::write_pos(uint32 pos)");
-		LogTraceStepReturnVoid;
+		
 	}
 
 	inline uint32 DataRefBuffer::write_pos() const
 	{
-		LogTraceStepCall("uint32 DataRefBuffer::write_pos() const");
-		LogTraceStepReturn(m_size);
+		return m_size;
 	}
 
 	inline RuntimeError DataRefBuffer::resize_buffer(uint32 size)
 	{
-		LogTraceStepCall("RuntimeError DataRefBuffer::resize_buffer(uint32 size)");
-		LogTraceStepReturn(RE_Success);
+		return RE_Msgpack_DisableResize;
+	}
+
+	inline void DataRefBuffer::swap(DataRefBuffer & right)
+	{
+		const char * buffer = right.m_buffer;
+		uint32 size = right.m_size;
+		right.m_buffer = m_buffer;
+		right.m_size = m_size;
+		m_buffer = buffer;
+		m_size = size;
 	}
 
 }

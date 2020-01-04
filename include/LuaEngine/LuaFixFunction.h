@@ -104,11 +104,6 @@
 	  return lua_isuserdata (L, index) && !lua_islightuserdata (L, index);
 	}
 
-	inline LIGHTINK_DECL bool lua_isnothing(lua_State * L, int index)
-	{
-		return (lua_isnil(L, index) || lua_isnone(L, index));
-	}
-
 	inline LIGHTINK_DECL void lock_metatable(lua_State * L, int index)
 	{
 		index = lua_absindex(L, index);

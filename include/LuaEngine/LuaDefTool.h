@@ -31,6 +31,7 @@
 #include "LuaEngine/LuaStateProtect.h"
 #include "LuaEngine/LuaCFunctionTraits.h"
 #include "LuaEngine/LuaClassPropertyTraits.h"
+#include "LuaEngine/LuaMetatable.h"
 
 namespace LightInk
 {
@@ -70,9 +71,10 @@ namespace LightInk
 			{
 				lua_pushvalue(L, -1);
 			}
-			new (lua_newuserdata(L, sizeof(LuaClassPropertyInfo))) LuaClassPropertyInfo(LuaClassPropertyTraits<T, void>::pt_index_function, 
+			new (lua_newuserdata(L, sizeof(LuaClassPropertyInfo))) LuaClassPropertyInfo(name, LuaClassPropertyTraits<T, void>::pt_index_function, 
 																						LuaClassPropertyTraits<T, void>::pt_newindex_function, obj);
-			rawsetfieldlen(L, -2, name.c_str(), name.size());
+			LuaMetatable::push_property_function(L, -1);
+			rawsetfieldlen(L, -3, name.c_str(), name.size());
 			LogTraceStepReturnVoid;
 		}
 

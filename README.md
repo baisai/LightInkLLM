@@ -1,5 +1,5 @@
-# LightInkLLM
-LightInkLog and LightInkLua and LightInkMsgPack
+# LightInkLLMT
+LightInkLog and LightInkLua and LightInkMsgPack and LightInkTinySocket
 
 
 # build
@@ -7,16 +7,17 @@ LightInkLog and LightInkLua and LightInkMsgPack
 
 ## win32
 
-* install vs2012
-* open file ./windows/LightInkLLM.sln
-* build
-* the file output in ./bin/Debug(Release)/
+* install cmake and vs2012
+* mkdir ./build
+* cd ./build
+* cmake ../project
+* the vs project in ./build
 
 ## linux
 
 * install cmake
-* mkdir ./Linux/build
-* cd ./Linux/build
-* cmake ../
+* mkdir ./build
+* cd ./build
+* cmake ../project
 * make
 * the file output in ./bin/Debug(Release)/

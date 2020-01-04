@@ -29,21 +29,21 @@
 
 namespace LightInk
 {
-	template<typename ElemType, typename Allocator>
-	SelfDQueue<ElemType, Allocator>::SelfDQueue() : m_head(), m_tail(), m_size(0)
+	template<typename ElemType>
+	SelfDQueue<ElemType>::SelfDQueue() : m_head(), m_tail(), m_size(0)
 	{
 		m_head.next(&m_tail);
 		m_tail.pre(&m_head);
 	}
 
-	template<typename ElemType, typename Allocator>
-	SelfDQueue<ElemType, Allocator>::~SelfDQueue()
+	template<typename ElemType>
+	SelfDQueue<ElemType>::~SelfDQueue()
 	{
 		clear();
 	}
 
-	template<typename ElemType, typename Allocator>
-	void SelfDQueue<ElemType, Allocator>::clear()
+	template<typename ElemType>
+	void SelfDQueue<ElemType>::clear()
 	{
 		if (m_head.next())
 		{			m_head.next()->pre(NULL);
@@ -59,69 +59,71 @@ namespace LightInk
 		m_size = 0;
 	}
 
-	template<typename ElemType, typename Allocator>
-	SelfDQueue<ElemType, Allocator>::SelfDQueue(const SelfDQueue & cp) : m_head(), m_tail(), m_size(0)
+	template<typename ElemType>
+	SelfDQueue<ElemType>::SelfDQueue(const SelfDQueue & cp) : m_head(), m_tail(), m_size(0)
 	{
-		static_cast<SelfDQueue &>(cp).swap_queue(*this);
+		const_cast<SelfDQueue &>(cp).swap_queue(*this);
 	}
 
-	template<typename ElemType, typename Allocator>
-	SelfDQueue<ElemType, Allocator> & SelfDQueue<ElemType, Allocator>::operator = (const SelfDQueue & right)
+	template<typename ElemType>
+	SelfDQueue<ElemType> & SelfDQueue<ElemType>::operator = (const SelfDQueue & right)
 	{
-		static_cast<SelfDQueue &>(right).swap_queue(*this);
+		const_cast<SelfDQueue &>(right).swap_queue(*this);
 		return *this;
 	}
 
-	template<typename ElemType, typename Allocator>
-	uint32 SelfDQueue<ElemType, Allocator>::push_front(ElemType & node)
+	template<typename ElemType>
+	uint32 SelfDQueue<ElemType>::push_front(ElemType & node)
 	{
-		node.next(m_head.next());
-		node.pre(&m_head);
-		m_head->next().pre(&node);
-		m_head->next(&node);
+		NodeType & nt = static_cast<NodeType &>(node);
+		nt.next(m_head.next());
+		nt.pre(&m_head);
+		m_head.next()->pre(&nt);
+		m_head.next(&nt);
 		++m_size;
 		return m_size;
 	}
 
 
-	template<typename ElemType, typename Allocator>
-	uint32 SelfDQueue<ElemType, Allocator>::push_back(ElemType & node)
+	template<typename ElemType>
+	uint32 SelfDQueue<ElemType>::push_back(ElemType & node)
 	{
-		node.next(&m_tail);
-		node.pre(m_tail.pre());
-		m_tail.pre()->next(&node);
-		m_tail.pre(&node);
+		NodeType & nt = static_cast<NodeType &>(node);
+		nt.next(&m_tail);
+		nt.pre(m_tail.pre());
+		m_tail.pre()->next(&nt);
+		m_tail.pre(&nt);
 		++m_size;
 		return m_size;
 	}
 
-	template<typename ElemType, typename Allocator>
-	uint32 SelfDQueue<ElemType, Allocator>::remove_node(ElemType & node)
+	template<typename ElemType>
+	uint32 SelfDQueue<ElemType>::remove_node(ElemType & node)
 	{
-		if (node.remove()) { --m_size; }
+		if (static_cast<NodeType &>(node).remove()) { --m_size; }
 		return m_size;
 	}
 
-	template<typename ElemType, typename Allocator>
-	ElemType * SelfDQueue<ElemType, Allocator>::pop_front()
+	template<typename ElemType>
+	ElemType * SelfDQueue<ElemType>::pop_front()
 	{
 		ElemType * p = get_head();
-		if (p && p->remove()) { --m_size; }
+		if (p && static_cast<NodeType *>(p)->remove()) { --m_size; }
 		return p;
 	}
 
-	template<typename ElemType, typename Allocator>
-	ElemType * SelfDQueue<ElemType, Allocator>::pop_back()
+	template<typename ElemType>
+	ElemType * SelfDQueue<ElemType>::pop_back()
 	{
 		ElemType * p = get_tail();
-		if (p && p->remove()) { --m_size; }
+		if (p && static_cast<NodeType *>(p)->remove()) { --m_size; }
 		return p;
 	}
 
-	template<typename ElemType, typename Allocator>
-	bool SelfDQueue<ElemType, Allocator>::pop(ElemType & node)
+	template<typename ElemType>
+	bool SelfDQueue<ElemType>::pop(ElemType & node)
 	{
-		if (node.remove()) 
+		if (static_cast<NodeType &>(node).remove())
 		{ 
 			--m_size; 
 			return true;
@@ -129,8 +131,8 @@ namespace LightInk
 		return false;
 	}
 
-	template<typename ElemType, typename Allocator>
-	void SelfDQueue<ElemType, Allocator>::swap_queue(SelfDQueue & queue)
+	template<typename ElemType>
+	void SelfDQueue<ElemType>::swap_queue(SelfDQueue & queue)
 	{
 		if (empty())
 		{
@@ -148,32 +150,75 @@ namespace LightInk
 		}
 	}
 
-	template<typename ElemType, typename Allocator>
-	inline uint32 SelfDQueue<ElemType, Allocator>::size()
+	template<typename ElemType>
+	inline uint32 SelfDQueue<ElemType>::size() const
 	{
 		return m_size;
 	}
 
-	template<typename ElemType, typename Allocator>
-	inline bool SelfDQueue<ElemType, Allocator>::empty()
+	template<typename ElemType>
+	inline bool SelfDQueue<ElemType>::empty() const
 	{
 		return m_head.next() == &m_tail;
 	}
 
-	template<typename ElemType, typename Allocator>
-	inline ElemType * SelfDQueue<ElemType, Allocator>::get_head()
+	template<typename ElemType>
+	inline ElemType * SelfDQueue<ElemType>::get_head()
 	{
 		NodeType * p = m_head.next();
 		return p == &m_tail ? NULL : static_cast<ElemType *>(p);
 	}
+	template<typename ElemType>
+	inline const ElemType * SelfDQueue<ElemType>::get_head() const
+	{
+		const NodeType * p = m_head.next();
+		return p == &m_tail ? NULL : static_cast<const ElemType *>(p);
+	}
 
-	template<typename ElemType, typename Allocator>
-	inline ElemType * SelfDQueue<ElemType, Allocator>::get_tail()
+	template<typename ElemType>
+	inline ElemType * SelfDQueue<ElemType>::get_tail()
 	{
 		NodeType * p = m_tail.pre();
 		return p == &m_head ? NULL : static_cast<ElemType *>(p);
 	}
-
+	template<typename ElemType>
+	inline const ElemType * SelfDQueue<ElemType>::get_tail() const
+	{
+		const NodeType * p = m_tail.pre();
+		return p == &m_head ? NULL : static_cast<const ElemType *>(p);
+	}
+	template<typename ElemType>
+	inline ElemType * SelfDQueue<ElemType>::next(ElemType & node) 
+	{ 
+		NodeType * pNext = static_cast<NodeType &>(node).next(); 
+		if (pNext == &m_tail) 
+		{ return NULL; } 
+		return static_cast<ElemType *>(pNext); 
+	}
+	template<typename ElemType>
+	inline const ElemType * SelfDQueue<ElemType>::next(const ElemType & node) const 
+	{ 
+		const NodeType * pNext = static_cast<const NodeType &>(node).next();
+		if (pNext == &m_tail)
+		{ return NULL; }
+		return static_cast<const ElemType *>(pNext); 
+	}
+	template<typename ElemType>
+	inline ElemType * SelfDQueue<ElemType>::pre(ElemType & node) 
+	{ 
+		NodeType * pPre = static_cast<NodeType &>(node).pre();
+		if (pPre == &m_head)
+		{ return NULL; }
+		return static_cast<ElemType *>(pPre); 
+	}
+	template<typename ElemType>
+	inline const ElemType * SelfDQueue<ElemType>::pre(const ElemType & node) const 
+	{
+		const NodeType * pPre = static_cast<const NodeType &>(node).pre();
+		if (pPre == &m_head)
+		{ return NULL; }
+		return static_cast<const ElemType *>(pPre); 
+	}
 }
 
 #endif

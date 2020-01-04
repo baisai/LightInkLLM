@@ -25,27 +25,36 @@
 #ifndef LIGHTINK_COMMON_CONFIG_H_
 #define LIGHTINK_COMMON_CONFIG_H_
 
-#if defined(DEBUG) || defined(_DEBUG)
+#if defined WIN32 && !defined WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#if defined(DEBUG) || defined(_DEBUG) || !defined(NDEBUG)
 #define LIGHTINK_DEBUG
 #endif // DEBUG
 
-#define LightInkNoTraceStepCall //关闭每次Call的trace日志
+//#define LightInkLogTraceStepCall //开启每次Call的trace日志
 
-//#define LightInkNoTrace //关闭trace日志
+#define LightInkLogTrace //开启trace日志
 
-#ifndef LIGHTINK_DEBUG
-#define LightInkNoDebug //关闭debug日志
+#ifdef LIGHTINK_DEBUG
+#define LightInkLogDebug //开启debug日志
 #endif
 
-//#define LightInkNoMessage
-//#define LightInkNoError
+#define LightInkLogMessage
+#define LightInkLogWarning
+#define LightInkLogError
+#define LightInkLogFatal
 
-#ifndef LIGHTINK_DEBUG
-#define LightInkNoScriptDebug
+#ifdef LIGHTINK_DEBUG
+#define LightInkLogScriptDebug
 #endif
 
-//#define LightInkNoScriptMessage
-//#define LightInkNoScriptError
+#define LightInkLogScriptMessage
+#define LightInkLogScriptWarning
+#define LightInkLogScriptError
+#define LightInkLogScriptErrorJump
+#define LightInkLogScriptFatal
 
 
 #define LIGHTINK_SHOWVERSION

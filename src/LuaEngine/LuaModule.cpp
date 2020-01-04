@@ -114,25 +114,20 @@ namespace LightInk
 		LogTraceStepReturn(m_next);
 	}
 
-	LuaRegisterNode & LuaRegisterNode::operator <= (LuaRegisterNode & right)
+	LuaRegisterNode & LuaRegisterNode::operator <= (const LuaRegisterNode & right)
 	{
-		LogTraceStepCall("LuaRegisterNode & LuaRegisterNode::operator ,(const LuaRegisterNode & right)");
-		right.m_next = this;
-		LogTraceStepReturn(right);
+		LogTraceStepCall("LuaRegisterNode & LuaRegisterNode::operator <= (const LuaRegisterNode & right)");
+		LuaRegisterNode & noneConst = const_cast<LuaRegisterNode &>(right);
+		noneConst.m_next = this;
+		LogTraceStepReturn(noneConst);
 	}
 
 	LuaRegisterNode & LuaRegisterNode::operator = (const LuaRegisterNode & right)
 	{
-		LogTraceStepCall("LuaRegisterNode & LuaRegisterNode::operator <= (const LuaRegisterNode & right)");
+		LogTraceStepCall("LuaRegisterNode & LuaRegisterNode::operator = (const LuaRegisterNode & right)");
 		m_key = right.m_key;
 		m_value = right.m_value;
 		m_next = NULL;
-		LogTraceStepReturn(*this);
-	}
-
-	LuaRegisterNode & LuaRegisterNode::self()
-	{
-		LogTraceStepCall("LuaRegisterNode & LuaRegisterNode::self()");
 		LogTraceStepReturn(*this);
 	}
 
@@ -140,15 +135,22 @@ namespace LightInk
 	////////////////////////////////////////////////////////////////////////
 	//LuaModule
 	///////////////////////////////////////////////////////////////////////
-	LuaModule::LuaModule(lua_State * L, const string & moduleName) : m_top(lua_gettop(L)), LuaRegisterNode(L)
+	LuaModule::LuaModule(lua_State * L) : LuaRegisterNode(L)
+	{
+		LogTraceStepCall("LuaModule::LuaModule(lua_State * L)");
+		LuaStateProtect lsp(L, true);
+		set_key("_G");
+		set_parent(LUA_GLOBALSINDEX);
+		set_value(LUA_GLOBALSINDEX);
+		LogTraceStepReturnVoid;
+	}
+	LuaModule::LuaModule(lua_State * L, const string & moduleName) : LuaRegisterNode(L)
 	{
 		LogTraceStepCall("LuaModule::LuaModule(lua_State * L, const string & moduleName)");
+		LuaStateProtect lsp(L, true);
 		set_key(moduleName);
-		lua_pushvalue(L, LUA_GLOBALSINDEX);
-		set_parent(-1);
-		lua_pop(L, 1);
-
-		LuaRef v = m_parent[m_key].get_ref();
+		set_parent(LUA_GLOBALSINDEX);
+		LuaRef v = m_parent.rawget(m_key);
 		if (v.is_table())
 		{
 			set_value(v);
@@ -159,16 +161,15 @@ namespace LightInk
 		}
 		LogTraceStepReturnVoid;
 	}
-	LuaModule::LuaModule(lua_State * L, const string & moduleName, const LuaRef & parent) : m_top(lua_gettop(L)), LuaRegisterNode(LuaRef(L, moduleName), LuaRef(L), parent)
+	LuaModule::LuaModule(lua_State * L, const string & moduleName, const LuaRef & parent) : LuaRegisterNode(LuaRef(L, moduleName), LuaRef(L), parent)
 	{
 		LogTraceStepCall("LuaModule::LuaModule(lua_State * L, const string & moduleName, const LuaRef & parent)");
+		LuaStateProtect lsp(L, true);
 		if (!parent.is_table())
 		{
-			lua_pushvalue(L, LUA_GLOBALSINDEX);
-			set_parent(-1);
-			lua_pop(L, 1);
+			set_parent(LUA_GLOBALSINDEX);
 		}
-		LuaRef v = m_parent[m_key].get_ref();
+		LuaRef v = m_parent.rawget(m_key);
 		if (v.is_table())
 		{
 			set_value(v);
@@ -182,7 +183,6 @@ namespace LightInk
 	LuaModule::~LuaModule()
 	{
 		LogTraceStepCall("LuaModule::~LuaModule()");
-		release_module();
 		LogTraceStepReturnVoid;
 	}
 
@@ -192,16 +192,9 @@ namespace LightInk
 		register_field(key);
 		if (m_parent.is_table())
 		{
-			m_parent[m_key] = m_value;
+			m_parent.rawset(m_key, m_value);
 		}
 		LogTraceStepReturn(*this);
-	}
-
-	void LuaModule::release_module()
-	{
-		LogTraceStepCall("void LuaModule::release_module()");
-		lua_settop(m_key.state(), m_top);
-		LogTraceStepReturnVoid;
 	}
 
 	void LuaModule::register_field(const LuaRegisterNode & head)

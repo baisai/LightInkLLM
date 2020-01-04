@@ -26,7 +26,6 @@
 #define LIGHTINK_LOG_LOGITEM_H_
 
 #include <string>
-#include "Common/SmallObject.h"
 #include "fmt/fmt.h"
 #include "Log/LogThreadType.h"
 #include "Common/OsHelper.h"
@@ -34,7 +33,7 @@
 
 namespace LightInk
 {
-	struct LIGHTINK_DECL LogFileLine : public SmallObject
+	struct LIGHTINK_DECL LogFileLine
 	{
 		LogFileLine() : m_file(FormatHelper::file_line), m_line(0) {  }
 		LogFileLine(const char * file, uint32 line) : m_file(file), m_line(line) {  }
@@ -43,7 +42,7 @@ namespace LightInk
 	};
 #define LightInkLogFileLine LightInk::LogFileLine(__FILE__, __LINE__)
 
-	struct LogItem : public SmallObject
+	struct LogItem
 	{
 		LogItem(const string * name, LogLevel::LEVEL level) : m_name(name), m_level(level), m_fl()
 		{
@@ -55,6 +54,16 @@ namespace LightInk
 			OsHelper::gettimeofday(&m_time);
 		}
 
+		LogItem(const LogItem & cp) :
+			m_name(cp.m_name), 
+			m_threadID(cp.m_threadID),
+			m_level(cp.m_level), 
+			m_time(cp.m_time), 
+			m_fl(cp.m_fl)
+		{
+			m_msg << fmt::StringRef(cp.m_msg.data(), cp.m_msg.size());
+		}
+
 		const string * m_name;
 		size_t m_threadID;
 		fmt::MemoryWriter m_msg;
@@ -62,8 +71,6 @@ namespace LightInk
 		LogLevel::LEVEL m_level;
 		struct timeval m_time;
 		LogFileLine m_fl;
-
-	LIGHTINK_DISABLE_COPY(LogItem)
 	};
 }
 

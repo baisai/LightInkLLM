@@ -29,7 +29,7 @@
 
 namespace LightInk
 {
-	class LIGHTINK_DECL LogTraceHelper : public SmallObject
+	class LIGHTINK_DECL LogTraceHelper
 	{
 	public:
 		LogTraceHelper(const char * file, uint32 line, fmt::MemoryWriter * str) : m_file(file), m_line(line), m_str(str) 

@@ -69,6 +69,7 @@ namespace LightInk
 			m_wheels = NULL;
 			m_timers.clear();
 		}
+		m_removeList.clear();
 		LogTraceStepReturnVoid;
 	}
 
@@ -80,7 +81,7 @@ namespace LightInk
 			LogTraceStepReturn(false);
 		}
 		int32 wheel_4 =  32 - (wheel_1+ wheel_2+wheel_3 );
-		if (wheel_4 < 0) //最高支持位的时间
+		if (wheel_4 < 0) //max bit
 		{
 			LogTraceStepReturn(false);
 		}
@@ -119,25 +120,44 @@ namespace LightInk
 		{
 			uint64 start = OsHelper::get_up_time();
 			uint32 dur = static_cast<uint32>(start - m_preUpTime) + m_fixTime;
-			if (dur >= m_step) { m_fixTime = dur - m_step; }
-			else { LogTraceStepReturnVoid; }
+			if (dur < m_step)
+				LogTraceStepReturnVoid;
 
 			m_preUpTime = start;
-			m_time += m_step;
 
-			TimerNode * node = NULL;
-			TimerNode * next = m_wheels->submit_timer();
-			while(next)
+			while (dur >= m_step)
 			{
-				node = next ;
-				next = next ->next();
-				if (node->timer().tick_out())
+				dur -= m_step;
+				m_fixTime = dur;
+				m_time += m_step;
+
+				vector<uint32>::type remove;
+				m_removeList.swap(remove);
+				for (vector<uint32>::type::const_iterator idIter = remove.begin(); idIter != remove.end(); ++idIter)
 				{
-					m_wheels->add_timer(node);
+					TimersMap::iterator iter = m_timers.find(*idIter);
+					if (iter != m_timers.end())
+					{
+						delete iter->second;
+						m_timers.erase(iter);
+					}
 				}
-				else
+				remove.clear();
+
+				TimerNode * node = NULL;
+				TimerNode * next = m_wheels->submit_timer();
+				while(next)
 				{
-					delete node;
+					node = next ;
+					next = next ->next();
+					if (node->timer().tick_out())
+					{
+						m_wheels->add_timer(node);
+					}
+					else
+					{
+						delete node;
+					}
 				}
 			}
 		}
@@ -200,19 +220,8 @@ namespace LightInk
 	{
 		LogTraceStepCall("bool STTimerMgr::remove_timer(uint32 id)");
 		if (!m_run) { LogTraceStepReturn(false); }
-		TimerNode * timer = NULL;
-		TimersMap::iterator iter = m_timers.find(id);
-		if (iter != m_timers.end())
-		{
-			timer = iter->second;
-			m_timers.erase(iter);
-		}
-		if (timer)
-		{
-			delete timer;
-			LogTraceStepReturn(true);
-		}
-		LogTraceStepReturn(false);
+		m_removeList.push_back(id);
+		LogTraceStepReturn(true);
 	}
 
 

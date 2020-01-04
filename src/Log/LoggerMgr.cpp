@@ -29,8 +29,25 @@ namespace LightInk
 {
 	LoggerMgr::~LoggerMgr()
 	{
+		release();
+	}
+	
+	RuntimeError LoggerMgr::init_async(uint32 size, AsyncMsg::AsyncOverflow aof)
+	{
+		if(!m_thread)
+		{
+			m_thread = new AsyncThread(aof, size);
+			if (m_thread && m_thread->run())
+				return RE_Success;
+		}
+		return RE_Log_LogFailed;
+	}
+
+	void LoggerMgr::release() 
+	{
 		if (m_thread)
 		{
+			m_thread->release();
 			delete m_thread;
 			m_thread = NULL;
 		}
@@ -44,42 +61,18 @@ namespace LightInk
 			m_fixedLogger.clear();
 		}
 	}
-	
-	RuntimeError LoggerMgr::init_async(uint32 size, AsyncMsg::AsyncOverflow aof)
-	{
-		if(!m_thread)
-		{
-			m_thread = new AsyncThread(aof, size);
-			m_thread->run();
-		}
-		return RE_Success;
-	}
 
-	void LoggerMgr::release() 
-	{ if (m_thread) { m_thread->release(); } }
-
-	RuntimeError LoggerMgr::flush(Logger * logger) 
+	RuntimeError LoggerMgr::flush(Logger * logger, LogLevel::LEVEL level)
 	{ 
-		if (m_thread) { return m_thread->async_flush(logger->m_channel); }
-		return logger->do_flush();
+		if (m_thread) 
+			return m_thread->async_flush(logger->m_channel, level);
+		return logger->do_flush(level);
 	}
 	RuntimeError LoggerMgr::channel(Logger * logger, LogItem & item)
 	{ 
-		RuntimeError err = RE_Success;
 		if (m_thread)
-		{
-			err = m_thread->async_channel(logger->m_channel, logger->m_format, item);
-		}
-		else
-		{
-			err = logger->do_channel(item);
-		}
-		if (err != RE_Success) { return err; }
-		if (logger->should_flush(item.m_level))
-		{
-			err = flush(logger);
-		}
-		return err;
+			return m_thread->async_channel(logger->m_channel, logger->m_format, item);
+		return logger->do_channel(item);
 	}
 
 	RuntimeError LoggerMgr::register_logger(LoggerPtr log)
@@ -130,7 +123,9 @@ namespace LightInk
 		{
 			return LoggerPtr();
 		}
-		LoggerPtr pLog(new Logger(op));
+		LoggerPtr pLog(new Logger);
+		pLog->set_option(op);
+		pLog->deploy();
 		m_userLogger.insert(std::pair<string, LoggerPtr>(pLog->get_name(), pLog));
 		return pLog;
 	}

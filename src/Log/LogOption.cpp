@@ -51,61 +51,6 @@ namespace LightInk
 		return *this;
 	}
 
-	void LogOption::set_name(const string & name)
-	{
-		m_name = name;
-	}
-
-	const string & LogOption::get_name() const
-	{
-		return m_name;
-	}
-
-	void LogOption::set_format(const string & format)
-	{
-		m_format = format;
-	}
-
-	const string & LogOption::get_format() const
-	{
-		return m_format;
-	}
-
-	void LogOption::add_level(LogLevel::LEVEL level)
-	{
-		m_level |= level;
-	}
-	void LogOption::remove_level(LogLevel::LEVEL level)
-	{
-		m_level &= (~level);
-	}
-	void LogOption::reset_level(uint32 level)
-	{
-		m_level = level;
-	}
-	uint32 LogOption::get_level() const
-	{
-		return m_level;
-	}
-
-
-	void LogOption::add_flush_level(LogLevel::LEVEL level)
-	{
-		m_flushLevel |= level;
-	}
-	void LogOption::remove_flush_level(LogLevel::LEVEL level)
-	{
-		m_flushLevel &= (~level);
-	}
-	void LogOption::reset_flush_level(uint32 level)
-	{
-		m_flushLevel = level;
-	}
-	uint32 LogOption::get_flush_level() const
-	{
-		return m_flushLevel;
-	}
-
 	void LogOption::add_channel(ChannelOptionBase * op)
 	{
 		m_channelOption.push_back(ChannelOptionPtr(op));

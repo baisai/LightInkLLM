@@ -30,6 +30,14 @@ void test_log();
 void release_log();
 void test_lua();
 void test_msgpack();
+void test_tinysocket();
+
+class NodeTest : public LightInk::SelfDQueue<NodeTest>::NodeType
+{
+public:
+	NodeTest(){  }
+	~NodeTest(){  }
+};
 
 int main(int argc, char ** argv)
 {
@@ -42,20 +50,16 @@ int main(int argc, char ** argv)
 	test_msgpack();
 	getchar();
 
-	{
-		class NodeTest : public LightInk::SelfDQueue<NodeTest>::NodeType
-		{
-		public:
-			NodeTest(){  }
-			~NodeTest(){  }
-		};
-		LightInk::SelfDQueue<NodeTest> que;
-		NodeTest * elem = new NodeTest;
-		que.push_back(*elem);
-		LogMessage("SelfDQueue Size = {}", que.size());
-		delete elem;
-		LogMessage("SelfDQueue Size = {}", que.size());
-	}
+
+	LightInk::SelfDQueue<NodeTest> que;
+	NodeTest * elem = new NodeTest;
+	que.push_back(*elem);
+	LogMessage("SelfDQueue Size = {}", que.size());
+	delete elem;
+	LogMessage("SelfDQueue Size = {}", que.size());
+	getchar();
+	
+	test_tinysocket();
 	getchar();
 	
 	release_log();

@@ -25,15 +25,14 @@
 #define LIGHTINK_COMMON_SELFDQUEUE_H_
 
 #include "Common/Type.h"
-#include "Common/SmallObject.h"
 
 namespace LightInk
 {
-	template<typename ElemType, typename Allocator = SmallObject>
-	class LIGHTINK_TEMPLATE_DECL SelfDQueue : public Allocator
+	template<typename ElemType>
+	class LIGHTINK_TEMPLATE_DECL SelfDQueue
 	{
 	public:
-		class NodeType : public Allocator
+		class NodeType
 		{
 		public:
 			NodeType() : m_next(NULL), m_pre(NULL) {}
@@ -42,6 +41,7 @@ namespace LightInk
 
 			void next(NodeType * next) { m_next = next; }
 			NodeType * next() { return m_next; }
+			const NodeType * next() const { return m_next; }
 
 			bool remove()
 			{
@@ -61,6 +61,7 @@ namespace LightInk
 
 			void pre(NodeType * pre) { m_pre = pre; }
 			NodeType * pre() { return m_pre; }
+			const NodeType * pre() const { return m_pre; }
 
 			void insert_list(NodeType * head, NodeType * tail)
 			{
@@ -93,12 +94,19 @@ namespace LightInk
 		bool pop(ElemType & node);
 
 		ElemType * get_head();
+		const ElemType * get_head() const;
 		ElemType * get_tail();
+		const ElemType * get_tail() const;
 
+		ElemType * next(ElemType & node);
+		const ElemType * next(const ElemType & node) const;
+
+		ElemType * pre(ElemType & node);
+		const ElemType * pre(const ElemType & node) const;
 		void swap_queue(SelfDQueue & queue);
 
-		uint32 size();
-		bool empty();
+		uint32 size() const;
+		bool empty() const;
 		void clear();
 	private:
 		NodeType m_head;

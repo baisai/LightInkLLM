@@ -24,11 +24,12 @@
 
 #ifndef LIGHTINK_RULEENGINE_TIMERDATA_H_
 #define LIGHTINK_RULEENGINE_TIMERDATA_H_
+
 #include "Common/Type.h"
-#include "Common/SmallObject.h"
+
 namespace LightInk
 {
-	struct LIGHTINK_DECL TimerCall : public SmallObject
+	struct LIGHTINK_DECL TimerCall
 	{
 		TimerCall() : m_id(0) {  }
 		virtual ~TimerCall(){  }
@@ -37,7 +38,7 @@ namespace LightInk
 		uint32 m_id;
 	};
 
-	class LIGHTINK_DECL TimerData : public SmallObject
+	class LIGHTINK_DECL TimerData
 	{
 	public:
 		typedef uint64 KeyType;

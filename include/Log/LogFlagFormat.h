@@ -31,7 +31,7 @@
 
 namespace LightInk
 {
-	class LogFlagFormat : public SmallObject
+	class LogFlagFormat
 	{
 	public:
 		virtual ~LogFlagFormat() {  }

@@ -25,13 +25,12 @@
 #ifndef LIGHTINK_MSGPACK_DATASHAREDBUFFER_H_
 #define LIGHTINK_MSGPACK_DATASHAREDBUFFER_H_
 
-#include "Common/Memory/ObjectPool.h"
 #include "Common/Ptr/SharedPtr.h"
 #include "Msgpack/DataBuffer.h"
 
 namespace LightInk
 {
-	class LIGHTINK_DECL DataSharedBuffer : public SmallObject
+	class LIGHTINK_DECL DataSharedBuffer
 	{
 	public:
 		DataSharedBuffer() : m_buffer(BufferStrategy::create()) {  }
@@ -59,6 +58,8 @@ namespace LightInk
 		RuntimeError read(const char ** data, uint32 size, uint32 offset = 0);
 
 		RuntimeError resize_buffer(uint32 size);
+
+		void swap(DataSharedBuffer & right);
 
 	public:
 		struct BufferStrategy
@@ -98,10 +99,17 @@ namespace LightInk
 	inline RuntimeError DataSharedBuffer::resize_buffer(uint32 size) 
 	{ return m_buffer->resize_buffer(size); }
 
+	inline void DataSharedBuffer::swap(DataSharedBuffer & right)
+	{ 
+		SharedPtrTSUser<DataBuffer, BufferStrategy>::type buffer = right.m_buffer;
+		right.m_buffer = m_buffer;
+		m_buffer = buffer;
+	}
+
 	inline DataBuffer * DataSharedBuffer::BufferStrategy::create()
-	{ return LightInkDataBufferPool->allocate_object(); }
+	{ return new DataBuffer; }
 	inline void DataSharedBuffer::BufferStrategy::release(DataBuffer * ptr)
-	{ LightInkDataBufferPool->deallocate_object(ptr); }
+	{ if (ptr) { delete ptr; } }
 
 
 }

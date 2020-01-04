@@ -38,3 +38,10 @@
 *.lastbuildstate
 *.suo
 *.cache
+
+#build dir
+/win32/
+/linux/
+
+#Output dir
+/bin/

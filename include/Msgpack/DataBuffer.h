@@ -29,12 +29,11 @@
 #include "Common/RuntimeError.h"
 #include "Common/Type.h"
 #include "Log/Log.h"
-#include "Common/SmallObject.h"
 #include "Common/STLType.h"
 
 namespace LightInk
 {
-	class LIGHTINK_DECL DataBuffer : public SmallObject
+	class LIGHTINK_DECL DataBuffer
 	{
 	public:
 		DataBuffer();
@@ -63,8 +62,10 @@ namespace LightInk
 
 		RuntimeError resize_buffer(uint32 size);
 
+		void swap(DataBuffer & right);
+
 	protected:
-		RuntimeError reset_buffer(uint32 size);
+		RuntimeError grow_buffer(uint32 size);
 
 	protected:
 		char * m_buffer;
@@ -76,48 +77,36 @@ namespace LightInk
 	//////////////////////////////////////////////////////////////////////
 	inline bool DataBuffer::release()
 	{
-		LogTraceStepCall("bool DataBuffer::release()");
 		clear();
-		LogTraceStepReturn(true);
+		return true;
 	}
 
 	inline void DataBuffer::clear()
 	{
-		LogTraceStepCall("DataBuffer::clear()");
 		m_writePos = 0;
-		LogTraceStepReturnVoid;
 	}
 
 	inline char * DataBuffer::data() const
 	{
-		LogTraceStepCall("char * DataBuffer::data() const");
-		LogTraceStepReturn(m_buffer);
+		return m_buffer;
 	}
 
 	inline uint32 DataBuffer::buffer_size() const
 	{
-		LogTraceStepCall("uint32 DataBuffer::buffer_size() const");
-		LogTraceStepReturn(m_size);
+		return m_size;
 	}
 
 	inline void DataBuffer::write_pos(uint32 pos)
 	{
-		LogTraceStepCall("void DataBuffer::write_pos(uint32 pos)");
 		if (pos <= m_size)
-		{
 			m_writePos = pos;
-		}
 		else
-		{
 			m_writePos = m_size;
-		}
-		LogTraceStepReturnVoid;
 	}
 
 	inline uint32 DataBuffer::write_pos() const
 	{
-		LogTraceStepCall("uint32 DataBuffer::write_pos() const");
-		LogTraceStepReturn(m_writePos);
+		return m_writePos;
 	}
 
 }

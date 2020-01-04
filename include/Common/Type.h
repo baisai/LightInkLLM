@@ -28,7 +28,6 @@
 #include "Common/Config.h"
 #include "Common/WinSnprintf.h"
 
-
 #define LIGHTINK_DISABLE_COPY(name) \
 	private: \
 	name(const name &); \
@@ -38,6 +37,7 @@
 	private: \
 	~name();
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 #if defined(_MSC_VER) && _MSC_VER < 1600
 # include "stdint_msvc2008.h"
@@ -105,9 +105,8 @@
 
 #endif
 
-#define LIGHTINK_MAX_PATH 1024
-#define LIGHTINK_MAX_FILENAME 128
-
+#define LIGHTINK_MAX_PATH 4096
+#define LIGHTINK_MAX_FILENAME 256
 
 /////////////////////////////////////////////////////////////
 //类型
@@ -130,11 +129,17 @@ typedef uint32 SERVER_ID;
 typedef uint16 PROC_ID;
 typedef uint16 SERVER_TYPE;
 typedef uint32 MSG_OPCODE;
-typedef uint8 BROADCAST_TYPE;
 typedef uint8 LINK_TYPE;
 typedef uint32 LINK_ID;
 typedef int PID_TYPE;
 
+
+
+//////////////////////////////////////////////////////////
+//常数
+/////////////////////////////////////////////////////////
+#define LIGHTINK_MP_MAXSIZE 1024 //small object max size
+#define LIGHTINK_MP_OFFSETBIT 3 //small object memory align
 
 
 #endif

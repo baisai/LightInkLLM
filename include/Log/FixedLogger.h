@@ -30,13 +30,13 @@
 namespace LightInk
 {
 	template <int32 Idx>
-	class LIGHTINK_TEMPLATE_DECL FixedLogger : public SingletonBase, public SmallObject
+	class LIGHTINK_TEMPLATE_DECL FixedLogger : public SingletonBase
 	{
 	private:
 		FixedLogger();
 		~FixedLogger();
 		Logger * get_logger();
-		bool init(const LogOption & op);
+		RuntimeError init(const LogOption & op);
 
 		void destroy();
 
@@ -65,12 +65,21 @@ namespace LightInk
 	inline Logger * FixedLogger<Idx>::get_logger() { return m_logger; }
 
 	template <int32 Idx>
-	inline bool FixedLogger<Idx>::init(const LogOption & op) 
+	inline RuntimeError FixedLogger<Idx>::init(const LogOption & op) 
 	{ 
-		if (m_logger) { return false; }
-		m_logger = new Logger(op);
+		if (m_logger) { return RE_Log_HaveInited; }
+		try
+		{
+			m_logger = new Logger;
+			m_logger->set_option(op);
+			m_logger->deploy();
+		}
+		catch (RuntimeError err)
+		{
+			return err;
+		}
 		m_loggerPtr.reset(m_logger);
-		return true;
+		return RE_Success;
 	}
 
 	template <int32 Idx>

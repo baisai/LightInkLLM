@@ -35,7 +35,8 @@ namespace LightInk
 	class LIGHTINK_DECL LogChannelAndroid : public LogChannel
 	{
 	public:
-		LogChannelAndroid(const string & tag = "LightInk") : m_tag(tag) {  }
+		LogChannelAndroid(const string & format, uint32 level, uint32 flushLevel, const string & tag = "LightInk") : 
+			LogChannel(format, level, flushLevel), m_tag(tag) {  }
 		virtual ~LogChannelAndroid() {  }
 
 	protected:

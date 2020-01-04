@@ -58,7 +58,7 @@ namespace LightInk
 	{
 		LogTraceStepCall("const string LuaInt64::to_string()");
 		char num[32] = { 0 };
-		snprintf(num, 32, "%lld", m_number);
+		snprintf(num, 32, SI64FMTD, m_number);
 		LogTraceStepReturn(string(num));
 	}
 	lua_Number LuaInt64::to_number()
@@ -299,7 +299,7 @@ namespace LightInk
 	{
 		LogTraceStepCall("const string LuaUint64::to_string()");
 		char num[32] = { 0 };
-		snprintf(num, 32, "%llu", m_number);
+		snprintf(num, 32, I64FMTD, m_number);
 		LogTraceStepReturn(string(num));
 	}
 	lua_Number LuaUint64::to_number()

@@ -18,5 +18,5 @@ CppClassInherit.test_static_inherit()
 cppObj.m_test = 10000
 print("CppClassInherit.m_test == 100000 ? ", cppObj.m_test == 100000)
 
-cppObj:force_delete__()
+cppObj:force_destroy__()
 cppObj = nil

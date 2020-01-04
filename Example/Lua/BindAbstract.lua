@@ -11,5 +11,5 @@ cppObj:test_abstract()
 
 CppClassAbsInherit.show_class_name(cppObj)
 
-cppObj:force_delete__()
+cppObj:force_destroy__()
 cppObj = nil

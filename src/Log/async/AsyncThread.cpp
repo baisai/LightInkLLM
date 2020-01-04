@@ -26,7 +26,7 @@
 #ifdef LIGHTINK_LOG_MULTITHREAD
 namespace LightInk
 {
-	AsyncThread::AsyncThread(AsyncMsg::AsyncOverflow aof, uint32 size) : m_queue(size), m_release(false), m_overflow(aof), m_closing(false)
+	AsyncThread::AsyncThread(AsyncMsg::AsyncOverflow aof, uint32 size) : m_queue(size), m_release(false), m_overflow(aof)
 	{
 
 	}
@@ -34,6 +34,7 @@ namespace LightInk
 	AsyncThread::~AsyncThread() {  }
 	void AsyncThread::work()
 	{
+		LogThread::work();
 		int sleep_millis = 0;
 		while (true)
 		{
@@ -45,7 +46,7 @@ namespace LightInk
 				switch (am->get_type())
 				{
 				case AsyncMsg::Flush :
-					am->get_channel()->flush();
+					am->get_channel()->flush(am->get_level());
 					break;
 				case AsyncMsg::Log :
 					{
@@ -66,11 +67,10 @@ namespace LightInk
 				LogSleepMillis(sleep_millis);
 			}
 		}
-		m_closing = false;
 	}
-	RuntimeError AsyncThread::async_flush(const ChannelListPtr & channel)
+	RuntimeError AsyncThread::async_flush(const ChannelListPtr & channel, LogLevel::LEVEL level)
 	{
-		AsyncMsg * am = new AsyncMsg(channel);
+		AsyncMsg * am = new AsyncMsg(channel, level);
 		push(am);
 		return RE_Success;
 	}
@@ -82,17 +82,16 @@ namespace LightInk
 	}
 	void AsyncThread::release()
 	{
-		m_closing = true;
 		m_release = true;
-		while (m_closing)
-		{
-			LogSleepMillis(10);
-		}
+		join();
 	}
 
 
 	void AsyncThread::push(AsyncMsg * am)
 	{
+		if (m_release)
+			return;
+
 		switch (m_overflow)
 		{
 		case AsyncMsg::Block:

@@ -34,29 +34,38 @@
 
 namespace LightInk
 {
-	class LIGHTINK_DECL LuaRef : public SmallObject
+	class LIGHTINK_DECL LuaRef
 	{
 	public:
+		LuaRef();
 		LuaRef(lua_State * L);
 		LuaRef(lua_State * L, bool fromStack);
 		LuaRef(lua_State * L, int idx);
 		template <typename T>
-		LuaRef(lua_State * L, const T & v) : m_L(L)
+		LuaRef(lua_State * L, const T & v) : m_L(NULL), m_ref(LUA_REFNIL)
 		{
 			LogTraceStepCall("LuaRef::LuaRef<T>(lua_State * L, const T v)");
-			LuaStack<const T>::push(m_L, v);
-			m_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+			if (L != NULL)
+			{
+				LuaStack<const T>::push(L, v);
+				reset(L, true);
+			}
 			LogTraceStepReturnVoid;
 		}
 		LuaRef(const LuaTableRef & v);
 		LuaRef(const LuaRef & cp);
 		virtual ~LuaRef();
 
-		void clear_lua();
+		void clear();
 
-		int create_ref() const;
+		void reset();
+		void reset(lua_State * L);
+		void reset(lua_State * L, bool fromStack);
+		void reset(lua_State * L, int idx);
 
 		void set_nil();
+
+		int create_ref() const;
 
 		LuaRef & operator = (const LuaRef & right);
 		LuaRef & operator = (const LuaTableRef & right);
@@ -65,9 +74,11 @@ namespace LightInk
 		LuaRef & operator = (const T & right)
 		{
 			LogTraceStepCall("LuaRef & LuaRef::operator = <T>(const T & right)");
-			luaL_unref(m_L, LUA_REGISTRYINDEX, m_ref);
-			LuaStack<const T>::push(m_L, right);
-			m_ref = luaL_ref(m_L, LUA_REGISTRYINDEX);
+			if (m_L != NULL)
+			{
+				LuaStack<const T>::push(m_L, right);
+				reset(m_L, true);
+			}
 			LogTraceStepReturn(*this);
 		}
 
@@ -80,8 +91,8 @@ namespace LightInk
 		void print() const;
 		
 		lua_State * state() const;
-		void push() const;
-		void pop();
+		bool push() const;
+		bool pop();
 		int type() const;
 
 		bool is_nil() const;
@@ -99,6 +110,8 @@ namespace LightInk
 		T cast() const
 		{
 			LogTraceStepCall("T LuaRef::cast<T>() const");
+			if (m_L == NULL)
+				LogTraceStepReturn(T());
 			LuaStateProtect lsp(m_L);
 			push();
 			T t(LuaStack<const T>::get(m_L, -1));
@@ -114,6 +127,8 @@ namespace LightInk
 		bool operator == (const T & right) const
 		{
 			LogTraceStepCall("bool LuaRef::operator ==<T> (const T & right) const");
+			if (m_L == NULL)
+				LogTraceStepReturn(false);
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, right);
@@ -131,6 +146,8 @@ namespace LightInk
 		bool operator < (const T & right) const
 		{
 			LogTraceStepCall("bool LuaRef::operator <<T> (const T & right) const");
+			if (m_L == NULL)
+				LogTraceStepReturn(false);
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, right);
@@ -142,6 +159,8 @@ namespace LightInk
 		bool operator <= (const T & right) const
 		{
 			LogTraceStepCall("bool LuaRef::operator <=<T> (const T & right) const");
+			if (m_L == NULL)
+				LogTraceStepReturn(false);
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, right);
@@ -153,6 +172,8 @@ namespace LightInk
 		bool operator > (const T & right) const
 		{
 			LogTraceStepCall("bool LuaRef::operator ><T> (const T & right) const");
+			if (m_L == NULL)
+				LogTraceStepReturn(false);
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, right);
@@ -164,6 +185,8 @@ namespace LightInk
 		bool operator >= (const T & right) const
 		{
 			LogTraceStepCall("bool LuaRef::operator >=<T> (const T & right) const");
+			if (m_L == NULL)
+				LogTraceStepReturn(false);
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, right);
@@ -175,6 +198,8 @@ namespace LightInk
 		bool rawequal(const T & right) const
 		{
 			LogTraceStepCall("bool LuaRef::rawequal<T>(const T & right) const");
+			if (m_L == NULL)
+				LogTraceStepReturn(false);
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, right);
@@ -188,6 +213,8 @@ namespace LightInk
 		void append(const T & v) const
 		{
 			LogTraceStepCall("LuaRef::append<T>(const T & v) const");
+			if (m_L == NULL)
+				LogTraceStepReturnVoid;
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, v);
@@ -198,10 +225,33 @@ namespace LightInk
 
 		size_t length() const;
 
+		template <typename T, typename V>
+		LuaRef & rawset(const T & key, const V & v)
+		{
+			LogTraceStepCall("LuaRef & LuaRef::rawset<T, V>(const T & key, const V & v)");
+			if (m_L == NULL)
+			{
+				LogError("Error!!!the lua state is NULL!!!");
+				LogTraceStepReturn(*this);
+			}
+			LuaStateProtect lsp(m_L);
+			push();
+			LuaStack<const T>::push(m_L, key);
+			LuaStack<const V>::push(m_L, v);
+			lua_rawset(m_L, -3);
+			lsp.reset();
+			LogTraceStepReturn(*this);
+		}
+
 		template <typename T>
 		LuaRef rawget(const T & key) const
 		{
 			LogTraceStepCall("LuaRef LuaRef::rawget<T>(const T & key) const");
+			if (m_L == NULL)
+			{
+				LogError("Error!!!the lua state is NULL!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStateProtect lsp(m_L);
 			push();
 			LuaStack<const T>::push(m_L, key);
@@ -211,10 +261,51 @@ namespace LightInk
 			LogTraceStepReturn(t);
 		}
 
+		template <typename T, typename V>
+		LuaRef & setfield(const T & key, const V & v)
+		{
+			LogTraceStepCall("LuaRef & LuaRef::setfield<T, V>(const T & key, const V & v)");
+			if (m_L == NULL)
+			{
+				LogError("Error!!!the lua state is NULL!!!");
+				LogTraceStepReturn(*this);
+			}
+			LuaStateProtect lsp(m_L);
+			push();
+			LuaStack<const T>::push(m_L, key);
+			LuaStack<const V>::push(m_L, v);
+			lua_settable(m_L, -3);
+			lsp.reset();
+			LogTraceStepReturn(*this);
+		}
+
+		template <typename T>
+		LuaRef getfield(const T & key) const
+		{
+			LogTraceStepCall("LuaRef LuaRef::getfield<T>(const T & key) const");
+			if (m_L == NULL)
+			{
+				LogError("Error!!!the lua state is NULL!!!");
+				LogTraceStepReturn(LuaRef());
+			}
+			LuaStateProtect lsp(m_L);
+			push();
+			LuaStack<const T>::push(m_L, key);
+			lua_gettable(m_L, -2);
+			LuaRef t(m_L, true);
+			lsp.reset();
+			LogTraceStepReturn(t);
+		}
+
 		template <typename T>
 		LuaTableRef operator[] (const T & key) const
 		{
 			LogTraceStepCall("LuaTableRef LuaRef::operator [] (const T & key) const");
+			if (m_L == NULL)
+			{
+				LogError("Error!!!the lua state is NULL!!!");
+				LogTraceStepReturn(LuaTableRef());
+			}
 			LuaStack<const T>::push(m_L, key);
 			LogTraceStepReturn(LuaTableRef(*this));
 		}
@@ -244,10 +335,11 @@ function create_traits(count)
 		table.insert(temp, ") const\n\t\t{\n\t\t\tLogTraceStepCall(\"const LuaRef ")
 		table.insert(temp, "LuaRef::operator()(")
 		table.insert(temp, arg2)
-		table.insert(temp, ") const\");\n\t\t\tpush();\n")
+		table.insert(temp, ") const\");\n\t\t\tif (!push())\n\t\t\t{\n")
+		table.insert(temp, "\t\t\t\tLogError(\"Error!!! LuaRef push value failed!!!\");\n\t\t\t\tLogTraceStepReturn(LuaRef());\n\t\t\t}\n")
 		table.insert(temp, arg3)
 		table.insert(temp, string.format("\t\t\tif (lua_pcall(m_L, %d, 1, 0))\n\t\t\t{\n", k))
-		table.insert(temp, "\t\t\t\tconst char * errStr = lua_tostring(m_L, -1);\n\t\t\t\tif (errStr) LogScriptError(errStr);\n")
+		table.insert(temp, "\t\t\t\tconst char * errStr = lua_tostring(m_L, -1);\n\t\t\t\tif (errStr) LogScriptError(m_L, errStr);\n")
 		table.insert(temp, "\t\t\t\tLogTraceStepReturn(LuaRef(m_L));\n\t\t\t}\n\t\t\tLogTraceStepReturn(LuaRef(m_L, true));\n\t\t}\n\n")
 
 		str = str .. table.concat(temp)
@@ -263,12 +355,16 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			if (lua_pcall(m_L, 1, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -278,13 +374,17 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			if (lua_pcall(m_L, 2, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -294,14 +394,18 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
 			if (lua_pcall(m_L, 3, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -311,7 +415,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -319,7 +427,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 4, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -329,7 +437,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -338,7 +450,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 5, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -348,7 +460,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -358,7 +474,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 6, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -368,7 +484,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -379,7 +499,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 7, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -389,7 +509,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -401,7 +525,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 8, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -411,7 +535,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -424,7 +552,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 9, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -434,7 +562,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -448,7 +580,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 10, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -458,7 +590,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -473,7 +609,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 11, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -483,7 +619,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -499,7 +639,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 12, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -509,7 +649,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -526,7 +670,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 13, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -536,7 +680,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -554,7 +702,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 14, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -564,7 +712,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -583,7 +735,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 15, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -593,7 +745,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -613,7 +769,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 16, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -623,7 +779,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -644,7 +804,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 17, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -654,7 +814,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17, const Arg18 & arg18) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17, const Arg18 & arg18) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -676,7 +840,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 18, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -686,7 +850,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17, const Arg18 & arg18, const Arg19 & arg19) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17, const Arg18 & arg18, const Arg19 & arg19) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -709,7 +877,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 19, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -719,7 +887,11 @@ create_traits(20)
 		const LuaRef operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17, const Arg18 & arg18, const Arg19 & arg19, const Arg20 & arg20) const
 		{
 			LogTraceStepCall("const LuaRef LuaRef::operator()(const Arg1 & arg1, const Arg2 & arg2, const Arg3 & arg3, const Arg4 & arg4, const Arg5 & arg5, const Arg6 & arg6, const Arg7 & arg7, const Arg8 & arg8, const Arg9 & arg9, const Arg10 & arg10, const Arg11 & arg11, const Arg12 & arg12, const Arg13 & arg13, const Arg14 & arg14, const Arg15 & arg15, const Arg16 & arg16, const Arg17 & arg17, const Arg18 & arg18, const Arg19 & arg19, const Arg20 & arg20) const");
-			push();
+			if (!push())
+			{
+				LogError("Error!!! LuaRef push value failed!!!");
+				LogTraceStepReturn(LuaRef());
+			}
 			LuaStack<const Arg1>::push(m_L, arg1);
 			LuaStack<const Arg2>::push(m_L, arg2);
 			LuaStack<const Arg3>::push(m_L, arg3);
@@ -743,7 +915,7 @@ create_traits(20)
 			if (lua_pcall(m_L, 20, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_L, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_L, errStr);
 				LogTraceStepReturn(LuaRef(m_L));
 			}
 			LogTraceStepReturn(LuaRef(m_L, true));
@@ -755,13 +927,33 @@ create_traits(20)
 
 	};
 
+	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <LuaRef>
+	{
+		static inline void push(lua_State * L, LuaRef & v)
+		{
+			LogTraceStepCall("LuaStack<LuaRef>::push(lua_State * L, LuaRef & v)");
+			if (L != v.state())
+			{
+				LogScriptErrorJump(L, "Error!!!The LuaStack<LuaRef>::push vm is not LuaRef vm!!!");
+			}
+			v.push();
+			LogTraceStepReturnVoid;
+		}
+
+		static inline LuaRef get(lua_State * L, int idx)
+		{
+			LogTraceStepCall("LuaRef LuaStack<LuaRef>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(LuaRef(L, idx));
+		}
+	};
 
 	template <>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <const LuaRef>
 	{
 		static inline void push(lua_State * L, const LuaRef & v)
 		{
-			LogTraceStepCall("LuaStack<const LuaRef>::push(lua_State * L, LuaRef & v)");
+			LogTraceStepCall("LuaStack<const LuaRef>::push(lua_State * L, const LuaRef & v)");
 			if (L != v.state())
 			{
 				LogScriptErrorJump(L, "Error!!!The LuaStack<LuaRef>::push vm is not LuaRef vm!!!");
@@ -778,11 +970,32 @@ create_traits(20)
 	};
 
 	template <>
+	struct LIGHTINK_TEMPLATE_DECL LuaStack <LuaRef &>
+	{
+		static inline void push(lua_State * L, LuaRef & v)
+		{
+			LogTraceStepCall("LuaStack<LuaRef &>::push(lua_State * L, LuaRef & v)");
+			if (L != v.state())
+			{
+				LogScriptErrorJump(L, "Error!!!The LuaStack<LuaRef>::push vm is not LuaRef vm!!!");
+			}
+			v.push();
+			LogTraceStepReturnVoid;
+		}
+
+		static inline LuaRef get(lua_State * L, int idx)
+		{
+			LogTraceStepCall("LuaRef LuaStack<LuaRef&>::get(lua_State * L, int idx)");
+			LogTraceStepReturn(LuaRef(L, idx));
+		}
+	};
+
+	template <>
 	struct LIGHTINK_TEMPLATE_DECL LuaStack <const LuaRef &>
 	{
 		static inline void push(lua_State * L, const LuaRef & v)
 		{
-			LogTraceStepCall("LuaStack<const LuaRef &>::push(lua_State * L, LuaRef & v)");
+			LogTraceStepCall("LuaStack<const LuaRef &>::push(lua_State * L, const LuaRef & v)");
 			if (L != v.state())
 			{
 				LogScriptErrorJump(L, "Error!!!The LuaStack<LuaRef>::push vm is not LuaRef vm!!!");

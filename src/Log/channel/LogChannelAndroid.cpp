@@ -30,16 +30,12 @@ namespace LightInk
 
 	RuntimeError LogChannelAndroid::do_log(const LogItem & item)
 	{
-		RuntimeError err = RE_Success;
-		if (should_log(item.m_level))
+		const android_LogPriority androidLevel = convert_to_android(item.m_level);
+		if (__android_log_write(androidLevel, m_tag.c_str(), item.m_format.c_str()) < 0)
 		{
-			const android_LogPriority androidLevel = convert_to_android(item.m_level);
-			if (__android_log_write(androidLevel, m_tag.c_str(), item.m_format.c_str()) < 0)
-			{
-				err = RE_Log_WriteChannelFailed;
-			}
+			return RE_Log_WriteChannelFailed;
 		}
-		return err;
+		return RE_Success;
 	}
 
 	RuntimeError LogChannelAndroid::do_flush()

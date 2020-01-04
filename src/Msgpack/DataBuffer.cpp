@@ -32,7 +32,7 @@ namespace LightInk
 	DataBuffer::DataBuffer() : m_buffer(NULL), m_size(0), m_writePos(0)
 	{
 		LogTraceStepCall("DataBuffer::DataBuffer()");
-		//m_buffer = (char *)realloc_user(NULL, 0, m_size);
+		//m_buffer = (char *)li_realloc(NULL, m_size);
 		LogTraceStepReturnVoid;
 	}
 
@@ -41,7 +41,7 @@ namespace LightInk
 		LogTraceStepCall("DataBuffer::DataBuffer(const DataBuffer & cp)");
 		if (m_size > 0)
 		{
-			m_buffer = (char *)realloc_user(m_buffer, 0, m_size);
+			m_buffer = (char *)li_realloc(m_buffer, m_size);
 			memcpy(m_buffer, cp.m_buffer, m_writePos); 
 		}
 		LogTraceStepReturnVoid;
@@ -52,7 +52,7 @@ namespace LightInk
 		LogTraceStepCall("DataBuffer::DataBuffer(uint32 size)");
 		if (m_size > 0)
 		{
-			m_buffer = (char *)realloc_user(m_buffer, 0, m_size);
+			m_buffer = (char *)li_realloc(m_buffer, m_size);
 		}
 		LogTraceStepReturnVoid;
 	}
@@ -60,7 +60,7 @@ namespace LightInk
 	DataBuffer::~DataBuffer()
 	{
 		LogTraceStepCall("DataBuffer::~DataBuffer()");
-		realloc_user(m_buffer, m_size, 0);
+		li_realloc(m_buffer, 0);
 		m_size = 0;
 		m_writePos = 0;
 		m_buffer = NULL;
@@ -70,7 +70,7 @@ namespace LightInk
 	DataBuffer & DataBuffer::operator = (const DataBuffer & right)
 	{
 		LogTraceStepCall("DataBuffer & DataBuffer::operator = (const DataBuffer & right)");
-		m_buffer = (char *)realloc_user(m_buffer, m_size, right.m_size);
+		m_buffer = (char *)li_realloc(m_buffer, right.m_size);
 		if (right.m_size > 0)
 		{
 			memcpy(m_buffer, right.m_buffer, right.m_writePos); 
@@ -85,7 +85,7 @@ namespace LightInk
 		LogTraceStepCall("RuntimeError DataBuffer::write(const void * data, uint32 size)");
 		if (m_writePos + size > m_size)
 		{
-			RuntimeError e = reset_buffer(m_writePos + size);
+			RuntimeError e = grow_buffer(m_writePos + size);
 			if (e != RE_Success)
 			{
 				LogTraceStepReturn(e);
@@ -137,7 +137,7 @@ namespace LightInk
 	RuntimeError DataBuffer::resize_buffer(uint32 size)
 	{
 		LogTraceStepCall("RuntimeError DataBuffer::resize_buffer(uint32 size)");
-		void * tmp = realloc_user(m_buffer, m_size, size);
+		void * tmp = li_realloc(m_buffer, size);
 		if (!tmp)
 		{
 			LogTraceStepReturn(RE_Msgpack_MemoryNotEnoughError);
@@ -151,10 +151,24 @@ namespace LightInk
 		LogTraceStepReturn(RE_Success);
 	}
 
-
-	RuntimeError DataBuffer::reset_buffer(uint32 size)
+	void DataBuffer::swap(DataBuffer & right)
 	{
-		LogTraceStepCall("RuntimeError DataBuffer::reset_buffer(uint32 size)");
+		LogTraceStepCall("void DataBuffer::swap(DataBuffer & right)");
+		char * buffer = right.m_buffer;
+		uint32 size = right.m_size;
+		uint32 writePos = right.m_writePos;
+		right.m_buffer = m_buffer;
+		right.m_size = m_size;
+		right.m_writePos = m_writePos;
+		m_buffer = buffer;
+		m_size = size;
+		m_writePos = writePos;
+		LogTraceStepReturnVoid;
+	}
+
+	RuntimeError DataBuffer::grow_buffer(uint32 size)
+	{
+		LogTraceStepCall("RuntimeError DataBuffer::grow_buffer(uint32 size)");
 		if (size <= m_size)
 		{
 			LogTraceStepReturn(RE_Success);
@@ -163,7 +177,7 @@ namespace LightInk
 		{
 			size += ((m_size >> 3) + 16);
 		}
-		void* tmp = realloc_user(m_buffer, m_size, size);
+		void* tmp = li_realloc(m_buffer, size);
 		if(!tmp) {
 			LogTraceStepReturn(RE_Msgpack_MemoryNotEnoughError);
 		}

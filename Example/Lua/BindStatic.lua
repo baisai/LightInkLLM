@@ -7,9 +7,9 @@ print("test_cclosure return",
 	test_cclosure({name = "chendong", email = "baisaichen@live.com"}))
 
 print("int_static == ", int_static)
-print("int_static == ", get_userdata_property(int_static))
-set_userdata_property(int_static, 100)
-print("int_static == ", get_userdata_property(int_static))
+print("int_static == ", int_static())
+int_static(100)
+print("int_static == ", int_static())
 
 
 print("this is print()")

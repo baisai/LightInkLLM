@@ -24,13 +24,13 @@
 #ifndef LIGHTINK_COMMON_ASYNCQUEUE_H_
 #define LIGHTINK_COMMON_ASYNCQUEUE_H_
 
+#include "Common/Memory/MemoryAllocator.h"
 #include "Atomic/Atomic.h"
-#include "Common/SmallObject.h"
 
 namespace LightInk
 {
 	template <typename T>
-	class AsyncQueue : SmallObject
+	class AsyncQueue
 	{
 	public:
 		AsyncQueue(uint32 size);
@@ -58,7 +58,7 @@ namespace LightInk
 	template <typename T>
 	AsyncQueue<T>::AsyncQueue(uint32 size) : m_size(size), m_queue(NULL)
 	{
-		m_queue = (Atomic<T *> *)malloc_user(size * sizeof(Atomic<T *>));
+		m_queue = (Atomic<T *> *)li_malloc(size * sizeof(Atomic<T *>));
 		for (uint32 i = 0; i < size; i++)
 		{
 			m_queue[i].store(NULL);
@@ -69,7 +69,7 @@ namespace LightInk
 
 	template <typename T>
 	AsyncQueue<T>::~AsyncQueue() 
-	{ free_user(m_queue, m_size * sizeof(Atomic<T *>)); m_queue = NULL; }
+	{ li_free(m_queue); m_queue = NULL; }
 
 	template <typename T>
 	inline bool AsyncQueue<T>::empty()

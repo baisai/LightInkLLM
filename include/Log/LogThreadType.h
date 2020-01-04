@@ -53,16 +53,18 @@ namespace LightInk
 	LIGHTINK_DISABLE_COPY(LogLock)
 	};
 
-	class LIGHTINK_DECL LogThread : public SmallObject
+	class LIGHTINK_DECL LogThread
 	{
 	public:
 		LogThread();
 		virtual ~LogThread();
 
-		int32 run();
+		bool run();
 		virtual void work();
 
 		bool is_running();
+
+		bool join();
 
 #ifdef _WIN32
 		static DWORD WINAPI work_thread(void * arg);
@@ -70,16 +72,15 @@ namespace LightInk
 		static void * work_thread(void * arg);
 #endif
 
-		static uint32 thread_self();
+		static size_t thread_self();
 
-	protected:
-		bool m_running;
 	private:
 #ifdef _WIN32
 		HANDLE m_handle;
 #else
 		pthread_t m_handle;
 #endif
+		size_t m_threadID;
 
 	LIGHTINK_DISABLE_COPY(LogThread)
 	};
@@ -100,18 +101,18 @@ namespace LightInk
 	template <typename T>
 	struct LogSharedPtrTS
 	{
-		typedef SharedPtrWrapper<T, RefCounterTS<SmallObject>, PtrDelStrategy, SmallObject> type;
+		typedef SharedPtrWrapper<T, RefCounterTS, PtrDelStrategy> type;
 	};
 	template <typename T>
 	struct LogAutoPtr
 	{
-		typedef AutoPtrWrapper<T, PtrDelStrategy, SmallObject> type;
+		typedef AutoPtrWrapper<T, PtrDelStrategy> type;
 	};
 
 	template <typename T>
 	struct LogSharedPtr
 	{
-		typedef SharedPtrWrapper<T, RefCounter<SmallObject>, PtrDelStrategy, SmallObject> type;
+		typedef SharedPtrWrapper<T, RefCounter, PtrDelStrategy> type;
 	};
 
 #define LogSleepMillis turf_sleepMillis

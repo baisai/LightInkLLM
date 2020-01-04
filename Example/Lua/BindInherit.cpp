@@ -57,6 +57,8 @@ public:
 
 	void test() { LogMessage("call --> void CppClassInherit.test()"); }
 
+	CppClassInherit * get_class(CppClassInherit * c) { return c; }
+
 	static void test_static() { LogMessage("call --> void CppClassInherit::test_static()"); }
 	static void test_static_inherit() { LogMessage("call --> void CppClassInherit::test_static_inherit()"); }
 
@@ -86,6 +88,7 @@ static LightInk::LuaRegisterNode bind_inherit(lua_State * lua)
 			.def(&CppClassInherit::get_inherit, "get_inherit")
 			.def(&CppClassInherit::set_inherit, "set_inherit")
 			.def(&CppClassInherit::test, "test")
+			.def(&CppClassInherit::get_class, "get_class")
 			.def(CppClassInherit::test_static, "test_static")
 			.def(CppClassInherit::test_static_inherit, "test_static_inherit")
 			.def(&CppClassInherit::m_test, "m_test")
@@ -96,9 +99,9 @@ static void bind_cppclass2(lua_State * lua)
 {
 	LightInk::LuaModule(lua, "CppClassList")
 	[
-		bind_inherit(lua).self()
+		bind_inherit(lua)
 		<=
-		bind_base(lua).self()
+		bind_base(lua)
 	];
 }
 
@@ -122,6 +125,7 @@ static void bind_cppclass(lua_State * lua)
 			.def(&CppClassInherit::get_inherit, "get_inherit")
 			.def(&CppClassInherit::set_inherit, "set_inherit")
 			.def(&CppClassInherit::test, "test")
+			.def(&CppClassInherit::get_class, "get_class")
 			.def(CppClassInherit::test_static, "test_static")
 			.def(CppClassInherit::test_static_inherit, "test_static_inherit")
 			.def(&CppClassInherit::m_test, "m_test")

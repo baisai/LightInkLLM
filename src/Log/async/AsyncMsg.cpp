@@ -27,7 +27,7 @@
 
 namespace LightInk
 {
-	AsyncMsg::AsyncMsg(const ChannelListPtr & channel) : m_type(Flush), m_channel(channel)
+	AsyncMsg::AsyncMsg(const ChannelListPtr & channel, LogLevel::LEVEL level) : m_type(Flush), m_channel(channel), m_level(level)
 	{
 
 	}
@@ -48,17 +48,21 @@ namespace LightInk
 		item.m_fl = m_fl;
 	}
 
-	const ChannelListPtr & AsyncMsg::get_channel()
+	const ChannelListPtr & AsyncMsg::get_channel() const
 	{
 		return m_channel;
 	}
-	const LogFormatPtr & AsyncMsg::get_format()
+	const LogFormatPtr & AsyncMsg::get_format() const
 	{
 		return m_format;
 	}
-	AsyncMsg::MsgType AsyncMsg::get_type()
+	AsyncMsg::MsgType AsyncMsg::get_type() const
 	{
 		return m_type;
+	}
+	LogLevel::LEVEL AsyncMsg::get_level() const
+	{
+		return m_level;
 	}
 
 }

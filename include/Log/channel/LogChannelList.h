@@ -38,6 +38,7 @@ namespace LightInk
 		LogChannelList();
 		virtual ~LogChannelList();
 
+		void clear_channel();
 		void add_channel(LogChannelPtr channel);
 		void remove_channel(LogChannelPtr channel);
 
@@ -54,16 +55,24 @@ namespace LightInk
 	//inline method
 	//////////////////////////////////////////////////////////////////////
 	template <typename M>
-	LogChannelList<M>::LogChannelList() {  }
+	LogChannelList<M>::LogChannelList() : 
+		LogChannelMT<M>(string(), ~0u, ~0u) 
+	{  }
 
 	template <typename M>
-	LogChannelList<M>::~LogChannelList() { m_list.clear(); }
+	LogChannelList<M>::~LogChannelList() { clear_channel(); }
+
+	template <typename M>
+	void LogChannelList<M>::clear_channel() { Guard<M> l(this->m_lock); m_list.clear(); }
 
 	template <typename M>
 	void LogChannelList<M>::add_channel(LogChannelPtr channel)
 	{
-		Guard<M> l(this->m_lock);
-		m_list.push_back(channel);
+		if (channel)
+		{
+			Guard<M> l(this->m_lock);
+			m_list.push_back(channel);
+		}
 	}
 
 	template <typename M>
@@ -94,8 +103,8 @@ namespace LightInk
 		RuntimeError err = RE_Success;
 		for (ListIterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		{
-			if (err == RE_Success) err = (*iter)->flush();
-			else (*iter)->flush();
+			if (err == RE_Success) err = (*iter)->flush(LogLevel::LogMsg_Fatal);
+			else (*iter)->flush(LogLevel::LogMsg_Fatal);
 		}
 		return err;
 	}

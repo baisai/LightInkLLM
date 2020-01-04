@@ -29,7 +29,7 @@
 
 namespace LightInk
 {
-	class AsyncMsg : public SmallObject
+	class AsyncMsg
 	{
 	public:
 		enum MsgType
@@ -43,14 +43,15 @@ namespace LightInk
 			Discard = 2,
 		};
 
-		AsyncMsg(const ChannelListPtr & channel);
+		AsyncMsg(const ChannelListPtr & channel, LogLevel::LEVEL level);
 		AsyncMsg(const ChannelListPtr & channel, const LogFormatPtr & format, const LogItem & item);
 
 		void fill_log_item(LogItem & item);
 
-		const ChannelListPtr & get_channel();
-		const LogFormatPtr & get_format();
-		MsgType get_type();
+		const ChannelListPtr & get_channel() const;
+		const LogFormatPtr & get_format() const;
+		MsgType get_type() const;
+		LogLevel::LEVEL get_level() const;
 
 	private:
 		MsgType m_type;

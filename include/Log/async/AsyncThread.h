@@ -40,7 +40,7 @@ namespace LightInk
 		AsyncThread(AsyncMsg::AsyncOverflow aof, uint32 size);
 		~AsyncThread();
 		void work();
-		RuntimeError async_flush(const ChannelListPtr & channel);
+		RuntimeError async_flush(const ChannelListPtr & channel, LogLevel::LEVEL level);
 		RuntimeError async_channel(const ChannelListPtr & channel, const LogFormatPtr & format, LogItem & item);
 		void release();
 
@@ -51,7 +51,6 @@ namespace LightInk
 		AsyncQueue<AsyncMsg> m_queue;
 		bool m_release;
 		const AsyncMsg::AsyncOverflow m_overflow;
-		bool m_closing;
 
 	LIGHTINK_DISABLE_COPY(AsyncThread)
 	};
@@ -76,8 +75,8 @@ namespace LightInk
 
 	inline int32 AsyncThread::run() { return 0; }
 
-	inline RuntimeError AsyncThread::async_flush(const ChannelListPtr & channel) 
-	{ return channel->flush(); }
+	inline RuntimeError AsyncThread::async_flush(const ChannelListPtr & channel, LogLevel::LEVEL level)
+	{ return channel->flush(level); }
 
 	inline RuntimeError AsyncThread::async_channel(const ChannelListPtr & channel, const LogFormatPtr & format, LogItem & item)
 	{ 

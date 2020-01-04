@@ -58,8 +58,8 @@ namespace LightInk
 
 		inline void copy_key() { LogTraceStepCall("void LuaIterator::copy_key()"); lua_pushvalue(m_L, m_keyIdx); ++m_copyCount; LogTraceStepReturnVoid; }
 		inline void copy_value() { LogTraceStepCall("void LuaIterator::copy_value()"); lua_pushvalue(m_L, m_keyIdx + 1); ++m_copyCount; LogTraceStepReturnVoid; }
-		inline void pop_copy() { LogTraceStepCall("void LuaIterator::pop_copy()"); lua_pop(m_L, m_copyCount); LogTraceStepReturnVoid; }
-		inline void clean_stack() { LogTraceStepCall("void LuaIterator::clean_stack()"); lua_settop(m_L, m_keyIdx + 1); LogTraceStepReturnVoid; }
+		inline void pop_copy() { LogTraceStepCall("void LuaIterator::pop_copy()"); lua_pop(m_L, m_copyCount); m_copyCount = 0; LogTraceStepReturnVoid; }
+		inline void clean_stack() { LogTraceStepCall("void LuaIterator::clean_stack()"); lua_settop(m_L, m_keyIdx + 1); m_copyCount = 0; LogTraceStepReturnVoid; }
 
 		LuaIterator & operator ++ ();
 		LuaIterator & operator ++ (int);

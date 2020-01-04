@@ -80,7 +80,7 @@ namespace LightInk
 	{
 		typedef D Result;
 	};
-	//找不到返回特定类型
+	//not found return specific type
 	template <typename H, typename T, typename D>
 	struct TypeListAtDefault<TypeList<H, T>, 1, D>
 	{

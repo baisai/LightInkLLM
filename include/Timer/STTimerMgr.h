@@ -25,16 +25,16 @@
 #ifndef LIGHTINK_RULEENGINE_STTIMERMGR_H_
 #define LIGHTINK_RULEENGINE_STTIMERMGR_H_
 
-#include <unordered_map>
+#include <map>
 #include "Log/Log.h"
 #include "Timer/TimerWheel.h"
 
 namespace LightInk
 {
-	class LIGHTINK_DECL STTimerMgr: public SmallObject
+	class LIGHTINK_DECL STTimerMgr
 	{
 	public:
-		typedef std::unordered_map<uint32, TimerNode *> TimersMap;
+		typedef std::map<uint32, TimerNode *> TimersMap;
 	public:
 		STTimerMgr();
 
@@ -66,6 +66,8 @@ namespace LightInk
 		bool m_run;
 		
 		TimerWheel * m_wheels ;
+
+		vector<uint32>::type m_removeList;
 
 		TimersMap m_timers;
 		uint32 m_ids;

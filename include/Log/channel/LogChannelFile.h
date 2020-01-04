@@ -37,7 +37,12 @@ namespace LightInk
 	class LIGHTINK_TEMPLATE_DECL LogChannelFile : public LogChannelMT<M>
 	{
 	public:
-		LogChannelFile(const OsHelper::FileNameType & name, bool cover = false) { m_file.open(name, cover); }
+		LogChannelFile(const string & format, uint32 level, uint32 flushLevel, const OsHelper::FileNameType & name, bool cover = false) :
+			LogChannelMT<M>(format, level, flushLevel)
+		{ 
+			RuntimeError err = m_file.open(name, cover);
+			if (err != RE_Success) { throw err; }
+		}
 		virtual ~LogChannelFile() { m_file.close(); }
 
 
@@ -64,15 +69,16 @@ namespace LightInk
 	class LIGHTINK_TEMPLATE_DECL LogChannelBlockFile : public LogChannelMT<M>
 	{
 	public:
-		LogChannelBlockFile(const OsHelper::FileNameType & filename, size_t maxSize, size_t maxFiles) : 
-			m_filename(filename), m_maxSize(maxSize), m_maxFiles(maxFiles), m_currSize(0), m_currIndex(0)
+		LogChannelBlockFile(const string & format, uint32 level, uint32 flushLevel, const OsHelper::FileNameType & filename, size_t maxSize, size_t maxFiles) :
+			LogChannelMT<M>(format, level, flushLevel), m_filename(filename), m_maxSize(maxSize), m_maxFiles(maxFiles), m_currSize(0), m_currIndex(0)
 		{
 			size_t ext = m_filename.find_last_of('.');
 			if (ext != OsHelper::FileNameType::npos)
 			{
 				m_extname = m_filename.substr(ext, OsHelper::FileNameType::npos);
 			}
-			m_file.open(calc_filename(0), false); 
+			RuntimeError err = m_file.open(calc_filename(0), false);
+			if (err != RE_Success) { throw err; }
 			m_currSize = m_file.size();
 		}
 		virtual ~LogChannelBlockFile() { m_file.close(); }
@@ -157,14 +163,16 @@ namespace LightInk
 	class LIGHTINK_TEMPLATE_DECL LogChannelDateFile : public LogChannelMT<M>
 	{
 	public:
-		LogChannelDateFile(const OsHelper::FileNameType & filename) : m_filename(filename)
+		LogChannelDateFile(const string & format, uint32 level, uint32 flushLevel, const OsHelper::FileNameType & filename) : 
+			LogChannelMT<M>(format, level, flushLevel), m_filename(filename)
 		{
 			size_t ext = m_filename.find_last_of('.');
 			if (ext != OsHelper::FileNameType::npos)
 			{
 				m_extname = m_filename.substr(ext, OsHelper::FileNameType::npos);
 			}
-			m_file.open(m_filename, false); 
+			RuntimeError err = m_file.open(m_filename, false); 
+			if (err != RE_Success) { throw err; }
 			m_nextTime = DateNameStrategy::get_next_time(time(NULL));
 		}
 		virtual ~LogChannelDateFile() { m_file.close(); }

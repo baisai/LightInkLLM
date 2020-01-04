@@ -29,29 +29,25 @@ namespace LightInk
 	{
 #ifdef _WIN32
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
-#define delta 11644473600000000Ui64
+#define delta 116444736000000000Ui64
 #   else
-#define delta 11644473600000000ULL
+#define delta 116444736000000000ULL
 #   endif
-#define secOffSet 0.000001
-#define usecOffSet 1000000
+#define secOffSet 10000000u
 		if (tv != nullptr) 
 		{
 			FILETIME fileTime;
 			GetSystemTimeAsFileTime(&fileTime);
-			uint64 present = 0;
-			present |= fileTime.dwHighDateTime;
+			uint64 present = fileTime.dwHighDateTime;
 			present <<= 32;
 			present |= fileTime.dwLowDateTime;
-			present /= 10;  // mic-sec
 			// Subtract the difference
 			present -= delta;
-			tv->tv_sec = static_cast<long>(present * secOffSet);
-			tv->tv_usec = static_cast<long>(present % usecOffSet);
+			tv->tv_sec = static_cast<long>(present / secOffSet);
+			tv->tv_usec = static_cast<long>((present % secOffSet) / 10u);
 		}
 #undef delta
 #undef secOffSet
-#undef usecOffSet
 #else
 		::gettimeofday(tv, NULL);
 #endif
@@ -327,18 +323,31 @@ namespace LightInk
 #endif
 	}
 
+
 #ifdef _WIN32
-	__declspec( thread ) uint32 sUpCount = 0u;
-	__declspec( thread ) uint32 sPreUp = 0u;
+	static long long get_frequency()
+	{
+		LARGE_INTEGER frequency;
+		if (QueryPerformanceFrequency(&frequency))
+			return frequency.QuadPart;
+		return 0;
+	}
+	static long long frequency = get_frequency();
 #endif
+
 	uint64 OsHelper::get_up_time()
 	{
 #ifdef _WIN32
-		uint32 now = GetTickCount();
-		if (now < sPreUp) { ++sUpCount; }
-		uint64 t = UINT32_MAX; t = t * sUpCount + now;
-		sPreUp = now;
-		return t;
+		if (frequency > 0)
+		{
+			LARGE_INTEGER counter;
+			QueryPerformanceCounter(&counter);
+			return counter.QuadPart * 1000 / frequency;
+		}
+		else
+		{
+			return GetTickCount();
+		}
 #else
 		struct timespec ts = { 0, 0 };
 		clock_gettime(CLOCK_MONOTONIC, &ts);

@@ -108,10 +108,8 @@ namespace LightInk
 		void next(LuaRegisterNode * n);
 		const LuaRegisterNode * next() const;
 
-		LuaRegisterNode & operator <= (LuaRegisterNode & right);
+		LuaRegisterNode & operator <= (const LuaRegisterNode & right);
 		LuaRegisterNode & operator = (const LuaRegisterNode & right);
-
-		LuaRegisterNode & self();
 
 	protected:
 		LuaRef m_key;
@@ -123,6 +121,7 @@ namespace LightInk
 	class LIGHTINK_DECL LuaModule : public LuaRegisterNode
 	{
 	public:
+		LuaModule(lua_State * L);
 		LuaModule(lua_State * L, const string & moduleName);
 		LuaModule(lua_State * L, const string & moduleName, const LuaRef & parent);
 		virtual ~LuaModule();
@@ -130,11 +129,7 @@ namespace LightInk
 		LuaModule & operator[](const LuaRegisterNode & key);
 
 	protected:
-		void release_module();
 		void register_field(const LuaRegisterNode & head);
-	protected:
-		int m_top;
-	LIGHTINK_DISABLE_COPY(LuaModule)
 	};
 
 }

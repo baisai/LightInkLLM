@@ -40,7 +40,7 @@ public:
 	int get_private() { return m_private; }
 	void set_private(int pri) { m_private = pri; }
 
-	CppEnum get_enum() { return m_enum; }	void set_enum(CppEnum e) { m_enum = e; }
+	CppEnum get_enum() { return m_enum; }	void set_enum(CppEnum e) { m_enum = e; }
 
 	static void test_static() { LogMessage("call --> void CppClass::test_static()"); }
 
@@ -52,7 +52,7 @@ public:
 	std::vector<int> m_vector;
 private:
 	int m_private;
-	CppEnum m_enum;
+	CppEnum m_enum;
 };
 
 class CppClass2
@@ -76,7 +76,7 @@ const CppClass CppClass2::s_cppclass(10000);
 
 namespace LightInk
 {
-	LightInkLuaEnumType(CppClass::CppEnum)}
+	LightInkLuaEnumType(CppClass::CppEnum)}
 static void bind_cppclass(lua_State * lua)
 {
 	LightInk::LuaModule lm(lua, "CppClassList");
@@ -98,7 +98,7 @@ static void bind_cppclass(lua_State * lua)
 	];
 	lm[
 		LightInk::LuaRegister<CppClass2, void()>(lua, "CppClass2")
-			.disable_new() //disable CppClass2.new__
+			.disable_new_create__() //disable CppClass2.new__
 			.def(CppClass2::create, "create")
 			.def(CppClass2::destroy, "destroy")
 			.def(&CppClass2::test, "test")

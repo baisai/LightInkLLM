@@ -24,8 +24,7 @@
 #ifndef LIGHTINK_LOG_LOGFORMAT_H_
 #define LIGHTINK_LOG_LOGFORMAT_H_
 
-#include <vector>
-#include <string>
+
 #include "Common/Type.h"
 #include "Log/LogThreadType.h"
 #include "Log/LogFlagFormat.h"
@@ -35,7 +34,7 @@ namespace LightInk
 {
 	class LogFlagFormat;
 	struct LogItem;
-	class LIGHTINK_DECL LogFormat : public SmallObject
+	class LIGHTINK_DECL LogFormat
 	{
 	public:
 		typedef LogAutoPtr<LogFlagFormat>::type LogFlagFormatPtr;

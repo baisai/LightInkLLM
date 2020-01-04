@@ -33,7 +33,7 @@ namespace LightInk
 	class LIGHTINK_TEMPLATE_DECL LogChannelOstream : public LogChannelMT<M>
 	{
 	public:
-		LogChannelOstream(std::ostream & os);
+		LogChannelOstream(const string & format, uint32 level, uint32 flushLevel, std::ostream & os);
 		virtual ~LogChannelOstream();
 
 	protected:
@@ -49,10 +49,12 @@ namespace LightInk
 	//inline method
 	//////////////////////////////////////////////////////////////////////
 	template <typename M>
-	LogChannelOstream<M>::LogChannelOstream(std::ostream & os) : m_ostream(os) {  }
+	LogChannelOstream<M>::LogChannelOstream(const string & format, uint32 level, uint32 flushLevel, std::ostream & os) : 
+		LogChannelMT<M>(format, level, flushLevel), m_ostream(os)
+	{  }
 
 	template <typename M>
-	LogChannelOstream<M>::~LogChannelOstream() { flush(); }
+	LogChannelOstream<M>::~LogChannelOstream() { do_flush(); }
 
 	template <typename M>
 	RuntimeError LogChannelOstream<M>::do_log(const LogItem & item)

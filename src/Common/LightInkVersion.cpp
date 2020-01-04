@@ -67,7 +67,7 @@ namespace LightInk
 		LightInkVersion()
 		{
 			snprintf(dependLib, sizeof(dependLib), 
-				"\nTurf version(201608)\nfmt version(%s)\nLua version(%s)\n",
+				"\nTurf version(201608)\nfmt version(%d)\nLua version(%s)\n",
 				FMT_VERSION, LUA_RELEASE);
 		}
 

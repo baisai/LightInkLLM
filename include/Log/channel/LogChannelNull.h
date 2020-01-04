@@ -31,7 +31,9 @@ namespace LightInk
 	class LIGHTINK_DECL LogChannelNull : public LogChannel
 	{
 	public:
-		LogChannelNull() {  }
+		LogChannelNull(const string & format, uint32 level, uint32 flushLevel) :
+			LogChannel(format, level, flushLevel)
+		{  }
 		virtual ~LogChannelNull() {  }
 
 	protected:

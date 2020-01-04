@@ -53,7 +53,8 @@ namespace LightInk
 
 		virtual ~LuaRegisterAbstract() {  }
 
-		LuaRegisterAbstract & operator = (const LuaRegisterAbstract<ClassType> & right);
+		template <typename T>
+		LuaRegisterAbstract & operator = (const LuaRegisterAbstract<T> & right);
 
 		template <typename T>
 		LuaRegisterAbstract & def(T obj, const string & name);
@@ -63,16 +64,14 @@ namespace LightInk
 		template <typename T>
 		LuaRegisterAbstract & def_property(T * obj, const string & name);
 
-		LuaRegisterAbstract & disable_new();
+		template <typename ET, typename KT>
+		LuaRegisterAbstract & def_enum(ET obj, const KT & name);
 
-		template <typename ET>
-		LuaRegisterAbstract & def_enum(ET obj, const string & name);
+		template <typename T, typename KT>
+		LuaRegisterAbstract & def_const_copy(const T & obj, const KT & name);
 
-		template <typename T>
-		LuaRegisterAbstract & def_const_copy(const T & obj, const string & name);
-
-		template <typename T>
-		LuaRegisterAbstract & def_const_ptr(const T * obj, const string & name);
+		template <typename T, typename KT>
+		LuaRegisterAbstract & def_const_ptr(const T * obj, const KT & name);
 
 	protected:
 		template <typename T>
@@ -81,17 +80,14 @@ namespace LightInk
 		template <typename T>
 		LuaRegisterAbstract & def_class_property(T ClassType::* obj, const string & name);
 
-		template <typename T>
-		LuaRegisterAbstract & def_func(T obj, const string & name);
-
 		LuaRegisterAbstract & def_cclosure(lua_CFunction obj, const string & name);
 
 		RuntimeError get_class_table();
 
-		RuntimeError get_class_metatable();
-
 		void init_class(const string & name);
 
+		bool is_disable_new();
+		bool is_disable_create();
 
 	protected:
 		lua_State * m_lua;
@@ -102,14 +98,23 @@ namespace LightInk
 	class LIGHTINK_TEMPLATE_DECL LuaModuleByClass : public LuaModule
 	{
 	public:
-		LuaModuleByClass(lua_State * L, const string & moduleName, const LuaRef & table, LuaRegisterAbstract<ClassType> & c);
+		LuaModuleByClass(lua_State * L, const string & moduleName, const LuaRef & parent, LuaRegisterAbstract<ClassType> & c);
 
 		virtual ~LuaModuleByClass();
 
 		LuaRegisterAbstract<ClassType> & module_end();
 
 		template <typename T>
-		LuaModuleByClass & def(T obj, const string & name);
+		LuaModuleByClass<ClassType> & def(T obj, const string & name);
+
+		template <typename ET, typename KT>
+		LuaModuleByClass<ClassType> & def_enum(ET obj, const KT & key);
+
+		template <typename T, typename KT>
+		LuaModuleByClass<ClassType> & def_const_copy(const T & obj, const KT & key);
+
+		template <typename T, typename KT>
+		LuaModuleByClass<ClassType> & def_const_ptr(const T * obj, const KT & key);
 
 		template <typename T>
 		LuaRegisterAbstract<ClassType> & operator[](const T & idx);

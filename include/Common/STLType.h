@@ -33,6 +33,7 @@
 #include <deque>
 #include <list>
 #include "Common/Type.h"
+#include "Common/Memory/MemoryAllocator.h"
 
 namespace LightInk
 {

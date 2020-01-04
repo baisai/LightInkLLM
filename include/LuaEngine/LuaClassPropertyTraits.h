@@ -34,20 +34,40 @@ namespace LightInk
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//LuaClassPropertyTraits
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	struct LuaClassPropertyInfo
+	class LuaClassPropertyInfo
 	{
-		typedef int (*IndexFunction)(lua_State *, void *, const char *);
-		typedef int (*NewindexFunction)(lua_State *, void *, const char *, int);
-		LuaClassPropertyInfo(IndexFunction i, NewindexFunction ni, void * p) : m_indexFunction(i), m_newindexFunction(ni), m_property(p)
-		{}
+	public:
+		typedef int (*IndexFunction)(lua_State *, void *, const string &);
+		typedef int (*NewindexFunction)(lua_State *, void *, const string &, int);
+		LuaClassPropertyInfo(const string & name, IndexFunction i, NewindexFunction ni, void * p) : m_name(name), m_indexFunction(i), m_newindexFunction(ni), m_property(p)
+		{  }
+
+		virtual ~LuaClassPropertyInfo()
+		{  }
+
+		inline int call_index(lua_State * L) { return m_indexFunction(L, m_property, m_name); }
+		inline int call_newindex(lua_State * L, int idx) { return m_newindexFunction(L, m_property, m_name, idx); }
+
+	private:
+		string m_name;
 		IndexFunction m_indexFunction;
 		NewindexFunction m_newindexFunction;
 		void * m_property;
 	};
 	template <typename T>
-	struct LuaClassPropertyInfoImp : public LuaClassPropertyInfo
+	class LuaClassPropertyInfoImp : public LuaClassPropertyInfo
 	{
-		LuaClassPropertyInfoImp(IndexFunction i, NewindexFunction ni, void * p) : LuaClassPropertyInfo(i, ni ,p), m_imp(NULL){ ; }
+	public:
+		LuaClassPropertyInfoImp(const string & name, IndexFunction i, NewindexFunction ni, void * p) : LuaClassPropertyInfo(name, i, ni ,p), m_imp(NULL)
+		{  }
+		
+		virtual ~LuaClassPropertyInfoImp()
+		{  }
+
+		inline const T & get_imp() const { return m_imp; }
+		inline void set_imp(const T & imp) { m_imp = imp; }
+
+	private:
 		T m_imp;
 	};
 
@@ -59,12 +79,17 @@ namespace LightInk
 	{
 		typedef T PropertyType;
 		typedef T ClassType::* PropertyTypePtr;
-		static int pt_index_function(lua_State * L, void * field, const char * key)
+		static int pt_index_function(lua_State * L, void * field, const string & key)
 		{
-			LogTraceStepCall("int LuaClassPropertyTraits<ClassType, T>::pt_index_function(lua_State * L, void * field, const char * key)");
+			LogTraceStepCall("int LuaClassPropertyTraits<ClassType, T>::pt_index_function(lua_State * L, void * field, const string & key)");
 			ClassType * objPtr = LuaMetatableTraits<ClassType>::userdata_to_object(L, 1);
+			if (objPtr == NULL)
+			{
+				LogScriptError(L, "Error!!!this field \"{}\" first arg is not a object!!!", key);
+				LogTraceStepReturn(0);
+			}
 			LuaClassPropertyInfoImp<PropertyTypePtr> * lcpii = (LuaClassPropertyInfoImp<PropertyTypePtr> * )field;
-			PropertyTypePtr ptr = lcpii->m_imp;
+			PropertyTypePtr ptr = lcpii->get_imp();
 			if (ptr)
 			{
 				LuaStack<const PropertyType>::push(L, (objPtr->*ptr));
@@ -72,25 +97,29 @@ namespace LightInk
 			}
 			else
 			{
-				LogScriptErrorJump(L, "none this field<{}>\n", key);
-				LogTraceStepReturn(0);
+				LogScriptError(L, "Error!!!Not this field!!!\"{}\"", key);
 			}
 			LogTraceStepReturn(0);
 		}
 
-		static int pt_newindex_function(lua_State * L, void * field, const char * key, int idx)
+		static int pt_newindex_function(lua_State * L, void * field, const string & key, int idx)
 		{
-			LogTraceStepCall("int LuaClassPropertyTraits<ClassType, T>::pt_newindex_function(lua_State * L, void * field, const char * key, int idx)");
+			LogTraceStepCall("int LuaClassPropertyTraits<ClassType, T>::pt_newindex_function(lua_State * L, void * field, const string & key, int idx)");
 			ClassType * objPtr = LuaMetatableTraits<ClassType>::userdata_to_object(L, 1);
+			if (objPtr == NULL)
+			{
+				LogScriptError(L, "Error!!!this field \"{}\" first arg is not a object!!!", key);
+				LogTraceStepReturn(0);
+			}
 			LuaClassPropertyInfoImp<PropertyTypePtr> * lcpii = (LuaClassPropertyInfoImp<PropertyTypePtr> * )field;
-			PropertyTypePtr ptr = lcpii->m_imp;
+			PropertyTypePtr ptr = lcpii->get_imp();
 			if (ptr)
 			{
 				(objPtr->*ptr) = LuaStack<const PropertyType>::get(L, idx);
 			}
 			else
 			{
-				LogError("none this field<{}>\n", key);
+				LogScriptErrorJump(L, "Error!!!Not this field!!!\"{}\"", key);
 			}
 			LogTraceStepReturn(0);
 		}
@@ -102,9 +131,9 @@ namespace LightInk
 	struct LuaClassPropertyTraits<T, void>
 	{
 		typedef T PropertyType;
-		static int pt_index_function(lua_State * L, void * field, const char * key)
+		static int pt_index_function(lua_State * L, void * field, const string & key)
 		{
-			LogTraceStepCall("int LuaClassPropertyTraits<T>::pt_index_function(lua_State * L, void * field, const char * key)");
+			LogTraceStepCall("int LuaClassPropertyTraits<T>::pt_index_function(lua_State * L, void * field, const string & key)");
 			PropertyType * ptr = (PropertyType *)field;
 			if (ptr)
 			{
@@ -113,15 +142,14 @@ namespace LightInk
 			}
 			else
 			{
-				LogScriptErrorJump(L, "none this field<{}>\n", key);
-				LogTraceStepReturn(0);
+				LogScriptError(L, "Error!!!Not this field!!!\"{}\"", key);
 			}
 			LogTraceStepReturn(0);
 		}
 
-		static int pt_newindex_function(lua_State * L, void * field, const char * key, int idx)
+		static int pt_newindex_function(lua_State * L, void * field, const string & key, int idx)
 		{
-			LogTraceStepCall("int LuaClassPropertyTraits<T>::pt_newindex_function(lua_State * L, void * field, const char * key, int idx)");
+			LogTraceStepCall("int LuaClassPropertyTraits<T>::pt_newindex_function(lua_State * L, void * field, const string & key, int idx)");
 			PropertyType * ptr = (PropertyType *)field;
 			if (ptr)
 			{
@@ -129,7 +157,7 @@ namespace LightInk
 			}
 			else
 			{
-				LogScriptErrorJump(L, "none this field<{}>\n", key);
+				LogScriptErrorJump(L, "Error!!!Not this field!!!\"{}\"", key);
 			}
 			LogTraceStepReturn(0);
 		}

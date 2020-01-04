@@ -27,31 +27,45 @@
 
 namespace LightInk
 {
-	LuaTableRef::LuaTableRef(const LuaRef & tab, const LuaRef & key) : m_L(tab.state()), m_tableRef(tab.create_ref()), m_keyRef(key.create_ref())
+	LuaTableRef::LuaTableRef() : m_L(NULL), m_tableRef(LUA_REFNIL), m_keyRef(LUA_REFNIL)
 	{
-		LogTraceStepCall("LuaTableRef::LuaTableRef(const LuaRef & tab, const LuaRef & key)");
+		LogTraceStepCall("LuaTableRef::LuaTableRef()");
 		LogTraceStepReturnVoid;
 	}
-	LuaTableRef::LuaTableRef(const LuaRef & tab) : m_L(tab.state()), m_tableRef(tab.create_ref()), m_keyRef(luaL_ref(tab.state(), LUA_REGISTRYINDEX))
-	{ 
-		LogTraceStepCall("LuaRef::LuaTableRef::LuaTableRef(const LuaRef & tab)");
-		LogTraceStepReturnVoid; 
+	LuaTableRef::LuaTableRef(const LuaRef & tab) : m_L(NULL), m_tableRef(LUA_REFNIL), m_keyRef(LUA_REFNIL)
+	{
+		LogTraceStepCall("LuaTableRef::LuaTableRef(const LuaRef & tab)");
+		m_L = tab.state();
+		if (m_L != NULL)
+		{
+			m_tableRef = tab.create_ref();
+			m_keyRef = luaL_ref(m_L, LUA_REGISTRYINDEX);
+		}
+		LogTraceStepReturnVoid;
+	}
+	LuaTableRef::LuaTableRef(const LuaRef & tab, const LuaRef & key) : m_L(NULL), m_tableRef(LUA_REFNIL), m_keyRef(LUA_REFNIL)
+	{
+		LogTraceStepCall("LuaTableRef::LuaTableRef(const LuaRef & tab, const LuaRef & key)");
+		m_L = tab.state();
+		m_tableRef = tab.create_ref();
+		m_keyRef = key.create_ref();
+		LogTraceStepReturnVoid;
 	}
 	LuaTableRef::LuaTableRef(const LuaTableRef & cp) : m_L(cp.m_L), m_tableRef(cp.create_tab_ref()), m_keyRef(cp.create_key_ref())
 	{
-		LogTraceStepCall("LuaRef::LuaTableRef::LuaTableRef(const LuaTableRef & cp)");
+		LogTraceStepCall("LuaTableRef::LuaTableRef(const LuaTableRef & cp)");
 		LogTraceStepReturnVoid;
 	}
 	LuaTableRef::~LuaTableRef()
 	{
-		LogTraceStepCall("LuaRef::LuaTableRef::~LuaTableRef()");
+		LogTraceStepCall("LuaTableRef::~LuaTableRef()");
 		if (m_L) { luaL_unref(m_L, LUA_REGISTRYINDEX, m_keyRef); }
 		LogTraceStepReturnVoid;
 	}
 
-	void LuaTableRef::clear_lua()
+	void LuaTableRef::clear()
 	{
-		LogTraceStepCall("void LuaRef::LuaTableRef::clear_lua()");
+		LogTraceStepCall("void LuaTableRef::clear()");
 		m_L = NULL;
 		m_tableRef = LUA_REFNIL;
 		m_keyRef = LUA_REFNIL;
@@ -60,8 +74,8 @@ namespace LightInk
 
 	int LuaTableRef::create_ref() const
 	{
-		LogTraceStepCall("int LuaRef::LuaTableRef::create_ref() const");
-		if (m_tableRef == LUA_REFNIL || m_keyRef == LUA_REFNIL)
+		LogTraceStepCall("int LuaTableRef::create_ref() const");
+		if (m_L == NULL || m_tableRef == LUA_REFNIL || m_keyRef == LUA_REFNIL)
 		{
 			LogTraceStepReturn(LUA_REFNIL);
 		}
@@ -73,26 +87,30 @@ namespace LightInk
 
 	lua_State * LuaTableRef::state() const
 	{ 
-		LogTraceStepCall("lua_State * LuaRef::LuaTableRef::state()"); 
+		LogTraceStepCall("lua_State * LuaTableRef::state()"); 
 		LogTraceStepReturn(m_L); 
 	}
 
-	void LuaTableRef::push() const
+	bool LuaTableRef::push() const
 	{
-		LogTraceStepCall("LuaRef::LuaTableRef::push() const");
+		LogTraceStepCall("bool LuaTableRef::push() const");
+		if (m_L == NULL)
+		{
+			LogTraceStepReturn(false);
+		}
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
 		lua_gettable(m_L, -2);
 		lua_remove(m_L, -2); // remove the table
-		LogTraceStepReturnVoid;
+		LogTraceStepReturn(true);
 	}
 
 	int LuaTableRef::create_tab_ref() const
 	{
 		LogTraceStepCall("int LuaTableRef::create_tab_ref() const");
-		if (m_tableRef == LUA_REFNIL)
+		if (m_L == NULL || m_tableRef == LUA_REFNIL)
 		{
-			LogTraceStepReturn(m_tableRef);
+			LogTraceStepReturn(LUA_REFNIL);
 		}
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
 		LogTraceStepReturn(luaL_ref(m_L, LUA_REGISTRYINDEX));
@@ -101,9 +119,9 @@ namespace LightInk
 	int LuaTableRef::create_key_ref() const
 	{
 		LogTraceStepCall("int LuaTableRef::create_key_ref() const");
-		if (m_keyRef == LUA_REFNIL)
+		if (m_L == NULL || m_keyRef == LUA_REFNIL)
 		{
-			LogTraceStepReturn(m_keyRef);
+			LogTraceStepReturn(LUA_REFNIL);
 		}
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
 		LogTraceStepReturn(luaL_ref(m_L, LUA_REGISTRYINDEX));
@@ -111,18 +129,22 @@ namespace LightInk
 
 	LuaRef LuaTableRef::get_ref() const
 	{
-		LogTraceStepCall("LuaRef LuaRef:;LuaTableRef::get_ref()");
+		LogTraceStepCall("LuaRef LuaTableRef::get_ref()");
 		LogTraceStepReturn(LuaRef(*this));
 	}
 	LuaRef LuaTableRef::get_tab_ref() const
 	{
 		LogTraceStepCall("LuaRef LuaTableRef::get_tab_ref() const");
+		if (m_L == NULL)
+			LogTraceStepReturn(LuaRef());
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
 		LogTraceStepReturn(LuaRef(m_L, true));
 	}
 	LuaRef LuaTableRef::get_key_ref() const
 	{
 		LogTraceStepCall("LuaRef LuaTableRef::get_key_ref() const");
+		if (m_L == NULL)
+			LogTraceStepReturn(LuaRef());
 		lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
 		LogTraceStepReturn(LuaRef(m_L, true));
 	}

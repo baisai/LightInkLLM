@@ -30,7 +30,7 @@
 
 namespace LightInk
 {
-	class LIGHTINK_DECL FileHelper : public SmallObject
+	class LIGHTINK_DECL FileHelper
 	{
 	public:
 		FileHelper() : m_fp(NULL) {  }

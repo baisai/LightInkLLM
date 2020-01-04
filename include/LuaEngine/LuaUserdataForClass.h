@@ -29,62 +29,148 @@
 
 namespace LightInk
 {
-	template<typename T>
+	class GCCallback
+	{
+	public:
+		virtual ~GCCallback() {  }
+		virtual void call(void *, void *) const = 0;
+	};
+	template <typename T>
+	class GCCallbackT : public GCCallback
+	{ 
+	public:
+		typedef void (* CallbackType)(T *, void *);
+
+		GCCallbackT() : m_call(gc_delete) {  }
+		GCCallbackT(CallbackType call) : m_call(call) { if (!m_call) m_call = gc_delete; }
+		virtual ~GCCallbackT() {  }
+
+		inline virtual void call(void * obj, void * context) const
+		{ T * t = (T *)obj; m_call(t, context); }
+
+	private:
+		inline static void gc_delete(T * obj, void * context) { delete obj; }
+	private:
+		CallbackType m_call;
+	};
+
 	class LuaUserdataForClass
 	{
 	public:
-		typedef void (* GCCallback)(T *, void *);
-		inline static void gc_delete(T * obj, void * context) { delete obj; }
-		LuaUserdataForClass(const T * p, bool autoGC) : m_obj((T*)p), m_autoGC(autoGC), m_luaGC(gc_delete), m_context(NULL)
+		template <typename T>
+		LuaUserdataForClass(const T * p, int offset, bool autoGC) : 
+			m_classOffset(0), 
+			m_obj(((char *)p) + offset),
+			m_autoGC(autoGC), 
+			m_luaGC(new GCCallbackT<T>), 
+			m_context(NULL)
 		{
-			LogTraceStepCall("LuaUserdataForClass::LuaUserdataForClass(T * p, bool luaGC, GCCallback luaGC)");
+			LogTraceStepCall("LuaUserdataForClass::LuaUserdataForClass(T * p, int offset, bool luaGC)");
 			LogTraceStepReturnVoid;
 		}
-		LuaUserdataForClass(const T * p, bool autoGC, GCCallback luaGC, void * context) : m_obj((T*)p), m_autoGC(autoGC), m_luaGC(luaGC), m_context(context)
+
+		template <typename T>
+		LuaUserdataForClass(const T * p, int offset, bool autoGC, typename GCCallbackT<T>::CallbackType luaGC, void * context) : 
+			m_classOffset(0), 
+			m_obj(((char *)p) + offset),
+			m_autoGC(autoGC), 
+			m_luaGC(new GCCallbackT<T>(luaGC)), 
+			m_context(context)
 		{
-			LogTraceStepCall("LuaUserdataForClass::LuaUserdataForClass(T * p, bool luaGC, GCCallback luaGC, void * context)");
+			LogTraceStepCall("LuaUserdataForClass::LuaUserdataForClass(const T * p, int offset, bool autoGC, typename GCCallbackT<T>::CallbackType luaGC, void * context)");
 			LogTraceStepReturnVoid;
 		}
-		~LuaUserdataForClass()
+		virtual ~LuaUserdataForClass()
 		{
 			LogTraceStepCall("LuaUserdataForClass::~LuaUserdataForClass()");
-			if (m_obj && m_autoGC) { m_luaGC(m_obj, m_context); }
+			if (m_obj && m_autoGC) { m_luaGC->call(m_obj, m_context); }
+			delete m_luaGC;
+			m_luaGC = NULL;
 			m_obj = NULL;
 			m_context = NULL;
+			
 			LogTraceStepReturnVoid;
 		}
-		inline void user_gc() 
+
+		inline void offset_object(int32 offset)
+		{
+			LogTraceStepCall("LuaUserdataForClass::offset_object(int32 offset)");
+			m_obj = static_cast<char *>(m_obj) + offset;
+			LogTraceStepReturnVoid;
+		}
+
+		inline void set_class_offset(int32 offset)
+		{ 
+			LogTraceStepCall("void LuaUserdataForClass::set_class_offset(int32 offset)");
+			m_classOffset = offset;
+			LogTraceStepReturnVoid;
+		}
+
+		template <typename T>
+		inline T * get_object_t()
+		{ 
+			LogTraceStepCall("T * LuaUserdataForClass::get_object_t()");
+			char * p = (char *)get_object() + m_classOffset;
+			m_classOffset = 0;
+			LogTraceStepReturn((T *)p);
+		}
+
+		template <typename T>
+		inline T * move_object_t()
+		{
+			LogTraceStepCall("T * LuaUserdataForClass::move_object_t()");
+			char * p = (char *)move_object() + m_classOffset;
+			m_classOffset = 0;
+			LogTraceStepReturn((T *)p);
+		}
+
+		virtual inline void user_gc() 
 		{ 
 			LogTraceStepCall("void LuaUserdataForClass::user_gc()");
-			if (m_obj && !m_autoGC) { m_luaGC(m_obj, m_context); m_obj = NULL; m_context = NULL; }
+			if (m_obj && !m_autoGC) { m_luaGC->call(m_obj, m_context); m_obj = NULL; m_context = NULL; }
 			LogTraceStepReturnVoid;
 		}
-		inline void force_gc()
+		virtual inline void force_gc()
 		{
 			LogTraceStepCall("void LuaUserdataForClass::force_gc()");
-			if (m_obj) { m_luaGC(m_obj, m_context); m_obj = NULL; m_context = NULL; }
+			if (m_obj) { m_luaGC->call(m_obj, m_context); m_obj = NULL; m_context = NULL; }
 			LogTraceStepReturnVoid;
 		}
-		inline T * get_object() 
+		virtual inline void * get_object() const
 		{ 
-			LogTraceStepCall("T * LuaUserdataForClass::get_object() ");
+			LogTraceStepCall("void * LuaUserdataForClass::get_object() const");
 			LogTraceStepReturn(m_obj);
 		}
-		inline T * move_object()
+		virtual inline void * move_object()
 		{
-			LogTraceStepCall("T * LuaUserdataForClass::move_object()");
-			T * t = m_obj; m_obj = NULL;
+			LogTraceStepCall("void * LuaUserdataForClass::move_object()");
+			void * t = m_obj; m_obj = NULL;
 			LogTraceStepReturn(t);
 		}
-		inline void * get_context()
+		virtual inline void * get_context() const
 		{ 
-			LogTraceStepCall("T * LuaUserdataForClass::get_context() ");
+			LogTraceStepCall("T * LuaUserdataForClass::get_context() const");
 			LogTraceStepReturn(m_context);
 		}
+
+		inline bool is_auto_gc() const
+		{
+			LogTraceStepCall("bool LuaUserdataForClass::is_auto_gc() const");
+			LogTraceStepReturn(m_autoGC);
+		}
+
+		inline void set_atuto_gc(bool autoGC)
+		{
+			LogTraceStepCall("bool LuaUserdataForClass::set_atuto_gc()");
+			m_autoGC = autoGC;
+			LogTraceStepReturnVoid;
+		}
+
 	private:
-		T * m_obj;
+		int32 m_classOffset;
+		void * m_obj;
 		bool m_autoGC;
-		GCCallback m_luaGC;
+		GCCallback * m_luaGC;
 		void * m_context;
 	};
 

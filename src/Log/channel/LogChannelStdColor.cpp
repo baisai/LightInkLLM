@@ -27,7 +27,9 @@
 
 namespace LightInk
 {
-	LogChannelStdOutColor::LogChannelStdOutColor(LogChannelPtr channel) : m_channel(channel)
+	LogChannelStdOutColor::LogChannelStdOutColor(const string & format, uint32 level, uint32 flushLevel, LogChannelPtr channel) : 
+		LogChannel(format, level, flushLevel),
+		m_channel(channel)
 	{
 		for (int i = 0; i < LogLevel::LogMsg_Count; i++)
 		{
@@ -121,7 +123,7 @@ namespace LightInk
 
 	RuntimeError LogChannelStdOutColor::do_flush()
 	{
-		return m_channel->flush();
+		return m_channel->flush(LogLevel::LogMsg_Fatal);
 	}
 
 #ifdef _WIN32

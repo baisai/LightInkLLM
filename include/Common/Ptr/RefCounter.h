@@ -25,16 +25,14 @@
 #ifndef LIGHTINK_COMMON_REFCOUNTER_H_
 #define LIGHTINK_COMMON_REFCOUNTER_H_
 
-#include "Common/SmallObject.h"
 #include "Atomic/Atomic.h"
 
 namespace LightInk
 {
-	template <typename Allocator>
-	class LIGHTINK_TEMPLATE_DECL RefCounter : public Allocator
+	class LIGHTINK_TEMPLATE_DECL RefCounter
 	{
 	public:
-		RefCounter();
+		RefCounter() : m_sharedRefs(1), m_weakRefs(0) {  }
 		int64 inc_shared();
 		int64 dec_shared();
 		int64 inc_weak();
@@ -50,37 +48,25 @@ namespace LightInk
 	///////////////////////////////////////////////////////////////////////
 	//inline method
 	//////////////////////////////////////////////////////////////////////
-	template <typename Allocator>
-	RefCounter<Allocator>::RefCounter() : m_sharedRefs(1), m_weakRefs(0) {  }
+	inline int64 RefCounter::inc_shared() { ++m_sharedRefs; return m_sharedRefs; }
 
-	template <typename Allocator>
-	inline int64 RefCounter<Allocator>::inc_shared() { ++m_sharedRefs; return m_sharedRefs; }
+	inline int64 RefCounter::dec_shared() { if (m_sharedRefs > 0) { --m_sharedRefs; } return m_sharedRefs; }
 
-	template <typename Allocator>
-	inline int64 RefCounter<Allocator>::dec_shared() { if (m_sharedRefs > 0) { --m_sharedRefs; } return m_sharedRefs; }
+	inline int64 RefCounter::inc_weak() { ++m_weakRefs; return m_weakRefs; }
 
-	template <typename Allocator>
-	inline int64 RefCounter<Allocator>::inc_weak() { ++m_weakRefs; return m_weakRefs; }
+	inline int64 RefCounter::dec_weak() { if (m_weakRefs > 0) { --m_weakRefs; } return m_weakRefs; }
 
-	template <typename Allocator>
-	inline int64 RefCounter<Allocator>::dec_weak() { if (m_weakRefs > 0) { --m_weakRefs; } return m_weakRefs; }
+	inline int64 RefCounter::get_shared_refs() const { return m_sharedRefs; }
 
-	template <typename Allocator>
-	inline int64 RefCounter<Allocator>::get_shared_refs() const { return m_sharedRefs; }
+	inline int64 RefCounter::get_weak_refs() const { return m_weakRefs; }
 
-	template <typename Allocator>
-	inline int64 RefCounter<Allocator>::get_weak_refs() const { return m_weakRefs; }
-
-	template <typename Allocator>
-	inline bool RefCounter<Allocator>::has_refs() const { return (m_sharedRefs + m_weakRefs > 0); }
+	inline bool RefCounter::has_refs() const { return (m_sharedRefs + m_weakRefs > 0); }
 
 
-
-	template <typename Allocator>
-	class LIGHTINK_TEMPLATE_DECL RefCounterTS : public Allocator
+	class LIGHTINK_TEMPLATE_DECL RefCounterTS
 	{
 	public:
-		RefCounterTS();
+		RefCounterTS() { m_sharedRefs.store(1); m_weakRefs.store(0); }
 		int64 inc_shared();
 		int64 dec_shared();
 		int64 inc_weak();
@@ -96,44 +82,33 @@ namespace LightInk
 	///////////////////////////////////////////////////////////////////////
 	//inline method
 	//////////////////////////////////////////////////////////////////////
-	template <typename Allocator>
-	RefCounterTS<Allocator>::RefCounterTS() 
-	{ m_sharedRefs.store(1); m_weakRefs.store(0); }
-
-	template <typename Allocator>
-	inline int64 RefCounterTS<Allocator>::inc_shared() 
+	inline int64 RefCounterTS::inc_shared() 
 	{ return m_sharedRefs.fetch_add(1) + 1; }
 
-	template <typename Allocator>
-	inline int64 RefCounterTS<Allocator>::dec_shared() 
+	inline int64 RefCounterTS::dec_shared() 
 	{ 
 		int64 r = m_sharedRefs.fetch_sub(1);
 		if (r == 0) { m_sharedRefs.store(0); return r; }
 		return (r - 1); 
 	}
 
-	template <typename Allocator>
-	inline int64 RefCounterTS<Allocator>::inc_weak() 
+	inline int64 RefCounterTS::inc_weak() 
 	{ return m_weakRefs.fetch_add(1) + 1; }
 
-	template <typename Allocator>
-	inline int64 RefCounterTS<Allocator>::dec_weak()
+	inline int64 RefCounterTS::dec_weak()
 	{
 		int64 r = m_weakRefs.fetch_sub(1);
 		if (r == 0) { m_weakRefs.store(0); return r; }
 		return (r - 1);
 	}
 
-	template <typename Allocator>
-	inline int64 RefCounterTS<Allocator>::get_shared_refs() const 
+	inline int64 RefCounterTS::get_shared_refs() const 
 	{ return m_sharedRefs.load(); }
 
-	template <typename Allocator>
-	inline int64 RefCounterTS<Allocator>::get_weak_refs() const 
+	inline int64 RefCounterTS::get_weak_refs() const 
 	{ return m_weakRefs.load(); }
 
-	template <typename Allocator>
-	inline bool RefCounterTS<Allocator>::has_refs() const 
+	inline bool RefCounterTS::has_refs() const 
 	{ return m_sharedRefs.load() + m_weakRefs.load() > 0; }
 }
 

@@ -30,6 +30,7 @@
 #include "LuaEngine/LuaLib.h"
 #include "Log/Log.h"
 #include "Log/LoggerMgr.h"
+#include "Common/Memory/SmallAllocator.h"
 #include "LuaEngine/LuaRef.h"
 #include "LuaEngine/LuaRegister.h"
 #include "LuaEngine/LuaModule.h"
@@ -37,30 +38,35 @@
 
 namespace LightInk
 {
-	class LIGHTINK_DECL LuaEngine : public SmallObject
+	class LIGHTINK_DECL LuaEngine
 	{
 	public:
 		LuaEngine();
-		~LuaEngine();
+		virtual ~LuaEngine();
 		lua_State * get_lua_state();
 		bool is_inited();
 		RuntimeError init();
 		void close();
 		virtual void * do_lua_allocator(void * ptr, size_t osize, size_t nsize);
+		virtual void allocator_gc(bool all);
 		virtual RuntimeError do_init();
 		virtual void do_close();
 		virtual RuntimeError add_package_path(const string & path);
 		virtual void clear_package_path();
-		static void dump_stack(lua_State * L);
+		static string dump_stack(lua_State * L);
 		virtual RuntimeError do_string(const char * chunk);
+		virtual RuntimeError do_chunk(const char * chunk, const char * name);
 		virtual RuntimeError do_file(const char * fileName);
 		virtual RuntimeError require_file(const char * fileName);
-		RuntimeError register_global_func(const char * func, lua_CFunction f);
+		template <typename T>
+		void register_global_object(const char * name, T obj) { LuaDefAutoTool::def(m_lua, obj, name); }
 		LuaRef get_global_ref(const char * name);
 
 		void register_module(void(*func)(lua_State * lua));
 
 		static const char * get_class_name(lua_State * L, int idx);
+
+		static bool load_class_script(lua_State * L);
 
 	private:
 		static void * lua_allocator(void * ud, void * ptr, size_t osize, size_t nsize);
@@ -71,9 +77,19 @@ namespace LightInk
 		static int lua_print_warning(lua_State * L);
 		static int lua_print_error(lua_State * L);
 		static int lua_print_fatal(lua_State * L);
+
+		static uint32 lua_num_bit_nega(uint32 num);
+		static uint32 lua_num_bit_and(uint32 num1, uint32 num2);
+		static uint32 lua_num_bit_or(uint32 num1, uint32 num2);
+		static uint32 lua_num_bit_xor(uint32 num1, uint32 num2);
+
+		static uint32 lua_num_bit_left(uint32 num, int16 leftBit);
+		static uint32 lua_num_bit_right(uint32 num, int16 rightBit);
 		
 	protected:
 		lua_State * m_lua;
+		LuaDebugger m_debugger;
+		SmallAllocator m_allocator;
 
 	public:
 		template <typename T>
@@ -113,7 +129,7 @@ namespace LightInk
 			if (lua_pcall(m_lua, 0, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -150,7 +166,7 @@ function create_traits(count)
 		table.insert(temp, "\t\t\tLuaStateProtect lsp(m_lua, true);\n\t\t\tlua_getglobal(m_lua, name);\n")
 		table.insert(temp, arg3)
 		table.insert(temp, string.format("\t\t\tif (lua_pcall(m_lua, %d, 1, 0))\n\t\t\t{\n", k))
-		table.insert(temp, "\t\t\t\tconst char * errStr = lua_tostring(m_lua, -1);\n\t\t\t\tif (errStr) LogScriptError(errStr);\n")
+		table.insert(temp, "\t\t\t\tconst char * errStr = lua_tostring(m_lua, -1);\n\t\t\t\tif (errStr) LogScriptError(m_lua, errStr);\n")
 		table.insert(temp, "\t\t\t\tLogTraceStepReturn(RE_Lua_RuntimeError);\n\t\t\t}\n")
 		table.insert(temp, "\t\t\ttry { result = LuaStack<const R>::get(m_lua, -1); }\n\t\t\tcatch (RuntimeError e)\n\t\t\t{  LogTraceStepReturn(e); }\n\t\t\tLogTraceStepReturn(RE_Success);\n\t\t}\n\n")
 
@@ -173,7 +189,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 1, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -193,7 +209,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 2, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -214,7 +230,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 3, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -236,7 +252,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 4, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -259,7 +275,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 5, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -283,7 +299,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 6, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -308,7 +324,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 7, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -334,7 +350,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 8, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -361,7 +377,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 9, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -389,7 +405,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 10, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -418,7 +434,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 11, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -448,7 +464,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 12, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -479,7 +495,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 13, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -511,7 +527,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 14, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -544,7 +560,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 15, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -578,7 +594,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 16, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -613,7 +629,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 17, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -649,7 +665,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 18, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -686,7 +702,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 19, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }
@@ -724,7 +740,7 @@ create_traits(20)
 			if (lua_pcall(m_lua, 20, 1, 0))
 			{
 				const char * errStr = lua_tostring(m_lua, -1);
-				if (errStr) LogScriptError(errStr);
+				if (errStr) LogScriptError(m_lua, errStr);
 				LogTraceStepReturn(RE_Lua_RuntimeError);
 			}
 			try { result = LuaStack<const R>::get(m_lua, -1); }

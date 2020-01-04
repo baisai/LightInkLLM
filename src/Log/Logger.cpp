@@ -21,64 +21,26 @@
  * IN THE SOFTWARE.
  */
 
-
 #include "Log/LogOption.h"
 #include "Log/LoggerMgr.h"
 
 namespace LightInk
 {
-	Logger::Logger(const LogOption & op) : m_name(op.get_name()), m_format(new LogFormat(op.get_format())), m_level(op.get_level()), m_flushLevel(op.get_flush_level()),
-											m_err(NULL), m_channel(op.get_channel_list())
-	{
-		
-	}
+	Logger::Logger() : m_deployed(false), m_format(new LogFormat("%+")), m_level(~0u), m_flushLevel(0u), m_err(NULL) 
+	{  }
 
-	Logger::Logger(const string & name, ChannelListPtr cl) : m_name(name), m_format(new LogFormat("%+")), m_level(~0u), m_flushLevel(0),
-																m_err(NULL), m_channel(cl)
+	bool Logger::set_option(const LogOption & op)
 	{
-		add_flush_level(LogLevel::LogMsg_Warning);
-		add_flush_level(LogLevel::LogMsg_Error);
-		add_flush_level(LogLevel::LogMsg_Fatal);
+		if (!m_deployed)
+		{
+			m_name = op.get_name();
+			m_format.reset(new LogFormat(op.get_format()));
+			m_level = op.get_level();
+			m_flushLevel = op.get_flush_level();
+			m_channel = op.get_channel_list();
+		}
+		return !m_deployed;
 	}
-	Logger::Logger(const string & name, ChannelList::LogChannelPtr c) : m_name(name), m_format(new LogFormat("%+")), m_level(~0u), m_flushLevel(0),
-																			m_err(NULL), m_channel(ChannelListPtr(new ChannelList()))
-	{
-		add_flush_level(LogLevel::LogMsg_Warning);
-		add_flush_level(LogLevel::LogMsg_Error);
-		add_flush_level(LogLevel::LogMsg_Fatal);
-		m_channel->add_channel(c);
-	}
-	Logger::Logger(const string & name, ChannelListPtr cl, const string & format) : m_name(name), m_format(new LogFormat(format)), m_level(~0u), m_flushLevel(0),
-																							m_err(NULL), m_channel(cl)
-	{
-		add_flush_level(LogLevel::LogMsg_Warning);
-		add_flush_level(LogLevel::LogMsg_Error);
-		add_flush_level(LogLevel::LogMsg_Fatal);
-	}
-	Logger::Logger(const string & name, ChannelList::LogChannelPtr c, const string & format) : m_name(name), m_format(new LogFormat(format)), m_level(~0u), m_flushLevel(0),
-																										m_err(NULL), m_channel(ChannelListPtr(new ChannelList()))
-	{
-		add_flush_level(LogLevel::LogMsg_Warning);
-		add_flush_level(LogLevel::LogMsg_Error);
-		add_flush_level(LogLevel::LogMsg_Fatal);
-		m_channel->add_channel(c);
-	}
-	Logger::Logger(const string & name, ChannelListPtr cl, LogFormatPtr format) : m_name(name), m_format(format), m_level(~0u), m_flushLevel(0),
-																					m_err(NULL), m_channel(cl)
-	{
-		add_flush_level(LogLevel::LogMsg_Warning);
-		add_flush_level(LogLevel::LogMsg_Error);
-		add_flush_level(LogLevel::LogMsg_Fatal);
-	}
-	Logger::Logger(const string & name, ChannelList::LogChannelPtr c, LogFormatPtr format) : m_name(name), m_format(format), m_level(~0u), m_flushLevel(0),
-																								m_err(NULL), m_channel(ChannelListPtr(new ChannelList()))
-	{
-		add_flush_level(LogLevel::LogMsg_Warning);
-		add_flush_level(LogLevel::LogMsg_Error);
-		add_flush_level(LogLevel::LogMsg_Fatal);
-		m_channel->add_channel(c);
-	}
-
 
 	RuntimeError Logger::log(LogLevel::LEVEL level, const char * fmt, const fmt::ArgList & args)
 	{
@@ -87,7 +49,12 @@ namespace LightInk
 		{
 			LogItem item(&m_name, level);
 			item.m_msg.write(fmt, args);
-			return channel(item);
+			RuntimeError err = channel(item);
+			if (err != RE_Success)
+				return err;
+			if (should_flush(level))
+				return flush(level);
+			return RE_Success;
 		}
 		catch (const std::exception & e)
 		{
@@ -111,7 +78,12 @@ namespace LightInk
 			LogItem item(&m_name, level);
 			item.m_fl = fl;
 			item.m_msg.write(fmt, args);
-			return channel(item);
+			RuntimeError err = channel(item);
+			if (err != RE_Success)
+				return err;
+			if (should_flush(level))
+				return flush(level);
+			return RE_Success;
 		}
 		catch (const std::exception & e)
 		{
@@ -127,19 +99,21 @@ namespace LightInk
 		}
 	}
 
-	RuntimeError Logger::flush()
+	RuntimeError Logger::flush(LogLevel::LEVEL level)
 	{
-		return LightInkLog->flush(this);
+		//should_flush called in log and log_fl
+		return LightInkLog->flush(this, level);
 	}
 	RuntimeError Logger::channel(LogItem & item)
 	{
+		//should_log called in log and log_fl
 		return LightInkLog->channel(this, item);
 	}
 
 	void Logger::default_error_handle(const string & msg) 
 	{ std::cerr << msg.c_str() << std::endl; }
 
-	RuntimeError Logger::do_flush() { return m_channel->flush(); }
+	RuntimeError Logger::do_flush(LogLevel::LEVEL level) { return m_channel->flush(level); }
 
 	RuntimeError Logger::do_channel(LogItem & item)
 	{

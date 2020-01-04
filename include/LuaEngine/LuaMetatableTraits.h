@@ -29,6 +29,7 @@
 #include "LuaEngine/LuaClassInfo.h"
 #include "LuaEngine/LuaUserdataForClass.h"
 #include "LuaEngine/LuaFixFunction.h"
+#include "LuaEngine/LuaMetatable.h"
 
 namespace LightInk
 {
@@ -39,90 +40,97 @@ namespace LightInk
 	template<typename ClassType>
 	struct LuaMetatableTraits
 	{
-		static LuaUserdataForClass<ClassType> * userdata_to_imp(lua_State * L, int idx)
+		static LuaUserdataForClass * userdata_to_imp(lua_State * L, int idx)
 		{
-			LogTraceStepCall("LuaUserdataForClass<ClassType> * LuaMetatableTraits<ClassType>::userdata_to_imp(lua_State * L, int idx)");
-			LuaStateProtect lsp(L);
-			if (lua_isnothing(L, idx) || !lua_isuserdata(L, idx))
+			LogTraceStepCall("LuaUserdataForClass * LuaMetatableTraits<ClassType>::userdata_to_imp(lua_State * L, int idx)");
+			LuaUserdataForClass * p = LuaMetatable::get_userdata(L, idx);
+			if (p == NULL)
 			{
-				LogScriptErrorJump(L, "Error!!!The arg {} is not userdata!!!", idx);
+				//LogScriptWarning("Warning!!!The arg {} is a ({}) object, but not found userdata!!!", idx, LuaClassInfo<ClassType>::get_class_name());
 				LogTraceStepReturn(NULL);
 			}
-			void * userdata = lua_touserdata(L, idx);
-
-			if (userdata == NULL)
+			int32 offset = LuaClassInfo<ClassType>::calc_from_offset(L, idx);
+			if (offset == LuaClassMgr::InvalidOffset)
 			{
-				LogScriptErrorJump(L, "Error!!!The arg {} is userdata, but pointer is null!!!", idx);
+				LogScriptError(L, "Error!!!The arg {} is a object, but it is not link {}!!!", idx, LuaClassInfo<ClassType>::get_class_name());
 				LogTraceStepReturn(NULL);
 			}
-			if (!lua_getmetatable(L, idx))
-			{
-				LogScriptErrorJump(L, "Error!!!The arg {} is userdata, but not metatable!!!", idx);
-				LogTraceStepReturn(NULL);
-			}
-			
-			//因为可能是继承关系
-			if (!LuaClassInfo<ClassType>::check_registered(L, -1))
-			{
-				LogScriptErrorJump(L, "Error!!!The arg {} is userdata, but class type is error!!!", idx);
-				LogTraceStepReturn(NULL);
-			}
-			LuaUserdataForClass<ClassType> * p = (LuaUserdataForClass<ClassType>*) userdata;
-			lsp.reset();
+			p->set_class_offset(offset);
 			LogTraceStepReturn(p);
 		}
 
 		static ClassType * userdata_to_object(lua_State* L, int idx)
 		{
 			LogTraceStepCall("ClassType * LuaMetatableTraits<ClassType>::userdata_to_object(lua_State * L, int idx)");
-			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, idx);
-			if (p)
-			{
-				LogTraceStepReturn(p->get_object());
-			}
+			LuaUserdataForClass * p = userdata_to_imp(L, idx);
+			if (p) { LogTraceStepReturn(p->get_object_t<ClassType>()); }
 			LogTraceStepReturn(NULL);
 		}
 
 		static ClassType * userdata_to_object_move(lua_State* L, int idx)
 		{
 			LogTraceStepCall("ClassType * LuaMetatableTraits<ClassType>::userdata_to_object_move(lua_State* L, int idx)");
-			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, idx);
-			if (p) { LogTraceStepReturn(p->move_object()); }
+			LuaUserdataForClass * p = userdata_to_imp(L, idx);
+			if (p) { LogTraceStepReturn(p->move_object_t<ClassType>()); }
 			LogTraceStepReturn(NULL);
 		}
 
-		static int mt_isdelete_function(lua_State * L)
+		static int mt_is_destroy_function(lua_State * L)
 		{
-			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_isdelete_function(lua_State * L)");
-			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
+			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_is_destroy_function(lua_State * L)");
+			LuaUserdataForClass * p = LuaMetatable::get_userdata(L, 1);
 			if (p && p->get_object()) { lua_pushboolean(L, 0); }
 			else { lua_pushboolean(L, 1); }
 			LogTraceStepReturn(1);
 		}
 
-		static int mt_delete_function(lua_State * L)
+		static int mt_destroy_function(lua_State * L)
 		{
-			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_delete_function(lua_State * L)");
-			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
+			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_destroy_function(lua_State * L)");
+			LuaUserdataForClass * p = LuaMetatable::get_userdata(L, 1);
 			if (p) { p->user_gc(); }
 			LogTraceStepReturn(0);
 		}
 
-		static int mt_force_delete_function(lua_State * L)
+		static int mt_force_destroy_function(lua_State * L)
 		{
-			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_force_delete_function(lua_State * L)");
-			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
+			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_force_destroy_function(lua_State * L)");
+			LuaUserdataForClass * p = LuaMetatable::get_userdata(L, 1);
 			if (p) { p->force_gc(); }
 			LogTraceStepReturn(0);
 		}
 
-		static int mt_gc_function(lua_State * L)
+		static int mt_is_auto_gc_funtcion(lua_State * L)
 		{
-			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_gc_function(lua_State * L)");
-			LuaUserdataForClass<ClassType> * p = userdata_to_imp(L, 1);
+			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_set_auto_gc_funtcion(lua_State * L)");
+			int autoGC = 0;
+			LuaUserdataForClass * p = LuaMetatable::get_userdata(L, 1);
+			if (p) { autoGC = p->is_auto_gc() ? 1 : 0; }
+			lua_pushboolean(L, autoGC);
+			LogTraceStepReturn(1);
+		}
+
+		static int mt_create___function(lua_State * L)
+		{
+			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_create___function(lua_State * L)");
+			if (LuaMetatable::mt_new___function(L) == 1)
+			{
+				LuaUserdataForClass * p = LuaMetatable::get_userdata(L, -1);
+				if (p) { p->set_atuto_gc(false); }
+				LogTraceStepReturn(1);
+			}
+			LogScriptError(L, "Call LuaMetatable::mt_new___function Error!!! create failed!!!");
+			LogTraceStepReturn(0);
+		}
+
+		static int mt_set_auto_gc_funtcion(lua_State * L)
+		{
+			LogTraceStepCall("int LuaMetatableTraits<ClassType>::mt_set_auto_gc_funtcion(lua_State * L)");
+			LuaUserdataForClass * p = userdata_to_imp(L, 1);
 			if (p)
 			{
-				p->~LuaUserdataForClass();
+				bool autoGC = lua_toboolean(L, 2);
+				p->set_atuto_gc(autoGC);
 			}
 			LogTraceStepReturn(0);
 		}

@@ -33,15 +33,16 @@
 namespace LightInk
 {
 	class LuaRef;
-	class LIGHTINK_DECL LuaTableRef : public SmallObject
+	class LIGHTINK_DECL LuaTableRef
 	{
 	public:
-		LuaTableRef(const LuaRef & tab, const LuaRef & key);
+		LuaTableRef();
 		LuaTableRef(const LuaRef & tab);
+		LuaTableRef(const LuaRef & tab, const LuaRef & key);
 		LuaTableRef(const LuaTableRef & cp);
 		~LuaTableRef();
 
-		void clear_lua();
+		void clear();
 
 		int create_ref() const;
 
@@ -49,12 +50,15 @@ namespace LightInk
 		LuaTableRef & operator = (const T & v)
 		{
 			LogTraceStepCall("LuaTableRef & LuaRef::LuaTableRef::operator =<T> (const T & v)");
-			LuaStateProtect lsp(m_L);
-			lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
-			lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
-			LuaStack<const T>::push(m_L, v);
-			lua_settable(m_L, -3);
-			lsp.reset();
+			if (m_L != NULL)
+			{
+				LuaStateProtect lsp(m_L);
+				lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
+				lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
+				LuaStack<const T>::push(m_L, v);
+				lua_settable(m_L, -3);
+				lsp.reset();
+			}
 			LogTraceStepReturn(*this);
 		}
 
@@ -62,18 +66,21 @@ namespace LightInk
 		LuaTableRef & rawset (const T & v)
 		{
 			LogTraceStepCall("LuaTableRef & LuaRef::LuaTableRef::rawset<T> (const T & v)");
-			LuaStateProtect lsp(m_L);
-			lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
-			lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
-			LuaStack<const T>::push(m_L, v);
-			lua_rawset(m_L, -3);
-			lsp.reset();
+			if (m_L != NULL)
+			{
+				LuaStateProtect lsp(m_L);
+				lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_tableRef);
+				lua_rawgeti(m_L, LUA_REGISTRYINDEX, m_keyRef);
+				LuaStack<const T>::push(m_L, v);
+				lua_rawset(m_L, -3);
+				lsp.reset();
+			}
 			LogTraceStepReturn(*this);
 		}
 
 		lua_State * state() const;
 
-		void push() const;
+		bool push() const;
 
 		int create_tab_ref() const;
 		int create_key_ref() const;

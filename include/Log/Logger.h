@@ -32,20 +32,49 @@
 namespace LightInk
 {
 	class LogOption;
-	class LIGHTINK_DECL Logger : public SmallObject
+	class LIGHTINK_DECL Logger
 	{
 	public:
 		friend class LoggerMgr;
 
-		Logger(const LogOption & op);
-		Logger(const string & name, ChannelListPtr cl);
-		Logger(const string & name, ChannelList::LogChannelPtr c);
-		Logger(const string & name, ChannelListPtr cl, const string & format);
-		Logger(const string & name, ChannelList::LogChannelPtr c, const string & format);
-		Logger(const string & name, ChannelListPtr cl, LogFormatPtr format);
-		Logger(const string & name, ChannelList::LogChannelPtr c, LogFormatPtr format);
+		Logger();
 		virtual ~Logger() {  }
 
+		bool set_option(const LogOption & op);
+		bool set_name(const string & name);
+		bool clear_channel();
+		bool set_channel_list(ChannelListPtr cl);
+		bool add_channel(ChannelList::LogChannelPtr c);
+		bool set_format(const string & format);
+		bool set_format_ptr(LogFormatPtr format);
+
+		bool add_level(LogLevel::LEVEL level);
+		bool remove_level(LogLevel::LEVEL level);
+		bool reset_level(uint32 level);
+
+		bool add_flush_level(LogLevel::LEVEL level);
+		bool remove_flush_level(LogLevel::LEVEL level);
+		bool reset_flush_level(uint32 level);
+
+		bool set_error_handle(OsHelper::log_err_handle err);
+
+		void deploy();
+
+		RuntimeError log(LogLevel::LEVEL level, const char * str);
+		RuntimeError trace(const char * str);
+		RuntimeError debug(const char * str);
+		RuntimeError message(const char * str);
+		RuntimeError warning(const char * str);
+		RuntimeError error(const char * str);
+		RuntimeError fatal(const char * str);
+
+		RuntimeError log_fl(const LogFileLine & fl, LogLevel::LEVEL level, const char * str);
+		RuntimeError trace_fl(const LogFileLine & fl, const char * str);
+		RuntimeError debug_fl(const LogFileLine & fl, const char * str);
+		RuntimeError message_fl(const LogFileLine & fl, const char * str);
+		RuntimeError warning_fl(const LogFileLine & fl, const char * str);
+		RuntimeError error_fl(const LogFileLine & fl, const char * str);
+		RuntimeError fatal_fl(const LogFileLine & fl, const char * str);
 
 		RuntimeError log(LogLevel::LEVEL level, const char * fmt, const fmt::ArgList & args);
 		RuntimeError trace(const char * fmt, const fmt::ArgList & args);
@@ -111,34 +140,26 @@ namespace LightInk
 		template <typename T>
 		RuntimeError fatal_fl(const LogFileLine & fl,const T & t);
 
-		RuntimeError flush();
+		RuntimeError flush(LogLevel::LEVEL level);
 		RuntimeError channel(LogItem & item);
 
 		bool should_log(LogLevel::LEVEL level) const;
 		bool should_flush(LogLevel::LEVEL level) const;
 
-		void add_level(LogLevel::LEVEL level);
-		void remove_level(LogLevel::LEVEL level);
-		void reset_level(uint32 level);
-
-		void add_flush_level(LogLevel::LEVEL level);
-		void remove_flush_level(LogLevel::LEVEL level);
-		void reset_flush_level(uint32 level);
-
 		uint32 get_level() const;
 		uint32 get_flush_level() const;
 
 		const string & get_name() const;
-		void set_error_handle(OsHelper::log_err_handle err);
 		OsHelper::log_err_handle get_error_handle();
 
 	protected:
 		virtual void default_error_handle(const string & msg);
-		virtual RuntimeError do_flush();
+		virtual RuntimeError do_flush(LogLevel::LEVEL level);
 		virtual RuntimeError do_channel(LogItem & item);
 
 	protected:
-		const string m_name;
+		bool m_deployed;
+		string m_name;
 		LogFormatPtr m_format;
 		uint32 m_level;
 		uint32 m_flushLevel;
@@ -151,6 +172,52 @@ namespace LightInk
 	///////////////////////////////////////////////////////////////////////
 	//inline method
 	//////////////////////////////////////////////////////////////////////
+	inline bool Logger::set_name(const string & name) 
+	{ if (!m_deployed) { m_name = name; } return !m_deployed; }
+	inline bool Logger::clear_channel() 
+	{ if (!m_deployed) { m_channel->clear_channel(); } return !m_deployed; }
+	inline bool Logger::set_channel_list(ChannelListPtr cl) 
+	{ if (!m_deployed) { m_channel = cl; } return !m_deployed; }
+	inline bool Logger::add_channel(ChannelList::LogChannelPtr c) 
+	{ if (!m_deployed) { m_channel->add_channel(c); } return !m_deployed; }
+	inline bool Logger::set_format(const string & format) 
+	{ if (!m_deployed) { m_format.reset(new LogFormat(format)); } return !m_deployed; }
+	inline bool Logger::set_format_ptr(LogFormatPtr format) 
+	{ if (!m_deployed) { m_format = format; } return !m_deployed; }
+	inline bool Logger::add_level(LogLevel::LEVEL level) 
+	{ if (!m_deployed) { m_level |= level; } return !m_deployed; }
+	inline bool Logger::remove_level(LogLevel::LEVEL level) 
+	{ if (!m_deployed) { m_level &= (~level); } return !m_deployed; }
+	inline bool Logger::reset_level(uint32 level) 
+	{ if (!m_deployed) { m_level = level; } return !m_deployed; }
+	inline bool Logger::add_flush_level(LogLevel::LEVEL level) 
+	{ if (!m_deployed) { m_flushLevel |= level; } return !m_deployed; }
+	inline bool Logger::remove_flush_level(LogLevel::LEVEL level) 
+	{ if (!m_deployed) { m_flushLevel &= (~level); } return !m_deployed; }
+	inline bool Logger::reset_flush_level(uint32 level) 
+	{ if (!m_deployed) { m_flushLevel = level; } return !m_deployed; }
+	inline bool Logger::set_error_handle(OsHelper::log_err_handle err) 
+	{ if (!m_deployed) { m_err = err; } return !m_deployed; }
+
+	inline void Logger::deploy() { m_deployed = true; }
+
+
+	inline RuntimeError Logger::log(LogLevel::LEVEL level, const char * str) { return log(level, fmt::StringRef(str)); }
+	inline RuntimeError Logger::trace(const char * str) { return log(LogLevel::LogMsg_Trace, str); }
+	inline RuntimeError Logger::debug(const char * str) { return log(LogLevel::LogMsg_Debug, str); }
+	inline RuntimeError Logger::message(const char * str) { return log(LogLevel::LogMsg_Message, str); }
+	inline RuntimeError Logger::warning(const char * str) { return log(LogLevel::LogMsg_Warning, str); }
+	inline RuntimeError Logger::error(const char * str) { return log(LogLevel::LogMsg_Error, str); }
+	inline RuntimeError Logger::fatal(const char * str) { return log(LogLevel::LogMsg_Fatal, str); }
+
+	inline RuntimeError Logger::log_fl(const LogFileLine & fl, LogLevel::LEVEL level, const char * str) { return log_fl(fl, level, fmt::StringRef(str)); }
+	inline RuntimeError Logger::trace_fl(const LogFileLine & fl, const char * str) { return log_fl(fl, LogLevel::LogMsg_Trace, str); }
+	inline RuntimeError Logger::debug_fl(const LogFileLine & fl, const char * str) { return log_fl(fl, LogLevel::LogMsg_Debug, str); }
+	inline RuntimeError Logger::message_fl(const LogFileLine & fl, const char * str) { return log_fl(fl, LogLevel::LogMsg_Message, str); }
+	inline RuntimeError Logger::warning_fl(const LogFileLine & fl, const char * str) { return log_fl(fl, LogLevel::LogMsg_Warning, str); }
+	inline RuntimeError Logger::error_fl(const LogFileLine & fl, const char * str) { return log_fl(fl, LogLevel::LogMsg_Error, str); }
+	inline RuntimeError Logger::fatal_fl(const LogFileLine & fl, const char * str) { return log_fl(fl, LogLevel::LogMsg_Fatal, str); }
+
 	inline RuntimeError Logger::trace(const char * fmt, const fmt::ArgList & args)
 	{ return log(LogLevel::LogMsg_Trace, fmt, args); }
 
@@ -195,7 +262,12 @@ namespace LightInk
 		{
 			LogItem item(&m_name, level);
 			item.m_msg << t;
-			return channel(item);
+			RuntimeError err = channel(item);
+			if (err != RE_Success)
+				return err;
+			if (should_flush(level))
+				return flush(level);
+			return RE_Success;
 		}
 		catch (const std::exception & e)
 		{
@@ -235,7 +307,12 @@ namespace LightInk
 			LogItem item(&m_name, level);
 			item.m_fl = fl;
 			item.m_msg << t;
-			return channel(item);
+			RuntimeError err = channel(item);
+			if (err != RE_Success)
+				return err;
+			if (should_flush(level))
+				return flush(level);
+			return RE_Success;
 		}
 		catch (const std::exception & e)
 		{
@@ -279,25 +356,11 @@ namespace LightInk
 
 	inline bool Logger::should_flush(LogLevel::LEVEL level) const { return (level & m_flushLevel) != 0;}
 
-	inline void Logger::add_level(LogLevel::LEVEL level) { m_level |= level; }
-
-	inline void Logger::remove_level(LogLevel::LEVEL level) { m_level &= (~level); }
-
-	inline void Logger::reset_level(uint32 level) { m_level = level; }
-
-	inline void Logger::add_flush_level(LogLevel::LEVEL level) { m_flushLevel |= level; }
-
-	inline void Logger::remove_flush_level(LogLevel::LEVEL level) { m_flushLevel &= (~level); }
-
-	inline void Logger::reset_flush_level(uint32 level) { m_flushLevel = level; }
-
 	inline uint32 Logger::get_level() const { return m_level; }
 
 	inline uint32 Logger::get_flush_level() const { return m_flushLevel; }
 
 	inline const string & Logger::get_name() const { return m_name; }
-
-	inline void Logger::set_error_handle(OsHelper::log_err_handle err) { m_err = err; }
 
 	inline OsHelper::log_err_handle Logger::get_error_handle() { return m_err; }
 

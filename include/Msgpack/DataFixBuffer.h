@@ -28,13 +28,12 @@
 #include "Common/RuntimeError.h"
 #include "Common/Type.h"
 #include "Log/Log.h"
-#include "Common/SmallObject.h"
 #include "Common/STLType.h"
 
 namespace LightInk
 {
 	template <uint32 FixLen>
-	class LIGHTINK_TEMPLATE_DECL DataFixBuffer : public SmallObject
+	class LIGHTINK_TEMPLATE_DECL DataFixBuffer
 	{
 	public:
 		DataFixBuffer();
@@ -61,6 +60,8 @@ namespace LightInk
 		RuntimeError read(const char ** data, uint32 size, uint32 offset = 0);
 
 		RuntimeError resize_buffer(uint32 size);
+
+		void swap(DataFixBuffer & right);
 
 	protected:
 		char m_buffer[FixLen];

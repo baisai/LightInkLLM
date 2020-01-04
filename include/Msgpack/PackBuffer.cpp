@@ -87,10 +87,10 @@ namespace LightInk
 	}
 
 	template <typename DBuffer>
-	inline void PackBuffer<DBuffer>::reset_data_buffer(DBuffer & buffer)
+	inline void PackBuffer<DBuffer>::swap_buffer(DBuffer & buffer)
 	{
-		LogTraceStepCall("void PackBuffer<DBuffer>::reset_data_buffer(DBuffer & buffer)");
-		m_buffer = buffer;
+		LogTraceStepCall("void PackBuffer<DBuffer>::swap_buffer(DBuffer & buffer)");
+		m_buffer.swap(buffer);
 		LogTraceStepReturnVoid;
 	}
 

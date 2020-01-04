@@ -32,7 +32,7 @@
 namespace LightInk
 {
 	template <typename DBuffer>
-	class LIGHTINK_TEMPLATE_DECL PackBuffer : public SmallObject
+	class LIGHTINK_TEMPLATE_DECL PackBuffer
 	{
 	public:
 		PackBuffer();
@@ -42,7 +42,7 @@ namespace LightInk
 		virtual ~PackBuffer();
 		virtual PackBuffer * clone();
 		virtual PackBuffer * deep_clone();
-		virtual void reset_data_buffer(DBuffer & buffer);
+		virtual void swap_buffer(DBuffer & buffer);
 
 		virtual bool release();
 

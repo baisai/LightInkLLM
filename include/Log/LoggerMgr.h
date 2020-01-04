@@ -33,17 +33,17 @@ namespace LightInk
 {
 	struct LogItem;
 	class AsyncThread;
-	class LIGHTINK_DECL LoggerMgr : public SmallObject
+	class LIGHTINK_DECL LoggerMgr
 	{
 	public:
 		static LoggerMgr * get_instance();
-		static bool init_cpp_log(const LogOption & op);
+		static RuntimeError init_cpp_log(const LogOption & op);
 		static Logger * get_cpp_log();
-		static bool init_lua_log(const LogOption & op);
+		static RuntimeError init_lua_log(const LogOption & op);
 		static Logger * get_lua_log();
 
 		template <int32 Idx>
-		bool init_fixed_logger(const LogOption & op);
+		RuntimeError init_fixed_logger(const LogOption & op);
 
 		template <int32 Idx>
 		Logger * get_fixed_logger();
@@ -67,7 +67,7 @@ namespace LightInk
 
 		LoggerPtr get_logger(const LogOption & op);
 		
-		RuntimeError flush(Logger * logger);
+		RuntimeError flush(Logger * logger, LogLevel::LEVEL level);
 
 		RuntimeError channel(Logger * logger, LogItem & item);
 
@@ -87,13 +87,13 @@ namespace LightInk
 	//////////////////////////////////////////////////////////////////////
 	inline LoggerMgr * LoggerMgr::get_instance() { static LoggerMgr s_lm; return &s_lm; }
 
-	inline bool LoggerMgr::init_cpp_log(const LogOption & op) { return get_instance()->init_fixed_logger<1>(op); }
+	inline RuntimeError LoggerMgr::init_cpp_log(const LogOption & op) { return get_instance()->init_fixed_logger<1>(op); }
 	inline Logger * LoggerMgr::get_cpp_log() { return get_instance()->get_fixed_logger<1>(); }
-	inline bool LoggerMgr::init_lua_log(const LogOption & op) { return get_instance()->init_fixed_logger<2>(op); }
+	inline RuntimeError LoggerMgr::init_lua_log(const LogOption & op) { return get_instance()->init_fixed_logger<2>(op); }
 	inline Logger * LoggerMgr::get_lua_log() { return get_instance()->get_fixed_logger<2>(); }
 
 	template <int32 Idx>
-	inline bool LoggerMgr::init_fixed_logger(const LogOption & op) 
+	inline RuntimeError LoggerMgr::init_fixed_logger(const LogOption & op) 
 	{ 
 		return get_raw_fixed_logger<Idx>()->init(op);
 	}

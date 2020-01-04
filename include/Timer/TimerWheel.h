@@ -30,7 +30,7 @@
 
 namespace LightInk
 {
-	class LIGHTINK_DECL TimerNode : public SmallObject
+	class LIGHTINK_DECL TimerNode
 	{
 	public:
 		TimerNode();
@@ -65,7 +65,7 @@ namespace LightInk
 	inline void TimerNode::next( TimerNode * next ) { m_next = next; }
 	inline TimerData & TimerNode::timer() { return m_timer; }
 
-	class TimerWheel: public SmallObject
+	class TimerWheel
 		{
 		public:
 			TimerWheel(uint32 step);
@@ -75,7 +75,7 @@ namespace LightInk
 
 			bool add_timer(TimerNode * timer);
 
-			//指向下一个tick并提交
+			//point to next tick and submit
 			TimerNode* submit_timer();
 
 			uint32 get_len();
@@ -83,13 +83,13 @@ namespace LightInk
 			uint32 get_step() ;
 
 		protected:
-			uint32 m_len ; //本轮长度
-			uint32 m_cur ; //轮转到第几个刻度了
-			uint32 m_step ; //一个刻度的时间
+			uint32 m_len ; //this wheel length
+			uint32 m_cur ; //this wheel current step count
+			uint32 m_step ; //a step time
 
-			TimerNode * m_wheel ; //钟盘
+			TimerNode * m_wheel ; //time wheel
 
-			TimerWheel * m_next ; //下一个钟盘
+			TimerWheel * m_next ; //next time wheel
 
 		LIGHTINK_DISABLE_COPY(TimerWheel)
 		};

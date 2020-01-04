@@ -172,6 +172,20 @@ namespace LightInk
 		LogTraceStepCall("RuntimeError DataFixBuffer<FixLen>::resize_buffer(uint32 size)");
 		LogTraceStepReturn(RE_Msgpack_DisableResize);
 	}
+
+	template<uint32 FixLen>
+	inline void DataFixBuffer<FixLen>::swap(DataFixBuffer<FixLen> & right)
+	{
+		LogTraceStepCall("void DataFixBuffer<FixLen>::swap(DataFixBuffer<FixLen> & right)");
+		uint32 writePos = right.m_writePos;
+		char tmp[FixLen] = { 0 };
+		memcpy(tmp, right.m_buffer, writePos);
+		right.m_writePos = m_writePos;
+		memcpy(right.m_buffer, m_buffer, m_writePos);
+		m_writePos = writePos;
+		memcpy(m_buffer, tmp, writePos);
+		LogTraceStepReturnVoid;
+	}
 }
 
 

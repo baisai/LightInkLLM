@@ -34,7 +34,9 @@ namespace LightInk
 	class LIGHTINK_DECL LogChannelStdOut : public LogChannel
 	{
 	public:
-		LogChannelStdOut() {  }
+		LogChannelStdOut(const string & format, uint32 level, uint32 flushLevel) : 
+			LogChannel(format, level, flushLevel) 
+		{  }
 		virtual ~LogChannelStdOut() {  }
 
 
@@ -62,7 +64,9 @@ namespace LightInk
 	class LIGHTINK_DECL LogChannelStdErr : public LogChannel
 	{
 	public:
-		LogChannelStdErr() {  }
+		LogChannelStdErr(const string & format, uint32 level, uint32 flushLevel) : 
+			LogChannel(format, level, flushLevel)
+		{  }
 		virtual ~LogChannelStdErr() {  }
 
 

@@ -25,41 +25,41 @@
 #define LIGHTINK_LOG_LOGCHANNEL_H_
 
 #include "Common/RuntimeError.h"
-#include "Log/LogItem.h"
+#include "Log/LogFormat.h"
 
 namespace LightInk
 {
 	struct LogItem;
-	class LIGHTINK_DECL LogChannel : public SmallObject
+	class LIGHTINK_DECL LogChannel
 	{
 	public:
-		LogChannel() : m_level(~0u) {  }
+		LogChannel(const string & format, uint32 level, uint32 flushLevel);
 		virtual ~LogChannel() {  }
 
-		virtual RuntimeError log(const LogItem & item) { return do_log(item); }
-		virtual RuntimeError flush() { return do_flush(); }
+		virtual RuntimeError log(const LogItem & item);
+		virtual RuntimeError flush(LogLevel::LEVEL level);
 
-		bool should_log(LogLevel::LEVEL level);
-		void add_level(LogLevel::LEVEL level);
-		void remove_level(LogLevel::LEVEL level);
-		void reset_level(uint32 level);
+		bool should_log(LogLevel::LEVEL level) const;
+		bool should_flush(LogLevel::LEVEL level) const;
 
 	protected:
 		virtual RuntimeError do_log(const LogItem & item) = 0;
 		virtual RuntimeError do_flush() = 0;
 
 	private:
+		LogFormatPtr m_format;
 		uint32 m_level;
+		uint32 m_flushLevel;
 
 	LIGHTINK_DISABLE_COPY(LogChannel)
 	};
 	///////////////////////////////////////////////////////////////////////
 	//inline method
 	//////////////////////////////////////////////////////////////////////
-	inline bool LogChannel::should_log(LogLevel::LEVEL level) { return (level & m_level) != 0;}
-	inline void LogChannel::add_level(LogLevel::LEVEL level) { m_level |= level; }
-	inline void LogChannel::remove_level(LogLevel::LEVEL level) { m_level &= (~level); }
-	inline void LogChannel::reset_level(uint32 level) { m_level = level; }
+	inline bool LogChannel::should_log(LogLevel::LEVEL level) const 
+	{ return (level & m_level) != 0; }
+	inline bool LogChannel::should_flush(LogLevel::LEVEL level) const 
+	{ return (level & m_flushLevel) != 0; }
 
 }
 

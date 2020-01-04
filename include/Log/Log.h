@@ -36,11 +36,11 @@
 ////////////////////////////
 //Trace
 ///////////////////////////
-#ifdef LightInkNoTrace
+#ifndef LightInkLogTrace
 #define LogTrace(ft, ...) do {} while (0)
 #define LogTraceEnd
-#ifndef LightInkNoTraceStepCall
-#define LightInkNoTraceStepCall
+#ifdef LightInkLogTraceStepCall
+#undef LightInkLogTraceStepCall
 #endif
 #else
 #define LogTrace(name, ft, ...) \
@@ -52,7 +52,7 @@
 		do {__##name##_trace.set_line(__LINE__); __##name##_trace.log_out(); } while (0)
 #endif
 
-#ifdef LightInkNoTraceStepCall
+#ifndef LightInkLogTraceStepCall
 #define LogTraceStepCall(ft, ...) do {} while (0)
 #define LogTraceStepReturn(v) return v
 #define LogTraceStepReturnVoid return
@@ -70,7 +70,7 @@
 ////////////////////////
 //Debug
 ///////////////////////
-#ifdef LightInkNoDebug
+#ifndef LightInkLogDebug
 #define LogDebug(ft, ...) do {} while (0)
 #else
 #define LogDebug(ft, ...) \
@@ -84,7 +84,7 @@
 ////////////////////////
 //Message
 ///////////////////////
-#ifdef LightInkNoMessage
+#ifndef LightInkLogMessage
 #define LogMessage(ft, ...) do {} while (0)
 #else
 #define LogMessage(ft, ...) \
@@ -98,7 +98,7 @@
 ////////////////////////
 //Warning
 ///////////////////////
-#ifdef LightInkNoWarning
+#ifndef LightInkLogWarning
 #define LogWarning(ft, ...) do {} while (0)
 #else
 #define LogWarning(ft, ...) \
@@ -113,7 +113,7 @@
 ////////////////////////
 //Error
 ///////////////////////
-#ifdef LightInkNoError
+#ifndef LightInkLogError
 #define LogError(ft, ...) do {} while (0)
 #else
 #define LogError(ft, ...) \
@@ -127,7 +127,7 @@
 ////////////////////////
 //Fatal
 ///////////////////////
-#ifdef LightInkNoFatal
+#ifndef LightInkLogFatal
 #define LogFatal(ft, ...) do {} while (0)
 #else
 #define LogFatal(ft, ...) \
@@ -143,7 +143,7 @@
 ////////////////////////
 //ScriptDebug
 ///////////////////////
-#ifdef LightInkNoScriptDebug
+#ifndef LightInkLogScriptDebug
 #define LogScriptDebug(ft, ...) do {} while (0)
 #else
 #define LogScriptDebug(ft, ...) \
@@ -158,7 +158,7 @@
 ////////////////////////
 //ScriptMessage
 ///////////////////////
-#ifdef LightInkNoScriptMessage
+#ifndef LightInkLogScriptMessage
 #define LogScriptMessage(ft, ...) do {} while (0)
 #else
 #define LogScriptMessage(ft, ...) \
@@ -171,7 +171,7 @@
 ////////////////////////
 //ScriptWarning
 ///////////////////////
-#ifdef LightInkNoScriptWarning
+#ifndef LightInkLogScriptWarning
 #define LogScriptWarning(ft, ...) do {} while (0)
 #else
 #define LogScriptWarning(ft, ...) \
@@ -185,13 +185,17 @@
 ////////////////////////
 //ScriptError
 ///////////////////////
-#ifdef LightInkNoScriptError
-#define LogScriptError(ft, ...) do {} while (0)
+#ifndef LightInkLogScriptError
+#define LogScriptError(L, ft, ...) do {} while (0)
 #else
-#define LogScriptError(ft, ...) \
+#define LogScriptError(L, ft, ...) \
 	do  \
 	{ \
 		LightInkLogLua->error_fl(LightInkLogFileLine, ft, ##__VA_ARGS__); \
+		LightInk::string ___stack; \
+		LightInk::LuaDebugger::get_all_frame_info(L, ___stack); \
+		if (!___stack.empty()) \
+			LightInkLogLua->error_fl(LightInkLogFileLine, ___stack.c_str()); \
 	} while (0)
 #endif
 
@@ -199,13 +203,17 @@
 ////////////////////////
 //Fatal
 ///////////////////////
-#ifdef LightInkNoScriptFatal
-#define LogScriptFatal(ft, ...) do {} while (0)
+#ifndef LightInkLogScriptFatal
+#define LogScriptFatal(L, ft, ...) do {} while (0)
 #else
-#define LogScriptFatal(ft, ...) \
+#define LogScriptFatal(L, ft, ...) \
 	do  \
 	{ \
 		LightInkLogLua->fatal_fl(LightInkLogFileLine, ft, ##__VA_ARGS__); \
+		LightInk::string ___stack; \
+		LightInk::LuaDebugger::get_all_frame_info(L, ___stack); \
+		if (!___stack.empty()) \
+			LightInkLogLua->fatal_fl(LightInkLogFileLine, ___stack.c_str()); \
 	} while (0)
 
 #endif
@@ -214,7 +222,7 @@
 /////////////////////////
 //ScriptError and Jump
 ////////////////////////
-#ifdef LightInkNoScriptErrorJump
+#ifndef LightInkLogScriptErrorJump
 #define LogScriptErrorJump(L, ft, ...) LogScriptError(ft, ##__VA_ARGS__)
 #else
 #define LogScriptErrorJump(L, ft, ...)  \

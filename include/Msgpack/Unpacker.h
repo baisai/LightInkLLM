@@ -34,7 +34,7 @@
 namespace LightInk
 {
 	template<typename TBuffer>
-	class LIGHTINK_TEMPLATE_DECL Unpacker : public SmallObject
+	class LIGHTINK_TEMPLATE_DECL Unpacker
 	{
 	public:
 		Unpacker();

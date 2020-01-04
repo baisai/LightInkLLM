@@ -2,13 +2,13 @@
 
 local CppClass = CppClassList.CppClass
 
-local cppObj = CppClass:new__(1)
+local cppObj = CppClass:create__(1)
 print("cppObj:get_private() == 1 ? ", cppObj:get_private() == 1)
 cppObj:set_private(100)
 print("cppObj:get_private() == 100 ? ", cppObj:get_private() == 100)
 cppObj:set_enum(CppClass.enum1)
 print("cppObj:get_enum() == CppClass.enum1 ? ", cppObj:get_enum() == CppClass.enum1)
-cppObj:delete__()
+cppObj:destroy__()
 cppObj = nil
 
 CppClass.test_static()
@@ -42,4 +42,4 @@ print("this is static CppClass2::s_cppclass Calss", CppClass2.s_cppclass:get_pri
 CppClass2.destroy(cppObj)
 cppObj = nil
 
-cppObj = CppClass2:new__() --this will be error!!! CppClass2 disable new
+cppObj = CppClass2:create__() --this will be error!!! CppClass2 disable new

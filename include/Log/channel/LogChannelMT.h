@@ -33,11 +33,11 @@ namespace LightInk
 	class LIGHTINK_TEMPLATE_DECL LogChannelMT : public LogChannel
 	{
 	public:
-		LogChannelMT();
+		LogChannelMT(const string & format, uint32 level, uint32 flushLevel);
 		virtual ~LogChannelMT();
 
 		virtual RuntimeError log(const LogItem & item);
-		virtual RuntimeError flush();
+		virtual RuntimeError flush(LogLevel::LEVEL level);
 
 	protected:
 		M m_lock;
@@ -48,18 +48,20 @@ namespace LightInk
 	//inline method
 	//////////////////////////////////////////////////////////////////////
 	template <typename M>
-	LogChannelMT<M>::LogChannelMT() {  }
+	LogChannelMT<M>::LogChannelMT(const string & format, uint32 level, uint32 flushLevel) :
+		LogChannel(format, level, flushLevel)
+	{  }
 
 	template <typename M>
 	LogChannelMT<M>::~LogChannelMT() {  }
 
 	template <typename M>
 	RuntimeError LogChannelMT<M>::log(const LogItem & item) 
-	{ Guard<M> l(m_lock);return do_log(item); }
+	{ Guard<M> l(m_lock);return LogChannel::log(item); }
 
 	template <typename M>
-	RuntimeError LogChannelMT<M>::flush() 
-	{ Guard<M> l(m_lock);return do_flush(); }
+	RuntimeError LogChannelMT<M>::flush(LogLevel::LEVEL level)
+	{ Guard<M> l(m_lock);return LogChannel::flush(level); }
 
 }
 

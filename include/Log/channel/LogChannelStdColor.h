@@ -33,7 +33,7 @@ namespace LightInk
 	public:
 		typedef LogSharedPtr<LogChannel>::type LogChannelPtr;
 
-		LogChannelStdOutColor(LogChannelPtr channel);
+		LogChannelStdOutColor(const string & format, uint32 level, uint32 flushLevel, LogChannelPtr channel);
 		virtual ~LogChannelStdOutColor() {  }
 
 		enum Code

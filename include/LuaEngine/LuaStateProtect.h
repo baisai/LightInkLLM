@@ -35,6 +35,7 @@ namespace LightInk
 		LuaStateProtect(lua_State * L, bool autoPop = false) : m_lua(L), m_top(lua_gettop(L)), m_autoPop(autoPop) { ; }
 		~LuaStateProtect() {if (m_autoPop) lua_settop(m_lua, m_top);}
 		void reset() { lua_settop(m_lua, m_top); }
+		int get_top() { return m_top; }
 	private:
 		lua_State * m_lua;
 		int m_top;
